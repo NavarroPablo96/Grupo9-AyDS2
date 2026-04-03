@@ -1,0 +1,6 @@
+package ComuEntreProcesos;
+
+public interface IEnviarEvento {
+
+    void enviarEvento(Evento evento);
+}

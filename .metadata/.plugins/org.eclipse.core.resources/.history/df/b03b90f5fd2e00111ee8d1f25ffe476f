@@ -1,0 +1,7 @@
+package vista_controlador;
+
+import javax.swing.text.DocumentFilter;
+
+public class DniFilter extends DocumentFilter {
+
+}

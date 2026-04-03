@@ -1,0 +1,56 @@
+package vista_controlador;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class Controlador {
+	
+    private ConexionFrame conexionView;
+    private VistaOperador operadorView;
+
+    public Controlador(ConexionFrame conexionView) {
+        this.conexionView = conexionView;
+        initControl();
+    }
+
+    /**
+     * Inicializa los listeners de los botones
+     */
+    private void initControl() {
+        // Botón "Escuchar" para empezar a escuchar en un puerto
+        conexionView.getBtnEscuchar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String ip = conexionView.getTxtReceptorIP().getText();
+                String puerto = conexionView.getTxtReceptorPuerto().getText();
+                System.out.println("Escuchando en IP: " + ip + " Puerto: " + puerto);
+
+            }
+        });
+
+        // Botón "Conectar" del emisor
+        //conexionView.getBtnConectar().addActionListener(new ActionListener() {
+        //    @Override
+        //    public void actionPerformed(ActionEvent e) {
+        //        String ip = conexionView.getTxtEmisorIP().getText();
+        //        String puerto = conexionView.getTxtEmisorPuerto().getText();
+        //        System.out.println("Conectando a IP: " + ip + " Puerto: " + puerto);
+
+                // Aquí iría la lógica para iniciar la conexión como emisor
+
+                // Por ejemplo, abrir la ventana del operador después de conectar
+         //       abrirVistaOperador();
+         //   }
+        //});
+    }
+
+    /**
+     * Muestra la ventana principal del operador
+     */
+    private void abrirVistaOperador() {
+        operadorView = new VistaOperador();
+        operadorView.setVisible(true);
+    }
+}
+
+

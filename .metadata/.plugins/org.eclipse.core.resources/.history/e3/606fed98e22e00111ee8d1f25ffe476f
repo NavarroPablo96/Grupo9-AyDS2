@@ -1,0 +1,107 @@
+package vista_controlador;
+
+import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+
+public class TerminalRegistro extends JFrame {
+
+    private static final long serialVersionUID = 1L;
+    private JPanel contentPane;
+    private JTextField txtDNI;
+    private JLabel lblTurnoNumero;
+    private JLabel lblDetalleTurno;
+    private JButton btnRegistrar;
+    private int turnoActual = 7; // Número de turno inicial
+
+    /**
+     * Create the frame.
+     */
+    public TerminalRegistro() {
+        setTitle("Terminal de Registro");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(100, 100, 450, 300);
+        contentPane = new JPanel();
+        contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+        contentPane.setLayout(new BorderLayout(10, 10));
+        setContentPane(contentPane);
+
+        // Panel superior con título
+        JLabel lblTitulo = new JLabel("Sistema de Turno");
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 24));
+        lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+        contentPane.add(lblTitulo, BorderLayout.NORTH);
+
+        // Panel central con instrucciones y registro
+        JPanel panelCentral = new JPanel();
+        panelCentral.setLayout(new BoxLayout(panelCentral, BoxLayout.Y_AXIS));
+        contentPane.add(panelCentral, BorderLayout.CENTER);
+
+        JLabel lblInstrucciones = new JLabel("Ingrese su documento para registrarse en la fila (solo dígitos)");
+        lblInstrucciones.setFont(new Font("Arial", Font.PLAIN, 14));
+        lblInstrucciones.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelCentral.add(lblInstrucciones);
+        panelCentral.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        // Panel con campo de texto y botón en la misma línea
+        JPanel panelRegistro = new JPanel();
+        panelRegistro.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        txtDNI = new JTextField();
+        txtDNI.setColumns(10);
+        this.btnRegistrar = new JButton("Registrarme");
+
+        btnRegistrar.addActionListener(e -> registrarTurno());
+
+        panelRegistro.add(txtDNI);
+        panelRegistro.add(btnRegistrar);
+        panelCentral.add(panelRegistro);
+        panelCentral.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        // Cuadro de turno
+        JPanel panelTurno = new JPanel();
+        panelTurno.setBorder(new LineBorder(Color.BLACK, 1));
+        panelTurno.setLayout(new BoxLayout(panelTurno, BoxLayout.Y_AXIS));
+        panelTurno.setPreferredSize(new Dimension(300, 80));
+        panelTurno.setMaximumSize(new Dimension(300, 80));
+        panelTurno.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        lblTurnoNumero = new JLabel("Turno #007");
+        lblTurnoNumero.setFont(new Font("Arial", Font.BOLD, 18));
+        lblTurnoNumero.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        lblDetalleTurno = new JLabel("Documento: 38291047 - Registrado a las 10:42 hs");
+        lblDetalleTurno.setFont(new Font("Arial", Font.PLAIN, 12));
+        lblDetalleTurno.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        panelTurno.add(Box.createVerticalGlue());
+        panelTurno.add(lblTurnoNumero);
+        panelTurno.add(Box.createRigidArea(new Dimension(0, 5)));
+        panelTurno.add(lblDetalleTurno);
+        panelTurno.add(Box.createVerticalGlue());
+
+        panelCentral.add(panelTurno);
+    }
+
+    // Método para registrar un turno
+    private void registrarTurno() {
+        String dni = txtDNI.getText().trim();
+        if (dni.matches("\\d+")) { // Validar que solo sean dígitos
+            turnoActual++;
+            lblTurnoNumero.setText(String.format("Turno #%03d", turnoActual));
+            String hora = new SimpleDateFormat("HH:mm").format(new Date());
+            lblDetalleTurno.setText("Documento: " + dni + " - Registrado a las " + hora + " hs");
+            txtDNI.setText("");
+        } else {
+            JOptionPane.showMessageDialog(this, "Ingrese solo números en el DNI", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+	public JButton getBtnRegistrar() {
+		return btnRegistrar;
+	}
+    
+    
+}

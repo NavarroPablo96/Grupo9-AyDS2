@@ -1,0 +1,7 @@
+package comuEntreProcesos;
+
+public interface IrecibirEvento {
+    void suscribirse(IReceptorEvento receptor);
+
+    void desuscribirse(IReceptorEvento receptor);
+}

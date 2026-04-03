@@ -1,0 +1,22 @@
+package comuEntreProcesos;
+
+import java.io.Serializable;
+
+public abstract class Evento implements Serializable {
+
+    private String procesoOrigen;
+    private String procesoDestino;
+
+    public Evento(String procesoOrigen, String procesoDestino) {
+        this.procesoOrigen = procesoOrigen;
+        this.procesoDestino = procesoDestino;
+    }
+
+    public String getProcesoOrigen() {
+        return procesoOrigen;
+    }
+
+    public String getProcesoDestino() {
+        return procesoDestino;
+    }
+}

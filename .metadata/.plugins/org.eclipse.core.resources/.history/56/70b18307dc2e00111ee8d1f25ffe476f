@@ -1,0 +1,5 @@
+package ComuEntreProcesos;
+
+public interface IReceptorEvento {
+    void ArriboEvento(Evento e);
+}

@@ -1,0 +1,14 @@
+package gestorInterfazOperador;
+
+import java.awt.EventQueue;
+
+import vista_controlador.ConexionFrame;
+
+public class GestorFila {
+	
+    public static void main(String[] args) {
+    	System.out.println("HOLA");
+    	
+    }
+
+}

@@ -1,0 +1,18 @@
+package comuEntreProcesos;
+
+import gestorInterfazOperador.Turno;
+
+public class EventoLlamarSiguiente extends Evento {
+
+	private Turno turno;
+
+    public EventoLlamarSiguiente(String origen, String destino,Turno turno) {
+		super(origen, destino);
+        this.turno = turno;
+	}
+
+
+    public Turno getTurno() {
+        return turno;
+    }
+}

@@ -1,0 +1,41 @@
+package gestorTurnos;
+
+import comuEntreProcesos.ComunicacionEntreProcesos;
+import comuEntreProcesos.EventoNuevoTurno;
+import vista_controlador.Controlador;
+
+public class GestorTurnos {
+	private int numeroTurno;
+	
+	private static GestorTurnos instancia;
+	
+	private GestorTurnos() {
+		this.numeroTurno=0;
+	}
+
+	public static GestorTurnos getInstance() {
+        if (instancia == null) {
+            instancia = new GestorTurnos();
+        }
+        return instancia;
+	}
+	
+	public static void main(String[] args) {
+    	System.out.println("TERMINAL");
+    	Controlador.getInstance().initControl();
+    	
+    	//GestorFila.getInstance().fila.add(new Turno(7,"38291047","10:42"));
+    	//GestorFila.getInstance().fila.add(new Turno(8,"20110334","10:44"));
+    	//GestorFila.getInstance().fila.add(new Turno(9,"30111222","10:45"));
+    	//GestorFila.getInstance().fila.add(new Turno(10,"40122333","10:47"));
+    }
+	
+	public void CrearTurno(String dni, String hora) {
+		this.numeroTurno++;
+		Turno nuevo = new Turno(this.numeroTurno,dni, hora);
+		EventoNuevoTurno nuevoTurno = new EventoNuevoTurno("Terminal","Operador",nuevo);
+		ComunicacionEntreProcesos.getInstance().enviarEvento(nuevoTurno);
+		Controlador.getInstance().ActualizarVista(nuevo);
+	}
+
+}

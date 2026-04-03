@@ -1,0 +1,10 @@
+package gestorInterfazOperador;
+
+public class Turno {
+	private int Numero;
+
+	public Object getNumero() {
+		return Numero;
+	}
+
+}

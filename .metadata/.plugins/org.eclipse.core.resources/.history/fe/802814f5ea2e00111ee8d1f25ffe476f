@@ -1,0 +1,22 @@
+package gestorHistorial;
+
+import vista_controlador.Controlador;
+
+public class GestorHistorial {
+	private static GestorHistorial instancia;
+	
+	private GestorHistorial() {
+	}
+
+	public static GestorHistorial getInstance() {
+        if (instancia == null) {
+            instancia = new GestorHistorial();
+        }
+        return instancia;
+	}
+
+	public static void main(String[] args) {
+    	System.out.println("MONITOR");
+    	Controlador.getInstance().initControl();
+    }
+}

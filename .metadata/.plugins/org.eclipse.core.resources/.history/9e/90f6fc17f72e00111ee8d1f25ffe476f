@@ -1,0 +1,79 @@
+package gestorHistorial;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import comuEntreProcesos.ComunicacionEntreProcesos;
+import comuEntreProcesos.Evento;
+import comuEntreProcesos.EventoLlamarSiguiente;
+import comuEntreProcesos.IReceptorEvento;
+import comuEntreProcesos.IRecibirEvento;
+import vista_controlador.Controlador;
+
+public class GestorHistorial implements IReceptorEvento{
+	private static GestorHistorial instancia;
+	private static IRecibirEvento notificador;
+	private List<Turno> historial;
+	private Turno turnoActual;
+    
+	private GestorHistorial() {
+		this.historial = new ArrayList<>();
+		this.turnoActual=null;
+	}
+
+	public static GestorHistorial getInstance() {
+        if (instancia == null) {
+            instancia = new GestorHistorial();
+        }
+        return instancia;
+	}
+
+	public static void main(String[] args) {
+    	System.out.println("MONITOR");
+    	notificador = ComunicacionEntreProcesos.getInstance();
+    	notificador.suscribirse(instancia);
+    	
+    	Controlador.getInstance().initControl();
+    }
+
+	public  List<Turno> getUltimosTurnos() {
+		List<Turno> ultimos = new ArrayList<>();
+
+        for (int i = 0; i < Math.min(4, historial.size()); i++) {
+        	ultimos.add(historial.get(i));
+        }
+
+        return ultimos;
+	}
+
+	public Turno getUltimoTurnoLlamado() {
+		return turnoActual;
+	}
+
+	@Override
+	public void ArriboEvento(Evento e) {
+	    if (e instanceof EventoLlamarSiguiente) {
+	    	EventoLlamarSiguiente evento = (EventoLlamarSiguiente) e;
+	        Turno turno = evento.getTurno();
+
+	        if (turnoActual != null) {
+	            historial.add(turnoActual);
+
+	            // 2. Mantener máximo 4 elementos
+	            if (historial.size() > 4) {
+	                historial.remove(0); // elimina el más antiguo
+	            }
+	        }
+	        turnoActual = turno;
+	        
+	        Controlador.getInstance().actualizarVistaOperador();
+	    }
+	    else {
+	    	System.out.println("Llego un Evento");
+	    	System.out.println("Tipo: " + e.getClass().getName());
+	        System.out.println("Origen: " + e.getProcesoOrigen());
+	        System.out.println("Destino: " + e.getProcesoDestino());
+	    }
+	}
+
+}

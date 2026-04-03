@@ -1,0 +1,49 @@
+package gestorHistorial;
+
+import java.util.List;
+
+import comuEntreProcesos.ComunicacionEntreProcesos;
+import comuEntreProcesos.Evento;
+import comuEntreProcesos.IReceptorEvento;
+import comuEntreProcesos.IRecibirEvento;
+import vista_controlador.Controlador;
+
+public class GestorHistorial implements IReceptorEvento{
+	private static GestorHistorial instancia;
+	private static IRecibirEvento notificador;
+	
+	private GestorHistorial() {
+	}
+
+	public static GestorHistorial getInstance() {
+        if (instancia == null) {
+            instancia = new GestorHistorial();
+        }
+        return instancia;
+	}
+
+	public static void main(String[] args) {
+    	System.out.println("MONITOR");
+    	notificador = ComunicacionEntreProcesos.getInstance();
+    	notificador.suscribirse(instancia);
+    	
+    	Controlador.getInstance().initControl();
+    }
+
+	public  List<Turno> getUltimosTurnos() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Turno getUltimoTurnoLlamado() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void ArriboEvento(Evento e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

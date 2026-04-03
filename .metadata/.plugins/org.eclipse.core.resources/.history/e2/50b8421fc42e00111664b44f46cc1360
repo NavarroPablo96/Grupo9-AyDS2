@@ -1,0 +1,18 @@
+package gestorInterfazOperador;
+
+public class Turno {
+	private String Numero,Documento,HoraReg;
+
+	public String getNumero() {
+		return Numero;
+	}
+
+	public String getDocumento() {
+		return null;
+	}
+
+	public String getHoraRegistro() {
+		return HoraReg;
+	}
+
+}

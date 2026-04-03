@@ -1,0 +1,5 @@
+package comuEntreProcesos;
+
+public class EventoNuevoTurno extends Evento {
+
+}

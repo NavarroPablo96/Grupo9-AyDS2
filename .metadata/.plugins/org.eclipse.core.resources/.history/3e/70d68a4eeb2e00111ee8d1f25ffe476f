@@ -1,0 +1,109 @@
+package vista_controlador;
+
+
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+
+import javax.swing.*;
+import javax.swing.text.AbstractDocument;
+
+public class ConexionFrame extends JFrame {
+
+    private static final long serialVersionUID = 1L;
+
+    private JTextField txtReceptorIP, txtReceptorPuerto;
+    private JButton btnEscuchar;
+
+    private JTextField txtEmisorIP, txtEmisorPuerto;
+    private JButton btnConectar;
+
+    public ConexionFrame() {
+        setTitle("Conexión - Monitor");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(100, 100, 400, 200);
+
+        JPanel contentPane = new JPanel();
+        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+        contentPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setContentPane(contentPane);
+
+        // -------------------
+        // PANEL RECEPTOR
+        // -------------------
+        JPanel panelReceptor = new JPanel();
+        panelReceptor.setBorder(BorderFactory.createTitledBorder("Receptor - Escuchar"));
+        panelReceptor.setLayout(new GridBagLayout());
+
+        txtReceptorIP = new JTextField(15);
+        txtReceptorIP.setText("127.0.0.1");
+        ((AbstractDocument) txtReceptorIP.getDocument()).setDocumentFilter(new IPFilter());
+        txtReceptorPuerto = new JTextField(15);
+        txtReceptorPuerto.setText("1234");
+        ((AbstractDocument) txtReceptorPuerto.getDocument()).setDocumentFilter(new PuertoFilter());
+        btnEscuchar = new JButton("Escuchar");
+
+        GridBagConstraints gbcLabelIPReceptor = new GridBagConstraints();
+        gbcLabelIPReceptor.gridx = 0;
+        gbcLabelIPReceptor.gridy = 0;
+        gbcLabelIPReceptor.insets = new Insets(5, 5, 5, 5);
+        gbcLabelIPReceptor.fill = GridBagConstraints.HORIZONTAL;
+        panelReceptor.add(new JLabel("IP:"), gbcLabelIPReceptor);
+
+        GridBagConstraints gbcTxtIPReceptor = new GridBagConstraints();
+        gbcTxtIPReceptor.gridx = 1;
+        gbcTxtIPReceptor.gridy = 0;
+        gbcTxtIPReceptor.insets = new Insets(5, 5, 5, 5);
+        gbcTxtIPReceptor.fill = GridBagConstraints.HORIZONTAL;
+        panelReceptor.add(txtReceptorIP, gbcTxtIPReceptor);
+
+        GridBagConstraints gbcLabelPuertoReceptor = new GridBagConstraints();
+        gbcLabelPuertoReceptor.gridx = 0;
+        gbcLabelPuertoReceptor.gridy = 1;
+        gbcLabelPuertoReceptor.insets = new Insets(5, 5, 5, 5);
+        gbcLabelPuertoReceptor.fill = GridBagConstraints.HORIZONTAL;
+        panelReceptor.add(new JLabel("Puerto:"), gbcLabelPuertoReceptor);
+
+        GridBagConstraints gbcTxtPuertoReceptor = new GridBagConstraints();
+        gbcTxtPuertoReceptor.gridx = 1;
+        gbcTxtPuertoReceptor.gridy = 1;
+        gbcTxtPuertoReceptor.insets = new Insets(5, 5, 5, 5);
+        gbcTxtPuertoReceptor.fill = GridBagConstraints.HORIZONTAL;
+        panelReceptor.add(txtReceptorPuerto, gbcTxtPuertoReceptor);
+
+        GridBagConstraints gbcBtnEscuchar = new GridBagConstraints();
+        gbcBtnEscuchar.gridx = 0;
+        gbcBtnEscuchar.gridy = 2;
+        gbcBtnEscuchar.gridwidth = 2;
+        gbcBtnEscuchar.insets = new Insets(5, 5, 5, 5);
+        gbcBtnEscuchar.fill = GridBagConstraints.HORIZONTAL;
+        panelReceptor.add(btnEscuchar, gbcBtnEscuchar);
+
+        contentPane.add(panelReceptor);
+        contentPane.add(Box.createVerticalStrut(20));
+
+    }
+
+	public JButton getBtnEscuchar() {
+		return this.btnEscuchar;
+	}
+
+	public JTextField getTxtReceptorIP() {
+		return this.txtReceptorIP;
+	}
+
+	public JTextField getTxtReceptorPuerto() {
+		return this.txtReceptorPuerto;
+	}
+	public JButton getBtnConectar() {
+	    return btnConectar;
+	}
+
+	public JTextField getTxtEmisorIP() {
+	    return txtEmisorIP;
+	}
+
+	public JTextField getTxtEmisorPuerto() {
+	    return txtEmisorPuerto;
+	}
+}

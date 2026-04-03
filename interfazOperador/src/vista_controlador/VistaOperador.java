@@ -1,0 +1,161 @@
+package vista_controlador;
+
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+
+import comuEntreProcesos.Turno;
+
+public class VistaOperador extends JFrame {
+
+    private static final long serialVersionUID = 1L;
+    private JPanel contentPane;
+    private JTable tabla;
+    private DefaultTableModel modeloTabla;
+
+    private JButton btnLlamar;
+    
+    public JButton getBtnLlamar() {
+		return btnLlamar;
+	}
+
+	private JLabel lblTitulo;
+    private JLabel lblDni;
+
+    private JPanel panelStats;
+    private JLabel lblEnEspera;
+    private JLabel lblAtendidos;
+    
+    public VistaOperador() {
+        setTitle("Panel de Operador");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(100, 100, 650, 488);
+
+        contentPane = new JPanel();
+        contentPane.setLayout(new BorderLayout(10, 10));
+        contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+        setContentPane(contentPane);
+
+        // 🔵 PANEL PRINCIPAL (vertical)
+        JPanel panelCentral = new JPanel();
+        panelCentral.setLayout(new BoxLayout(panelCentral, BoxLayout.Y_AXIS));
+        contentPane.add(panelCentral, BorderLayout.CENTER);
+
+        btnLlamar  = new JButton("Llamar siguiente");
+        btnLlamar.setFont(new Font("Arial", Font.BOLD, 24));
+        btnLlamar.setPreferredSize(new Dimension(200, 70));
+        btnLlamar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
+        btnLlamar.setBackground(new Color(255, 87, 34)); // naranja
+        btnLlamar.setForeground(Color.WHITE);
+        btnLlamar.setFocusPainted(false);
+        btnLlamar.setBorder(BorderFactory.createRaisedSoftBevelBorder());
+        panelCentral.add(btnLlamar);
+
+        panelCentral.add(Box.createVerticalStrut(15));
+
+        // 🟡 PANEL DE CUADRADOS (2 columnas)
+        panelStats = new JPanel(new GridLayout(1, 2, 15, 0));
+        lblEnEspera = new JLabel("0");
+        lblAtendidos = new JLabel("0");
+        
+        panelStats.add(crearCuadrado(lblEnEspera, "En espera", new Color(66, 135, 245))); // azul
+        panelStats.add(crearCuadrado(lblAtendidos, "Total atendidos hoy", new Color(76, 175, 80))); // verde
+        panelCentral.add(panelStats);
+
+        panelCentral.add(Box.createVerticalStrut(15));
+
+        // 🔴 ÚLTIMO CLIENTE
+        JPanel panelUltimo = new JPanel();
+        panelUltimo.setLayout(new BoxLayout(panelUltimo, BoxLayout.Y_AXIS));
+        panelUltimo.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2, true));
+        panelUltimo.setBackground(new Color(33, 33, 33));
+
+        lblTitulo = new JLabel("Último cliente llamado");
+        lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblTitulo.setForeground(Color.LIGHT_GRAY);
+        lblTitulo.setFont(new Font("Arial", Font.PLAIN, 16));
+
+        lblDni = new JLabel("-");
+        lblDni.setFont(new Font("Arial", Font.BOLD, 36));
+        lblDni.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblDni.setForeground(Color.WHITE);
+
+        panelUltimo.add(Box.createVerticalStrut(10));
+        panelUltimo.add(lblTitulo);
+        panelUltimo.add(Box.createVerticalStrut(5));
+        panelUltimo.add(lblDni);
+        panelUltimo.add(Box.createVerticalStrut(10));
+
+        panelCentral.add(panelUltimo);
+
+        panelCentral.add(Box.createVerticalStrut(15));
+
+        // 🟣 TABLA
+        String[] columnas = {"#", "Documento", "Hora Reg.", "Estado"};
+
+        
+        modeloTabla = new DefaultTableModel(columnas, 0);
+        this.tabla = new JTable(modeloTabla);
+        this.tabla.setFillsViewportHeight(true);
+        this.tabla.setRowHeight(30);
+        this.tabla.setFont(new Font("Arial", Font.PLAIN, 14));
+        this.tabla.getTableHeader().setBackground(new Color(33, 150, 243));
+        this.tabla.getTableHeader().setForeground(Color.WHITE);
+
+        JScrollPane scroll = new JScrollPane(this.tabla);
+        panelCentral.add(scroll);
+    }
+
+    // 🧩 Método para crear los cuadraditos con color
+    private JPanel crearCuadrado(JLabel lblNumero, String texto, Color colorFondo) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(colorFondo);
+
+        lblNumero.setFont(new Font("Arial", Font.BOLD, 28));
+        lblNumero.setForeground(Color.WHITE);
+        lblNumero.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel lblTexto = new JLabel(texto);
+        lblTexto.setForeground(Color.WHITE);
+        lblTexto.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(lblNumero);
+        panel.add(Box.createVerticalStrut(5));
+        panel.add(lblTexto);
+        panel.add(Box.createVerticalStrut(10));
+
+        return panel;
+    }
+    
+    public void actualizar(java.util.List<Turno> turnos,Turno ultimoTurno,int enEspera,int atendidos) {
+
+        modeloTabla.setRowCount(0); // limpiar
+
+        for (int i = 0; i < turnos.size(); i++) {
+            Turno t = turnos.get(i);
+
+            String estado = (i == 0) ? "Próximo" : "Espera";
+
+            modeloTabla.addRow(new Object[]{
+                    t.getNumero(),
+                    t.getDocumento(),
+                    t.getHoraRegistro(),
+                    estado
+            });
+        }
+
+        //Ultimo turno llamado
+        if (ultimoTurno != null) {
+            lblTitulo.setText("Último cliente llamado (Turno #" + ultimoTurno.getNumero() + ")");
+            lblDni.setText(ultimoTurno.getDocumento());
+        }
+
+        //Cantidad de Atendidos
+        lblEnEspera.setText(String.valueOf(enEspera));
+        lblAtendidos.setText(String.valueOf(atendidos));
+    }
+
+}

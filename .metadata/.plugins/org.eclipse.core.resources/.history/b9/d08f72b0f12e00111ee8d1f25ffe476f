@@ -1,0 +1,157 @@
+package vista_controlador;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import gestorHistorial.Turno;
+
+public class VistaMonitor extends JFrame {
+
+	private static final long serialVersionUID = 1L;
+	private JPanel contentPane;
+	private JLabel lblFechaHora;
+	private JLabel lblDniActual;
+	private JLabel lblTurnoActual;
+	private JPanel panelLista;
+
+	public VistaMonitor() {
+		setTitle("Monitor");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 600, 500);
+
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+		contentPane.setLayout(new BorderLayout(10, 10));
+		setContentPane(contentPane);
+
+		// ================= HEADER =================
+		JPanel panelHeader = new JPanel(new BorderLayout());
+
+		JLabel lblTitulo = new JLabel("Centro de Atención al ciudadano");
+		lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
+
+		lblFechaHora = new JLabel();
+		lblFechaHora.setFont(new Font("Arial", Font.PLAIN, 14));
+		lblFechaHora.setHorizontalAlignment(SwingConstants.RIGHT);
+
+		panelHeader.add(lblTitulo, BorderLayout.WEST);
+		panelHeader.add(lblFechaHora, BorderLayout.EAST);
+
+		contentPane.add(panelHeader, BorderLayout.NORTH);
+
+		// ================= CENTRO =================
+		JPanel panelCentro = new JPanel();
+		panelCentro.setLayout(new BoxLayout(panelCentro, BoxLayout.Y_AXIS));
+		contentPane.add(panelCentro, BorderLayout.CENTER);
+
+		// ---- TURNO ACTUAL ----
+		JLabel lblTituloTurno = new JLabel("TURNO DE ATENCIÓN");
+		lblTituloTurno.setFont(new Font("Arial", Font.BOLD, 16));
+		lblTituloTurno.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		lblDniActual = new JLabel("00.000.000");
+		lblDniActual.setFont(new Font("Arial", Font.BOLD, 32));
+		lblDniActual.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		lblTurnoActual = new JLabel("Turno #000 - Diríjase al mostrador");
+		lblTurnoActual.setFont(new Font("Arial", Font.PLAIN, 14));
+		lblTurnoActual.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		panelCentro.add(lblTituloTurno);
+		panelCentro.add(Box.createRigidArea(new Dimension(0, 10)));
+		panelCentro.add(lblDniActual);
+		panelCentro.add(Box.createRigidArea(new Dimension(0, 5)));
+		panelCentro.add(lblTurnoActual);
+		panelCentro.add(Box.createRigidArea(new Dimension(0, 20)));
+
+		// ---- LISTA TURNOS ----
+		JLabel lblListaTitulo = new JLabel("TURNOS ANTERIORES");
+		lblListaTitulo.setFont(new Font("Arial", Font.BOLD, 14));
+
+		panelCentro.add(lblListaTitulo);
+		panelCentro.add(Box.createRigidArea(new Dimension(0, 10)));
+
+		panelLista = new JPanel();
+		panelLista.setLayout(new BoxLayout(panelLista, BoxLayout.Y_AXIS));
+
+		panelCentro.add(panelLista);
+
+		// Timer para actualizar hora en vivo
+		new Timer(1000, e -> actualizarFechaHora()).start();
+	}
+
+	// ================= ACTUALIZAR =================
+	public void actualizar(List<Turno> ultimosTurnos, Turno ultimoTurnoLlamado) {
+
+		// Actualizar turno actual
+		if (ultimoTurnoLlamado != null) {
+			lblDniActual.setText(formatearDni(ultimoTurnoLlamado.getNumero()));
+			lblTurnoActual.setText("Turno #" +
+					String.format("%03d", ultimoTurnoLlamado.getNumero()) +
+					" - Diríjase al mostrador");
+		}
+
+		// Limpiar lista
+		panelLista.removeAll();
+
+		// Mostrar últimos 4 turnos
+		int count = 0;
+		for (Turno t : ultimosTurnos) {
+			if (count >= 4) break;
+
+			JPanel fila = new JPanel(new BorderLayout());
+
+			JLabel lblNumero = new JLabel("#" + String.format("%03d", t.getNumero()));
+			JLabel lblDni = new JLabel(formatearDni(t.getNumero()));
+			JLabel lblTiempo = new JLabel(calcularHace(t.getFecha()));
+
+			lblNumero.setPreferredSize(new Dimension(60, 20));
+			lblTiempo.setHorizontalAlignment(SwingConstants.RIGHT);
+
+			fila.add(lblNumero, BorderLayout.WEST);
+			fila.add(lblDni, BorderLayout.CENTER);
+			fila.add(lblTiempo, BorderLayout.EAST);
+
+			panelLista.add(fila);
+			panelLista.add(Box.createRigidArea(new Dimension(0, 5)));
+
+			count++;
+		}
+
+		panelLista.revalidate();
+		panelLista.repaint();
+	}
+
+	// ================= HELPERS =================
+
+	private void actualizarFechaHora() {
+		Date ahora = new Date();
+
+		SimpleDateFormat horaFormat = new SimpleDateFormat("HH:mm");
+		SimpleDateFormat fechaFormat = new SimpleDateFormat("EEE dd/MM/yyyy");
+
+		String hora = horaFormat.format(ahora);
+		String fecha = fechaFormat.format(ahora);
+
+		lblFechaHora.setText(hora + " hs  - " + capitalizar(fecha));
+	}
+
+	private String capitalizar(String texto) {
+		return texto.substring(0, 1).toUpperCase() + texto.substring(1);
+	}
+
+	private String formatearDni(int dni) {
+		return String.format("%,d", dni).replace(",", ".");
+	}
+
+	private String calcularHace(Date fechaTurno) {
+		long diff = new Date().getTime() - fechaTurno.getTime();
+		long minutos = diff / (1000 * 60);
+
+		if (minutos <= 0) return "hace instantes";
+		return "hace " + minutos + " min";
+	}
+}
