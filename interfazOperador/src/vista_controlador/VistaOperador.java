@@ -37,7 +37,7 @@ public class VistaOperador extends JFrame {
         contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
         setContentPane(contentPane);
 
-        // 🔵 PANEL PRINCIPAL (vertical)
+        // PANEL PRINCIPAL (vertical)
         JPanel panelCentral = new JPanel();
         panelCentral.setLayout(new BoxLayout(panelCentral, BoxLayout.Y_AXIS));
         contentPane.add(panelCentral, BorderLayout.CENTER);
@@ -54,7 +54,7 @@ public class VistaOperador extends JFrame {
 
         panelCentral.add(Box.createVerticalStrut(15));
 
-        // 🟡 PANEL DE CUADRADOS (2 columnas)
+        // PANEL DE CUADRADOS (2 columnas)
         panelStats = new JPanel(new GridLayout(1, 2, 15, 0));
         lblEnEspera = new JLabel("0");
         lblAtendidos = new JLabel("0");
@@ -65,7 +65,7 @@ public class VistaOperador extends JFrame {
 
         panelCentral.add(Box.createVerticalStrut(15));
 
-        // 🔴 ÚLTIMO CLIENTE
+        // ÚLTIMO CLIENTE
         JPanel panelUltimo = new JPanel();
         panelUltimo.setLayout(new BoxLayout(panelUltimo, BoxLayout.Y_AXIS));
         panelUltimo.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2, true));
@@ -91,7 +91,7 @@ public class VistaOperador extends JFrame {
 
         panelCentral.add(Box.createVerticalStrut(15));
 
-        // 🟣 TABLA
+        // TABLA
         String[] columnas = {"#", "Documento", "Hora Reg.", "Estado"};
 
         
@@ -107,7 +107,7 @@ public class VistaOperador extends JFrame {
         panelCentral.add(scroll);
     }
 
-    // 🧩 Método para crear los cuadraditos con color
+    // Método para crear los cuadraditos con color
     private JPanel crearCuadrado(JLabel lblNumero, String texto, Color colorFondo) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
