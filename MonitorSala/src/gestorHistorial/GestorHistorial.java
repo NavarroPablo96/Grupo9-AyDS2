@@ -1,7 +1,12 @@
 package gestorHistorial;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 import comuEntreProcesos.ComunicacionEntreProcesos;
 import comuEntreProcesos.Evento;
@@ -65,6 +70,9 @@ public class GestorHistorial implements IReceptorEvento{
 	                historial.remove(0); // elimina el más antiguo
 	            }
 	        }
+	        
+	        reproducirSonido();
+	        
 	        turnoActual = turno;
 	        
 	        Controlador.getInstance().actualizarVistaOperador();
@@ -75,6 +83,18 @@ public class GestorHistorial implements IReceptorEvento{
 	        System.out.println("Origen: " + e.getProcesoOrigen());
 	        System.out.println("Destino: " + e.getProcesoDestino());
 	    }
+	}
+	
+	public static void reproducirSonido() {
+		try {
+            File archivo = new File("notificacion.wav");             
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(archivo);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioStream);
+            clip.start();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 	}
 
 }
