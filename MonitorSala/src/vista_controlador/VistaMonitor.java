@@ -25,17 +25,22 @@ public class VistaMonitor extends JFrame {
 		setBounds(100, 100, 600, 500);
 
 		contentPane = new JPanel();
+		contentPane.setBackground(new Color(245, 245, 245));
 		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 		contentPane.setLayout(new BorderLayout(10, 10));
 		setContentPane(contentPane);
 
 		// ================= HEADER =================
 		JPanel panelHeader = new JPanel(new BorderLayout());
-
+		panelHeader.setBackground(new Color(33, 150, 243)); 
+		panelHeader.setBorder(new EmptyBorder(10, 10, 10, 10));
+		
 		JLabel lblTitulo = new JLabel("Centro de Atención al ciudadano");
+		lblTitulo.setForeground(Color.WHITE);
 		lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
 
 		lblFechaHora = new JLabel();
+		lblFechaHora.setForeground(Color.WHITE);
 		lblFechaHora.setFont(new Font("Arial", Font.PLAIN, 14));
 		lblFechaHora.setHorizontalAlignment(SwingConstants.RIGHT);
 
@@ -62,17 +67,31 @@ public class VistaMonitor extends JFrame {
 		lblTurnoActual.setFont(new Font("Arial", Font.PLAIN, 14));
 		lblTurnoActual.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		panelCentro.add(lblTituloTurno);
-		panelCentro.add(Box.createRigidArea(new Dimension(0, 10)));
-		panelCentro.add(lblDniActual);
-		panelCentro.add(Box.createRigidArea(new Dimension(0, 5)));
-		panelCentro.add(lblTurnoActual);
+		JPanel panelTurno = new JPanel();
+		panelTurno.setLayout(new BoxLayout(panelTurno, BoxLayout.Y_AXIS));
+		panelTurno.setBackground(new Color(33, 33, 33)); 
+		panelTurno.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2, true));
+
+		lblTituloTurno.setForeground(Color.LIGHT_GRAY);
+		lblDniActual.setForeground(Color.WHITE);
+		lblTurnoActual.setForeground(Color.WHITE);
+
+		panelTurno.add(Box.createVerticalStrut(10));
+		panelTurno.add(lblTituloTurno);
+		panelTurno.add(Box.createVerticalStrut(10));
+		panelTurno.add(lblDniActual);
+		panelTurno.add(Box.createVerticalStrut(5));
+		panelTurno.add(lblTurnoActual);
+		panelTurno.add(Box.createVerticalStrut(10));
+
+		panelCentro.add(panelTurno);
 		panelCentro.add(Box.createRigidArea(new Dimension(0, 20)));
 
 		// ---- LISTA TURNOS ----
 		JLabel lblListaTitulo = new JLabel("TURNOS ANTERIORES");
 		lblListaTitulo.setFont(new Font("Arial", Font.BOLD, 14));
-
+		lblListaTitulo.setForeground(new Color(33, 33, 33));
+		
 		panelCentro.add(lblListaTitulo);
 		panelCentro.add(Box.createRigidArea(new Dimension(0, 10)));
 
@@ -80,7 +99,8 @@ public class VistaMonitor extends JFrame {
 		panelLista.setLayout(new BoxLayout(panelLista, BoxLayout.Y_AXIS));
 
 		panelCentro.add(panelLista);
-
+		panelCentro.add(Box.createVerticalStrut(10));
+		
 		// Timer para actualizar hora en vivo
 		new Timer(1000, e -> actualizarFechaHora()).start();
 	}
@@ -101,14 +121,25 @@ public class VistaMonitor extends JFrame {
 
 		// Mostrar últimos 4 turnos
 		int count = 0;
-		for (Turno t : ultimosTurnos) {
+		for (int i = ultimosTurnos.size() - 1; i >= 0; i--) {
 			if (count >= 4) break;
+			Turno t = ultimosTurnos.get(i);
 
 			JPanel fila = new JPanel(new BorderLayout());
+			fila.setBackground(new Color(255, 255, 255));
+			fila.setBorder(BorderFactory.createCompoundBorder(
+			        BorderFactory.createLineBorder(new Color(220, 220, 220), 1, true),
+			        new EmptyBorder(8, 10, 8, 10)
+			));
 
 			JLabel lblNumero = new JLabel("#" + String.format("%03d", t.getNumero()));
+			lblNumero.setForeground(new Color(33, 150, 243)); // azul
+			lblNumero.setFont(new Font("Arial", Font.BOLD, 14));
+
 			JLabel lblDni = new JLabel(formatearDni(t.getDocumento()));
-			JLabel lblTiempo = new JLabel(calcularHace(t.getHoraReal()));
+			lblDni.setFont(new Font("Arial", Font.BOLD, 14));
+			JLabel lblTiempo = new JLabel(calcularHace(t.getHoraHoraDeLlamado()));
+			lblTiempo.setForeground(Color.GRAY);
 
 			lblNumero.setPreferredSize(new Dimension(60, 20));
 			lblTiempo.setHorizontalAlignment(SwingConstants.RIGHT);

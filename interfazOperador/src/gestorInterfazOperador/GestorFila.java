@@ -2,6 +2,7 @@ package gestorInterfazOperador;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import comuEntreProcesos.ComunicacionEntreProcesos;
@@ -76,13 +77,12 @@ public class GestorFila implements IReceptorEvento {
    
 	@Override
 	public void ArriboEvento(Evento e) {
-		System.out.println("Llego un evento:"+e.getClass().getName());
 	    if (e instanceof EventoNuevoTurno) {
 	        EventoNuevoTurno evento = (EventoNuevoTurno) e;
 	        Turno turno = evento.getTurno();
 	        fila.add(turno);	        // agregar a la lista
 	        ordenarFila();
-	        System.out.println("Se agrego a la lista el turno"+turno.getDocumento());
+	        System.out.println("Llego el EventoNuevoTurno DNI="+turno.getDocumento());
 	        Controlador.getInstance().estadoFilaNoVacia();
 	    }
 	    else {
@@ -115,6 +115,7 @@ public class GestorFila implements IReceptorEvento {
 	    }
 		else {
 			Turno t = fila.remove(0);
+			t.setHoraDeLlamado(new Date());
 			ultimoTurnoLlamado = t;
 			totalAtendidos++;
 			

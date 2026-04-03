@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +44,7 @@ public class ComunicacionEntreProcesos implements IRecibirEvento, IEnviarEvento 
     }
 
     private void notificarReceptores(Evento evento) {
-    	System.out.println("Notificando receptores:  cantReceptores = "+receptores.size());
-        for (IReceptorEvento receptor : receptores) {
+    	for (IReceptorEvento receptor : receptores) {
             receptor.ArriboEvento(evento);
         }
     }
@@ -64,17 +64,14 @@ public class ComunicacionEntreProcesos implements IRecibirEvento, IEnviarEvento 
 
     public void iniciarServidor(int puerto) {
         new Thread(() -> {
-        	System.out.println("Dentro de IniciarServidor");
-            try (ServerSocket serverSocket = new ServerSocket(puerto)) {
-            	System.out.println("Escuchando...");	Controlador.getInstance().estadoEscuchando("Escuchando en:"+puerto);	//le aviso al controlado que estamos escuchando así procede con las vistas
+        	try (ServerSocket serverSocket = new ServerSocket(puerto)) {
+            	System.out.println("Esperando conexión...");	
+            	Controlador.getInstance().estadoEscuchando("Escuchando en:"+puerto);	//le aviso al controlado que estamos escuchando así procede con las vistas
                 socket = serverSocket.accept();
-            	System.out.println("Alguién se conecto al Operador");
             	inTR = new ObjectInputStream(socket.getInputStream());
-                System.out.println("Linea 73 - iniciarServidor");
+                System.out.println("Conexión establecida, esperando eventos...");
                 while (true) {
-                	System.out.println("Dentro del whiletrue - IniciarServidor");
                     Evento evento = (Evento) inTR.readObject();
-                    System.out.println("Llego un evento - IniciarServidor");
                     notificarReceptores(evento);
                 }
                 
@@ -83,11 +80,14 @@ public class ComunicacionEntreProcesos implements IRecibirEvento, IEnviarEvento 
             	//Ya se está usando el puerto
                 e.printStackTrace();
             }catch (Exception e) {
-            	System.out.println("InterfazOperador-iniciarServidor-linea 87, es posible que se haya desconectado la terminal cliente");
-            	System.out.println("Si la Exception es SocketException se pudo haber descoenctado la terminal de registro, Exception= "+e.getClass().getName());
-                //e.printStackTrace();
-            	System.out.println("Se intenta volver a escuchar el puerto:" + puerto);
-            	ComunicacionEntreProcesos.getInstance().iniciarServidor(puerto);
+            	if(e instanceof SocketException) {
+                	System.out.println("Exception-Monitor-iniciarServidor, Se desconecto la InterfazOperador");
+                	System.out.println("Esperando conexión en puerto:" + puerto);
+                	ComunicacionEntreProcesos.getInstance().iniciarServidor(puerto);
+            	}
+            	else {
+            		e.printStackTrace();            		
+            	}
             }
         }).start();
     }
@@ -103,13 +103,11 @@ public class ComunicacionEntreProcesos implements IRecibirEvento, IEnviarEvento 
     
     @Override
     public void enviarEvento(Evento evento) {
-    	System.out.println("Se intenta enviar el evento: "+evento.getClass().getName());
-        try {
+    	try {
         	//puede tirar null pointer exception, if(out != null){ ...  }else{System.out.println("Falta establecer conexión");}
         	outMS.writeObject(evento);
         	outMS.flush();
-            System.out.println("Se supone que se envio exitosamente xd");
-        } catch (Exception e) {
+    	} catch (Exception e) {
             e.printStackTrace();
         }
     }

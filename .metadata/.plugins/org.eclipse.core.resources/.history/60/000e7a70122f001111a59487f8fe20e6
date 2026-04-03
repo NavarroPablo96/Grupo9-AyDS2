@@ -1,0 +1,83 @@
+package vista_controlador;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import comuEntreProcesos.ComunicacionEntreProcesos;
+import gestorHistorial.GestorHistorial;
+
+
+public class Controlador {
+	
+    private ConexionFrame conexionView;
+    private VistaMonitor monitorView;
+    
+
+	private static Controlador instancia;
+
+    private Controlador() {
+        this.conexionView = new ConexionFrame();
+        this.conexionView.setVisible(true);
+        this.monitorView = new VistaMonitor();
+        this.monitorView.setVisible(false);
+    }
+    
+    public static Controlador getInstance() {
+        if (instancia == null) {
+            instancia = new Controlador();
+        }
+        return instancia;
+    }
+
+    /**
+     * Inicializa los listeners de los botones
+     */
+    public void initControl() {
+        // Botón "Escuchar" para empezar a escuchar en un puerto
+        conexionView.getBtnEscuchar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String ip = conexionView.getTxtReceptorIP().getText();
+                int puerto = Integer.parseInt(conexionView.getTxtReceptorPuerto().getText());
+                
+                System.out.println("Intentando escuchar en IP: " + ip + " Puerto: " + puerto);
+                ComunicacionEntreProcesos.getInstance().iniciarServidor(puerto);
+
+            }
+        });
+        
+    }
+    
+    public void estadoEscuchando(String escuchandoEn) {
+    	conexionView.getBtnEscuchar().setEnabled(false);
+    	conexionView.getBtnEscuchar().setText(escuchandoEn);
+    }
+    
+    public void estadoOperadorConectado() {
+    	conexionView.setVisible(false);
+    	abrirVistaMonitor();
+    }
+    
+    /**
+     * Muestra la ventana principal del operador
+     */
+    private void abrirVistaMonitor() {
+    	monitorView.setVisible(true);
+        GestorHistorial gestor = GestorHistorial.getInstance();
+        monitorView.actualizar(
+                gestor.getUltimosTurnos(),
+                gestor.getUltimoTurnoLlamado()
+        );
+    }
+    
+    public void actualizarVistaOperador() {
+    	GestorHistorial gestor = GestorHistorial.getInstance();
+        monitorView.actualizar(
+                gestor.getUltimosTurnos(),
+                gestor.getUltimoTurnoLlamado()
+        );   	
+    }
+
+}
+
+

@@ -8,13 +8,13 @@ public class Turno implements Serializable {
     private static final long serialVersionUID = 1L;
 	private String Documento,HoraReg;
 	private int Numero;
-	private Date HoraReal;
+	private Date HoraDeLlamado;
 
-	public Turno(int numero, String documento, String horaReg,Date horaReal) {
+	public Turno(int numero, String documento, String horaReg,Date horaDeLlamado) {
 		Numero = numero;
 		Documento = documento;
 		HoraReg = horaReg;
-		HoraReal=horaReal;
+		HoraDeLlamado=horaDeLlamado;
 	}
 
 	public int getNumero() {
@@ -29,8 +29,12 @@ public class Turno implements Serializable {
 		return HoraReg;
 	}
 	
-	public Date getHoraReal() {
-		return HoraReal;
+	public Date getHoraHoraDeLlamado() {
+		return HoraDeLlamado;
+	}
+
+	public void setHoraDeLlamado(Date date) {
+		this.HoraDeLlamado=date;
 	}
 
 }

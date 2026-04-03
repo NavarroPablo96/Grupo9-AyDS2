@@ -62,15 +62,13 @@ public class ComunicacionEntreProcesos implements IRecibirEvento {
 
     public void iniciarServidor(int puerto) {
         new Thread(() -> {
-        	System.out.println("Dentro de IniciarServidor");
-            try (ServerSocket serverSocket = new ServerSocket(puerto)) {
-            	System.out.println("Escuchando...");
+        	try (ServerSocket serverSocket = new ServerSocket(puerto)) {
+            	System.out.println("Esperando conexión...");
             	Controlador.getInstance().estadoEscuchando("Escuchando en:"+puerto);	//le aviso al controlado que estamos escuchando así procede con las vistas
                 socket = serverSocket.accept();
-            	System.out.println("Alguién se conecto al Operador");
             	Controlador.getInstance().estadoOperadorConectado();
             	inIO = new ObjectInputStream(socket.getInputStream());
-                System.out.println("Linea 73 - iniciarServidor");
+            	System.out.println("Conexión establecida, esperando eventos...");
                 while (true) {
                     Evento evento = (Evento) inIO.readObject();
                     notificarReceptores(evento);
@@ -82,8 +80,8 @@ public class ComunicacionEntreProcesos implements IRecibirEvento {
                 e.printStackTrace();
             }catch (Exception e ) {
             	if(e instanceof SocketException) {
-                	System.out.println("Monitor-iniciarServidor-linea 87, Se desconecto la InterfazOperador");
-                	System.out.println("Se intenta volver a escuchar el puerto:" + puerto);
+                	System.out.println("Exception-Monitor-iniciarServidor, Se desconecto la InterfazOperador");
+                	System.out.println("Esperando conexión en puerto:" + puerto);
                 	ComunicacionEntreProcesos.getInstance().iniciarServidor(puerto);
             	}
             	else {

@@ -40,7 +40,7 @@ public class Controlador {
                 String ip = conexionView.getTxtReceptorIP().getText();
                 int puerto = Integer.parseInt(conexionView.getTxtReceptorPuerto().getText());
                 
-                System.out.println("Intentando escuchar en IP: " + ip + " Puerto: " + puerto);
+                System.out.println("Escuchando en IP: " + ip + " Puerto: " + puerto);
                 ComunicacionEntreProcesos.getInstance().iniciarServidor(puerto);
 
             }
