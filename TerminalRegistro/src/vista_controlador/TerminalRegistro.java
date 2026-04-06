@@ -22,7 +22,7 @@ public class TerminalRegistro extends JFrame {
     public TerminalRegistro() {
         setTitle("Terminal de Registro");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 450, 300);
+        setBounds(100, 100, 450, 560);
         contentPane = new JPanel();
         contentPane.setBackground(new Color(245, 245, 245));
         contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -64,6 +64,7 @@ public class TerminalRegistro extends JFrame {
         txtDNI.setColumns(10);
         txtDNI.setFont(new Font("Arial", Font.PLAIN, 16));
         txtDNI.setPreferredSize(new Dimension(150, 35));
+        txtDNI.setHorizontalAlignment(SwingConstants.CENTER);
         ((AbstractDocument) txtDNI.getDocument()).setDocumentFilter(new DniFilter());
         txtDNI.addActionListener(e -> btnRegistrar.doClick());
         
@@ -77,7 +78,47 @@ public class TerminalRegistro extends JFrame {
         panelRegistro.add(txtDNI);
         panelRegistro.add(btnRegistrar);
         panelCentral.add(panelRegistro);
-        panelCentral.add(Box.createRigidArea(new Dimension(0, 20)));
+        panelCentral.add(Box.createRigidArea(new Dimension(0, 12)));
+
+        // Teclado numerico estilo telefono
+        JPanel panelTeclado = new JPanel(new GridLayout(4, 3, 8, 8));
+        panelTeclado.setBackground(new Color(245, 245, 245));
+        panelTeclado.setMaximumSize(new Dimension(300, 230));
+        panelTeclado.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        String[] teclas = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "C", "0", "<-"};
+        for (String tecla : teclas) {
+            JButton btnTecla = new JButton(tecla);
+            btnTecla.setFont(new Font("Arial", Font.BOLD, 18));
+            btnTecla.setFocusPainted(false);
+            btnTecla.setBackground(new Color(238, 238, 238));
+
+            if ("C".equals(tecla)) {
+                btnTecla.setBackground(new Color(244, 67, 54));
+                btnTecla.setForeground(Color.WHITE);
+                btnTecla.addActionListener(e -> txtDNI.setText(""));
+            } else if ("<-".equals(tecla)) {
+                btnTecla.setBackground(new Color(33, 150, 243));
+                btnTecla.setForeground(Color.WHITE);
+                btnTecla.addActionListener(e -> {
+                    String actual = txtDNI.getText();
+                    if (!actual.isEmpty()) {
+                        txtDNI.setText(actual.substring(0, actual.length() - 1));
+                    }
+                });
+            } else {
+                btnTecla.addActionListener(e -> {
+                    if (txtDNI.getText().length() < 8) {
+                        txtDNI.setText(txtDNI.getText() + tecla);
+                    }
+                });
+            }
+
+            panelTeclado.add(btnTecla);
+        }
+
+        panelCentral.add(panelTeclado);
+        panelCentral.add(Box.createRigidArea(new Dimension(0, 16)));
         panelCentral.add(Box.createVerticalStrut(15));
         
         // Cuadro de turno
@@ -106,6 +147,7 @@ public class TerminalRegistro extends JFrame {
         panelTurno.add(Box.createVerticalGlue());
 
         panelCentral.add(panelTurno);
+        txtDNI.requestFocusInWindow();
     }
 
     

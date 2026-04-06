@@ -88,7 +88,7 @@ public class VistaMonitor extends JFrame {
 		panelCentro.add(Box.createRigidArea(new Dimension(0, 20)));
 
 		// ---- LISTA TURNOS ----
-		JLabel lblListaTitulo = new JLabel("TURNOS ANTERIORES");
+		JLabel lblListaTitulo = new JLabel("ULTIMOS 5 TURNOS LLAMADOS");
 		lblListaTitulo.setFont(new Font("Arial", Font.BOLD, 14));
 		lblListaTitulo.setForeground(new Color(33, 33, 33));
 		
@@ -119,14 +119,12 @@ public class VistaMonitor extends JFrame {
 		// Limpiar lista
 		panelLista.removeAll();
 
-		// Mostrar últimos 4 turnos
-		int count = 0;
-		for (int i = ultimosTurnos.size() - 1; i >= 0; i--) {
-			if (count >= 4) break;
+		// Mostrar ultimos 5 turnos con el mas reciente en la primera posicion.
+		for (int i = 0; i < ultimosTurnos.size() && i < 5; i++) {
 			Turno t = ultimosTurnos.get(i);
 
 			JPanel fila = new JPanel(new BorderLayout());
-			fila.setBackground(new Color(255, 255, 255));
+			fila.setBackground(i == 0 ? new Color(232, 245, 255) : new Color(255, 255, 255));
 			fila.setBorder(BorderFactory.createCompoundBorder(
 			        BorderFactory.createLineBorder(new Color(220, 220, 220), 1, true),
 			        new EmptyBorder(8, 10, 8, 10)
@@ -150,8 +148,6 @@ public class VistaMonitor extends JFrame {
 
 			panelLista.add(fila);
 			panelLista.add(Box.createRigidArea(new Dimension(0, 5)));
-
-			count++;
 		}
 
 		panelLista.revalidate();

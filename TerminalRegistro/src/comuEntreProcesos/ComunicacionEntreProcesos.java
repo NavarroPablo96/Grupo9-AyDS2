@@ -38,11 +38,19 @@ public class ComunicacionEntreProcesos implements IEnviarEvento {
     	outIO.flush();
     	Controlador.getInstance().estadoConectadoAOperador("Conectados a Operador");
     }
+
+    public boolean estaConectado() {
+        return socket != null && socket.isConnected() && !socket.isClosed() && outIO != null;
+    }
     
     
     @Override
     public void enviarEvento(Evento evento) {
     	System.out.println("Se intenta enviar el evento: "+evento.getClass().getName());
+        if (!estaConectado()) {
+            System.out.println("No hay conexion activa con el Operador. No se envio el turno.");
+            return;
+        }
         try {
         	//puede tirar null pointer exception, if(out != null){ ...  }else{System.out.println("Falta establecer conexión");}
         	outIO.writeObject(evento);

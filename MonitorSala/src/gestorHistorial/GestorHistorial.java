@@ -17,6 +17,7 @@ import comuEntreProcesos.Turno;
 import vista_controlador.Controlador;
 
 public class GestorHistorial implements IReceptorEvento{
+	private static final int MAX_TURNOS_EN_PANTALLA = 5;
 	private static GestorHistorial instancia;
 	private static IRecibirEvento notificador;
 	private List<Turno> historial;
@@ -43,13 +44,7 @@ public class GestorHistorial implements IReceptorEvento{
     }
 
 	public  List<Turno> getUltimosTurnos() {
-		List<Turno> ultimos = new ArrayList<>();
-
-        for (int i = 0; i < Math.min(4, historial.size()); i++) {
-        	ultimos.add(historial.get(i));
-        }
-
-        return ultimos;
+		return new ArrayList<>(historial);
 	}
 
 	public Turno getUltimoTurnoLlamado() {
@@ -61,14 +56,10 @@ public class GestorHistorial implements IReceptorEvento{
 	    if (e instanceof EventoLlamarSiguiente) {
 	    	EventoLlamarSiguiente evento = (EventoLlamarSiguiente) e;
 	        Turno turno = evento.getTurno();
+	        historial.add(0, turno);
 
-	        if (turnoActual != null) {
-	            historial.add(turnoActual);
-
-	            // 2. Mantener máximo 4 elementos
-	            if (historial.size() > 4) {
-	                historial.remove(0); // elimina el más antiguo
-	            }
+	        if (historial.size() > MAX_TURNOS_EN_PANTALLA) {
+	            historial.remove(historial.size() - 1); // elimina el más antiguo
 	        }
 	        
 	        reproducirSonido();

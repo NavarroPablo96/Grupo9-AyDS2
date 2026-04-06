@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.swing.JOptionPane;
+
 import comuEntreProcesos.ComunicacionEntreProcesos;
 import comuEntreProcesos.Turno;
 import gestorTurnos.GestorTurnos;
@@ -63,7 +65,30 @@ public class Controlador {
             public void actionPerformed(ActionEvent e) {
                 //GestorTurnos.getInstance().llamarSiguiente();
             	System.out.println("Intentando crear un turno");
-            	String dni  = terminalView.getTxtDNI().getText();
+
+                if (!ComunicacionEntreProcesos.getInstance().estaConectado()) {
+                    JOptionPane.showMessageDialog(
+                            terminalView,
+                            "Primero debe conectarse con el Operador para registrar turnos.",
+                            "Sin conexion",
+                            JOptionPane.WARNING_MESSAGE
+                    );
+                    return;
+                }
+
+            	String dni  = terminalView.getTxtDNI().getText().trim();
+
+                if (!esDocumentoValido(dni)) {
+                    JOptionPane.showMessageDialog(
+                            terminalView,
+                            "El documento debe ser numerico y tener entre 7 y 8 cifras.",
+                            "Documento invalido",
+                            JOptionPane.WARNING_MESSAGE
+                    );
+                    terminalView.getTxtDNI().requestFocusInWindow();
+                    return;
+                }
+
             	Date horaReal = new Date();
                 String hora = new SimpleDateFormat("HH:mm").format(horaReal);
                 terminalView.getTxtDNI().setText("");
@@ -93,6 +118,10 @@ public class Controlador {
 	public void ActualizarVista(Turno nuevo) {
 		terminalView.ActualizaVista(nuevo);
 	}
+
+    private boolean esDocumentoValido(String documento) {
+        return documento != null && documento.matches("\\d{7,8}");
+    }
 
 }
 

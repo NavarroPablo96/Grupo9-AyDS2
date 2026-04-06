@@ -18,15 +18,12 @@ public class DniFilter extends DocumentFilter {
 
         Document doc = fb.getDocument();
         String currentText = doc.getText(0, doc.getLength());
-        String newText = currentText.substring(0, offset) + text + currentText.substring(offset + length);
+        String safeText = (text == null) ? "" : text;
+        String newText = currentText.substring(0, offset) + safeText + currentText.substring(offset + length);
 
-        // Validaciones:
+        // Solo numeros y un maximo de 8 caracteres.
         if (newText.matches("\\d*") && newText.length() <= 8) {
-
-            // Evitar números >= 100000000
-            if (newText.isEmpty() || Long.parseLong(newText) < 100000000) {
-                fb.replace(offset, length, text, attrs);
-            }
+            fb.replace(offset, length, safeText, attrs);
         }
     }
 
