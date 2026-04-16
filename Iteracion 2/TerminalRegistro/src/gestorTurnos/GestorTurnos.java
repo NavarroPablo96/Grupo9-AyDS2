@@ -3,17 +3,21 @@ package gestorTurnos;
 import java.util.Date;
 
 import comuEntreProcesos.ComunicacionEntreProcesos;
-import comuEntreProcesos.EventoNuevoTurno;
-import comuEntreProcesos.Turno;
+import comuEntreProcesos.IReceptorEvento;
+import eventos.Evento;
+import eventos.EventoDniExistente;
+import eventos.EventoNuevoTurno;
+import eventos.EventoNumeroTerminal;
+import eventos.EventoTurnoCreadoConExito;
+import eventos.Turno;
 import vista_controlador.Controlador;
 
-public class GestorTurnos {
-	private int numeroTurno;
+public class GestorTurnos implements IReceptorEvento{
 	
 	private static GestorTurnos instancia;
+	private int NumeroTerminal;
 	
 	private GestorTurnos() {
-		this.numeroTurno=0;
 	}
 
 	public static GestorTurnos getInstance() {
@@ -23,22 +27,36 @@ public class GestorTurnos {
         return instancia;
 	}
 	
-	public static void main(String[] args) {
-    	System.out.println("TERMINAL");
-    	Controlador.getInstance().initControl();
-    	
-    	//GestorFila.getInstance().fila.add(new Turno(7,"38291047","10:42"));
-    	//GestorFila.getInstance().fila.add(new Turno(8,"20110334","10:44"));
-    	//GestorFila.getInstance().fila.add(new Turno(9,"30111222","10:45"));
-    	//GestorFila.getInstance().fila.add(new Turno(10,"40122333","10:47"));
-    }
-	
 	public void CrearTurno(String dni, String hora,Date horaReal) {
-		this.numeroTurno++;
-		Turno nuevo = new Turno(this.numeroTurno,dni, hora,horaReal);
-		EventoNuevoTurno nuevoTurno = new EventoNuevoTurno("Terminal","Operador",nuevo);
+		
+		Turno nuevo = new Turno(-1,dni, hora,horaReal);//TR=TerminalDeRegistro // TA=TerminalDeAtencion // TN=TerminalNotificacion
+		EventoNuevoTurno nuevoTurno = new EventoNuevoTurno("TR"+this.NumeroTerminal,"Servidor",nuevo);
 		ComunicacionEntreProcesos.getInstance().enviarEvento(nuevoTurno);
-		Controlador.getInstance().ActualizarVista(nuevo);
+		//Controlador.getInstance().ActualizarVista(nuevo);
+	}
+
+	@Override
+	public void ArriboEvento(Evento e) {
+	    if (e instanceof EventoNumeroTerminal) {
+	    	EventoNumeroTerminal ent =(EventoNumeroTerminal) e;
+	    	this.NumeroTerminal=ent.getNumero();
+	    	Controlador.getInstance().ActualizarVistaNumero(ent.getNumero());
+	    }
+	    else if(e instanceof EventoDniExistente){
+	    	EventoDniExistente Ede=(EventoDniExistente) e;
+	    	Controlador.getInstance().DocumentoYaRegistrado(Ede.getDni());
+	    }
+	    else if(e instanceof EventoTurnoCreadoConExito){
+	    	EventoTurnoCreadoConExito ETCCE = (EventoTurnoCreadoConExito) e;
+	    	Turno nuevo=ETCCE.getTurno();
+	    	Controlador.getInstance().ActualizarVista(nuevo);
+	    	System.out.println("El turno fue creado con éxito");
+	    }
+	    else{
+	    	System.out.println("EVENTO DESCONOCIDO - TR-GestorTurnos-ArriboEvento");
+	    	
+	    }
+
 	}
 
 }

@@ -1,0 +1,20 @@
+package eventos;
+
+public class EventoLlamarSiguiente extends Evento {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Turno turno;
+
+    public EventoLlamarSiguiente(String origen, String destino,Turno turno) {
+		super(origen, destino);
+        this.turno = turno;
+	}
+
+
+    public Turno getTurno() {
+        return turno;
+    }
+}

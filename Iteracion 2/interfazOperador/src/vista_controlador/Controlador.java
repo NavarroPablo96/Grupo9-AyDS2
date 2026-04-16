@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
+
 import comuEntreProcesos.ComunicacionEntreProcesos;
 import gestorInterfazOperador.GestorFila;
 
@@ -37,19 +39,6 @@ public class Controlador {
      * Inicializa los listeners de los botones
      */
     public void initControl() {
-        // Botón "Escuchar" para empezar a escuchar en un puerto
-        conexionView.getBtnEscuchar().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String ip = conexionView.getTxtReceptorIP().getText();
-                int puerto = Integer.parseInt(conexionView.getTxtReceptorPuerto().getText());
-                
-                System.out.println("Intentando escuchar en IP: " + ip + " Puerto: " + puerto);
-                ComunicacionEntreProcesos.getInstance().iniciarServidor(puerto);
-
-            }
-        });
-
         // Botón "Conectar" del emisor
         conexionView.getBtnConectar().addActionListener(new ActionListener() {
             @Override
@@ -73,25 +62,21 @@ public class Controlador {
                 GestorFila.getInstance().llamarSiguiente();
             }
         });
+        operadorView.getBtnNotificar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GestorFila.getInstance().ReNotificar();
+            }
+        });
         
     }
     
-    public void estadoEscuchando(String escuchandoEn) {
-    	conexionView.getBtnEscuchar().setEnabled(false);
-    	conexionView.getBtnEscuchar().setText(escuchandoEn);
-    }
     
-    public void estadoConectadoAMonitor(String txt) {
-    	conexionView.getBtnConectar().setEnabled(false);
-    	conexionView.getBtnConectar().setText(txt);
-    	conexionView.setVisible(false);
-    	abrirVistaOperador(); 		//se debería abrir la vista de Operador si estamos conectados al monitor
-    								//aunque se haya perdido la conexion con la terminal cliente
-    	
-    }
     public void estadoFilaVacia() {
     	operadorView.getBtnLlamar().setText("Fila Vacia");
     	operadorView.getBtnLlamar().setEnabled(false);
+    	operadorView.getBtnNotificar().setEnabled(false);
+    	actualizarVistaOperador();
     }
     public void estadoFilaNoVacia() {
     	operadorView.getBtnLlamar().setText("Llamar siguiente");
@@ -106,22 +91,46 @@ public class Controlador {
         operadorView.setVisible(true);
         GestorFila gestor = GestorFila.getInstance();
         operadorView.actualizar(
-                gestor.getProximosTurnos(),
-                gestor.getUltimoTurnoLlamado(),
+        		gestor.getUltimoTurnoLlamado(),
                 gestor.getCantidadEnEspera(),
-                gestor.getCantidadAtendidos()
+                gestor.getCantidadDeVecesLlamado()
         );
     }
     
     public void actualizarVistaOperador() {
         GestorFila gestor = GestorFila.getInstance();
+        if(gestor.getUltimoTurnoLlamado()==null) {
+        	operadorView.getBtnNotificar().setEnabled(false);
+        }
+        else {
+        	operadorView.getBtnNotificar().setEnabled(true);
+        }
         operadorView.actualizar(
-                gestor.getProximosTurnos(),
                 gestor.getUltimoTurnoLlamado(),
                 gestor.getCantidadEnEspera(),
-                gestor.getCantidadAtendidos()
+                gestor.getCantidadDeVecesLlamado()
         );    	
     }
+
+	public void estadoConectadoAServidor(String txt) {
+    	conexionView.setVisible(false);
+    	abrirVistaOperador();
+	}
+
+	public void ActualizarVistaNumero(int numeroTerminal) {
+		operadorView.ActualizarTitulo(numeroTerminal);
+	}
+
+	public void seDebeLlamarSiguiente(String string) {
+    	operadorView.getBtnNotificar().setEnabled(false);
+        JOptionPane.showMessageDialog(
+        		operadorView,
+                "El cliente ya fue llamado 3 veces, se debe proceder con el siguiente.",
+                "Cliente llamado muchas veces",
+                JOptionPane.WARNING_MESSAGE
+        );
+        return;
+	}
 
 }
 

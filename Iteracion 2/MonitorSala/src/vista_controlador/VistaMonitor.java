@@ -3,7 +3,7 @@ package vista_controlador;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import comuEntreProcesos.Turno;
+import eventos.Turno;
 
 import java.awt.*;
 import java.text.SimpleDateFormat;
@@ -18,7 +18,8 @@ public class VistaMonitor extends JFrame {
 	private JLabel lblDniActual;
 	private JLabel lblTurnoActual;
 	private JPanel panelLista;
-
+	private JLabel lblTitulo;
+	
 	public VistaMonitor() {
 		setTitle("Monitor");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -35,7 +36,7 @@ public class VistaMonitor extends JFrame {
 		panelHeader.setBackground(new Color(33, 150, 243)); 
 		panelHeader.setBorder(new EmptyBorder(10, 10, 10, 10));
 		
-		JLabel lblTitulo = new JLabel("Centro de Atención al ciudadano");
+		lblTitulo = new JLabel("Terminal de Notificación");
 		lblTitulo.setForeground(Color.WHITE);
 		lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
 
@@ -187,5 +188,9 @@ public class VistaMonitor extends JFrame {
 
 		if (minutos <= 0) return "hace instantes";
 		return "hace " + minutos + " min";
+	}
+
+	public void ActualizarTitulo(int numero) {
+		lblTitulo.setText("Terminal de Notificacion "+numero);
 	}
 }

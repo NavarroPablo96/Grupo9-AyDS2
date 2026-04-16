@@ -3,14 +3,12 @@ package comuEntreProcesos;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.BindException;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.List;
 
+import eventos.ConexionTerminal;
+import eventos.Evento;
 import vista_controlador.Controlador;
 
 public class ComunicacionEntreProcesos implements IRecibirEvento, IEnviarEvento {
@@ -29,7 +27,10 @@ public class ComunicacionEntreProcesos implements IRecibirEvento, IEnviarEvento 
     }
 	
     //Logica observer Observable
-    private List<IReceptorEvento> receptores;
+	// Esta clase es observable(IRecibirEvento) 
+	// tiene una lista de Observadores(IReceptorEvento)
+    //Logica observer Observable
+    private ArrayList<IReceptorEvento> receptores;
 
     @Override
     public void suscribirse(IReceptorEvento receptor) {
@@ -49,66 +50,82 @@ public class ComunicacionEntreProcesos implements IRecibirEvento, IEnviarEvento 
         }
     }
     
-    
-    
     //Logica de red:
     private Socket socket;
- // texto    PrintWriter / BufferedReader  
- //   private PrintWriter out;	//Estas clases solo envian texto
- //   private BufferedReader in;	//Necesitan metodos serializarEvento DeserializarEvento
-//    ObjectOutputStream / ObjectInputStream  // objetos	Con estas clases se pueden enviar objetos directamente
-    //Necesita que el objeto Evento implemente Serialiable
-    private ObjectOutputStream outMS;	//Tengo que crear in y out para TR terminal Registro
-    private ObjectInputStream inTR;	// y para MS = Monitor Sala
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
     
-
-    public void iniciarServidor(int puerto) {
-        new Thread(() -> {
-        	try (ServerSocket serverSocket = new ServerSocket(puerto)) {
-            	System.out.println("Esperando conexión...");	
-            	Controlador.getInstance().estadoEscuchando("Escuchando en:"+puerto);	//le aviso al controlado que estamos escuchando así procede con las vistas
-                socket = serverSocket.accept();
-            	inTR = new ObjectInputStream(socket.getInputStream());
-                System.out.println("Conexión establecida, esperando eventos...");
-                while (true) {
-                    Evento evento = (Evento) inTR.readObject();
-                    notificarReceptores(evento);
-                }
-                
-
-            } catch (BindException e) {
-            	//Ya se está usando el puerto
-                e.printStackTrace();
-            }catch (Exception e) {
-            	if(e instanceof SocketException) {
-                	System.out.println("Exception-Monitor-iniciarServidor, Se desconecto la InterfazOperador");
-                	System.out.println("Esperando conexión en puerto:" + puerto);
-                	ComunicacionEntreProcesos.getInstance().iniciarServidor(puerto);
-            	}
-            	else {
-            		e.printStackTrace();            		
-            	}
-            }
-        }).start();
-    }
     
     public void conectar(String ip, int puerto) throws UnknownHostException, IOException {
     	socket = new Socket(ip, puerto);
-    	outMS = new ObjectOutputStream(socket.getOutputStream());
-    	outMS.flush();
-        
-    	Controlador.getInstance().estadoConectadoAMonitor("Conectados a Monitor");
+		out = new ObjectOutputStream(socket.getOutputStream());		//IOException
+		in = new ObjectInputStream(socket.getInputStream());		//IOException
+		out.flush();
+    	out.writeObject(new ConexionTerminal("terminalAtencion","Servidor","TERMINAL_ATENCION"));
+    	out.flush();
+    	// Hilo que escucha SIEMPRE todos los eventos que llegan desde el servidor
+    	new Thread(() -> {
+    	    try {
+    	        while (true) {
+    	            Evento evento = (Evento) in.readObject();
+    	            notificarReceptores(evento);
+    	        }
+    	    } catch (Exception e) {
+    	        System.out.println("Se perdió la conexión con el servidor");
+    	    }
+    	}).start();
+    	Controlador.getInstance().estadoConectadoAServidor("Conectados a Servidor");
+    }
+    
+    public boolean estaConectado() {
+        return socket != null && socket.isConnected() && !socket.isClosed() && out != null;
     }
     
     
     @Override
     public void enviarEvento(Evento evento) {
-    	try {
+    	System.out.println("Se intenta enviar el evento: "+evento.getClass().getName());
+        if (!estaConectado()) {
+            System.out.println("No hay conexion activa con el Operador. No se envio el turno.");
+            return;
+        }
+        try {
         	//puede tirar null pointer exception, if(out != null){ ...  }else{System.out.println("Falta establecer conexión");}
-        	outMS.writeObject(evento);
-        	outMS.flush();
-    	} catch (Exception e) {
+        	out.writeObject(evento);
+        	out.flush();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    
+    /*public void iniciarServidor(int puerto) {
+    new Thread(() -> {
+    	try (ServerSocket serverSocket = new ServerSocket(puerto)) {
+        	System.out.println("Esperando conexión...");	
+        	Controlador.getInstance().estadoEscuchando("Escuchando en:"+puerto);	//le aviso al controlado que estamos escuchando así procede con las vistas
+            socket = serverSocket.accept();
+        	inTR = new ObjectInputStream(socket.getInputStream());
+            System.out.println("Conexión establecida, esperando eventos...");
+            while (true) {
+                Evento evento = (Evento) inTR.readObject();
+                notificarReceptores(evento);
+            }
+            
+
+        } catch (BindException e) {
+        	//Ya se está usando el puerto
+            e.printStackTrace();
+        }catch (Exception e) {
+        	if(e instanceof SocketException) {
+            	System.out.println("Exception-Monitor-iniciarServidor, Se desconecto la InterfazOperador");
+            	System.out.println("Esperando conexión en puerto:" + puerto);
+            	ComunicacionEntreProcesos.getInstance().iniciarServidor(puerto);
+        	}
+        	else {
+        		e.printStackTrace();            		
+        	}
+        }
+    }).start();
+}*/
+
 }

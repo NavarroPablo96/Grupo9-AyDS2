@@ -29,7 +29,7 @@ public class ConexionFrame extends JFrame {
         // PANEL EMISOR
         // -------------------
         JPanel panelEmisor = new JPanel();
-        panelEmisor.setBorder(BorderFactory.createTitledBorder("Emisor - Conectar"));
+        panelEmisor.setBorder(BorderFactory.createTitledBorder("Terminal de Registro - Conectar"));
         panelEmisor.setLayout(new GridBagLayout());
 
         txtEmisorIP = new JTextField(15);

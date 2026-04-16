@@ -9,7 +9,7 @@ import java.util.Date;
 import javax.swing.JOptionPane;
 
 import comuEntreProcesos.ComunicacionEntreProcesos;
-import comuEntreProcesos.Turno;
+import eventos.Turno;
 import gestorTurnos.GestorTurnos;
 
 
@@ -99,7 +99,7 @@ public class Controlador {
         
     }
     
-    public void estadoConectadoAOperador(String txt) {
+    public void estadoConectadoAServidor(String txt) {
     	conexionView.getBtnConectar().setEnabled(false);
     	conexionView.getBtnConectar().setText(txt);
     	conexionView.setVisible(false);
@@ -118,9 +118,24 @@ public class Controlador {
 	public void ActualizarVista(Turno nuevo) {
 		terminalView.ActualizaVista(nuevo);
 	}
+	
+	public void ActualizarVistaNumero(int numero) {
+		terminalView.ActualizarTitulo(numero);
+	}
 
     private boolean esDocumentoValido(String documento) {
         return documento != null && documento.matches("\\d{7,8}");
+    }
+    
+    public void DocumentoYaRegistrado(String dni) {
+	    JOptionPane.showMessageDialog(
+	            terminalView,
+	            "El documento "+dni  +" ya está ingresado en la fila.",
+	            "Documento ya registrado",
+	            JOptionPane.WARNING_MESSAGE
+	    );
+	    terminalView.getTxtDNI().requestFocusInWindow();
+	    return;
     }
 
 }

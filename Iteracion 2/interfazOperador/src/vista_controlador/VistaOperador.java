@@ -3,64 +3,94 @@ package vista_controlador;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
 
-import comuEntreProcesos.Turno;
+import eventos.Turno;
 
 public class VistaOperador extends JFrame {
 
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
-    private JTable tabla;
-    private DefaultTableModel modeloTabla;
-
+    private JLabel lblHeader;
     private JButton btnLlamar;
+    private JButton btnNotificar;
     
     public JButton getBtnLlamar() {
 		return btnLlamar;
 	}
-
+    public JButton getBtnNotificar() {
+        return btnNotificar;
+    }
 	private JLabel lblTitulo;
     private JLabel lblDni;
 
     private JPanel panelStats;
     private JLabel lblEnEspera;
-    private JLabel lblAtendidos;
+    private JLabel lblLlamados;
     
     public VistaOperador() {
         setTitle("Panel de Operador");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 650, 488);
+        setBounds(100, 100, 650, 345);
 
         contentPane = new JPanel();
         contentPane.setLayout(new BorderLayout(10, 10));
         contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
         setContentPane(contentPane);
+        
+        lblHeader = new JLabel("Sistema de Turnos");
+        lblHeader.setFont(new Font("Arial", Font.BOLD, 24));
+        lblHeader.setHorizontalAlignment(SwingConstants.CENTER);
+        lblHeader.setForeground(Color.WHITE);
 
+        JPanel panelHeader = new JPanel(new BorderLayout());
+        panelHeader.setBackground(new Color(33, 150, 243)); // azul
+        panelHeader.setBorder(new EmptyBorder(10, 10, 10, 10));
+        panelHeader.add(lblHeader, BorderLayout.CENTER);
+
+        contentPane.add(panelHeader, BorderLayout.NORTH);
+        
         // PANEL PRINCIPAL (vertical)
         JPanel panelCentral = new JPanel();
         panelCentral.setLayout(new BoxLayout(panelCentral, BoxLayout.Y_AXIS));
         contentPane.add(panelCentral, BorderLayout.CENTER);
 
-        btnLlamar  = new JButton("Llamar siguiente");
-        btnLlamar.setFont(new Font("Arial", Font.BOLD, 24));
-        btnLlamar.setPreferredSize(new Dimension(200, 70));
-        btnLlamar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
-        btnLlamar.setBackground(new Color(255, 87, 34)); // naranja
+     // Panel para los botones (1 fila, 2 columnas)
+        JPanel panelBotones = new JPanel(new GridLayout(1, 2, 10, 0));
+
+        // Botón llamar
+        btnLlamar = new JButton("Llamar siguiente");
+        btnLlamar.setFont(new Font("Arial", Font.BOLD, 20));
+        btnLlamar.setBackground(new Color(255, 87, 34));
         btnLlamar.setForeground(Color.WHITE);
         btnLlamar.setFocusPainted(false);
-        btnLlamar.setBorder(BorderFactory.createRaisedSoftBevelBorder());
-        panelCentral.add(btnLlamar);
+        btnLlamar.setEnabled(false);
+
+        // Botón notificar
+        btnNotificar = new JButton("Notificar de nuevo");
+        btnNotificar.setFont(new Font("Arial", Font.BOLD, 20));
+        btnNotificar.setBackground(new Color(255, 87, 34));
+        btnNotificar.setForeground(Color.WHITE);
+        btnNotificar.setFocusPainted(false);
+        btnNotificar.setEnabled(false);
+
+        // Agregar al panel
+        panelBotones.add(btnLlamar);
+        panelBotones.add(btnNotificar);
+
+        // Ajustar tamaño
+        panelBotones.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
+
+        panelCentral.add(panelBotones);
 
         panelCentral.add(Box.createVerticalStrut(15));
 
         // PANEL DE CUADRADOS (2 columnas)
         panelStats = new JPanel(new GridLayout(1, 2, 15, 0));
         lblEnEspera = new JLabel("0");
-        lblAtendidos = new JLabel("0");
+        lblLlamados = new JLabel("0");
         
-        panelStats.add(crearCuadrado(lblEnEspera, "En espera", new Color(66, 135, 245))); // azul
-        panelStats.add(crearCuadrado(lblAtendidos, "Total atendidos hoy", new Color(76, 175, 80))); // verde
+        panelStats.add(crearCuadrado(lblEnEspera, "En espera", new Color(76, 175, 80))); // azul
+        panelStats.add(crearCuadrado(lblLlamados, "Cantidad de Veces Llamado", new Color(76, 175, 80))); // verde
         panelCentral.add(panelStats);
 
         panelCentral.add(Box.createVerticalStrut(15));
@@ -90,21 +120,6 @@ public class VistaOperador extends JFrame {
         panelCentral.add(panelUltimo);
 
         panelCentral.add(Box.createVerticalStrut(15));
-
-        // TABLA
-        String[] columnas = {"#", "Documento", "Hora Reg.", "Estado"};
-
-        
-        modeloTabla = new DefaultTableModel(columnas, 0);
-        this.tabla = new JTable(modeloTabla);
-        this.tabla.setFillsViewportHeight(true);
-        this.tabla.setRowHeight(30);
-        this.tabla.setFont(new Font("Arial", Font.PLAIN, 14));
-        this.tabla.getTableHeader().setBackground(new Color(33, 150, 243));
-        this.tabla.getTableHeader().setForeground(Color.WHITE);
-
-        JScrollPane scroll = new JScrollPane(this.tabla);
-        panelCentral.add(scroll);
     }
 
     // Método para crear los cuadraditos con color
@@ -130,22 +145,7 @@ public class VistaOperador extends JFrame {
         return panel;
     }
     
-    public void actualizar(java.util.List<Turno> turnos,Turno ultimoTurno,int enEspera,int atendidos) {
-
-        modeloTabla.setRowCount(0); // limpiar
-
-        for (int i = 0; i < turnos.size(); i++) {
-            Turno t = turnos.get(i);
-
-            String estado = (i == 0) ? "Próximo" : "Espera";
-
-            modeloTabla.addRow(new Object[]{
-                    t.getNumero(),
-                    t.getDocumento(),
-                    t.getHoraRegistro(),
-                    estado
-            });
-        }
+    public void actualizar(Turno ultimoTurno,int enEspera,int CantLlamados) {
 
         //Ultimo turno llamado
         if (ultimoTurno != null) {
@@ -155,7 +155,12 @@ public class VistaOperador extends JFrame {
 
         //Cantidad de Atendidos
         lblEnEspera.setText(String.valueOf(enEspera));
-        lblAtendidos.setText(String.valueOf(atendidos));
+        lblLlamados.setText(String.valueOf(CantLlamados));
     }
+
+	public void ActualizarTitulo(int numero) {
+        setTitle("Puesto de Atencion "+numero);
+        lblHeader.setText("Puesto de Atencion " + numero);
+	}
 
 }

@@ -2,6 +2,7 @@ package vista_controlador;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import comuEntreProcesos.ComunicacionEntreProcesos;
 import gestorHistorial.GestorHistorial;
@@ -33,29 +34,34 @@ public class Controlador {
      * Inicializa los listeners de los botones
      */
     public void initControl() {
-        // Botón "Escuchar" para empezar a escuchar en un puerto
-        conexionView.getBtnEscuchar().addActionListener(new ActionListener() {
+        // Botón "Conectar" del emisor
+        conexionView.getBtnConectar().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String ip = conexionView.getTxtReceptorIP().getText();
-                int puerto = Integer.parseInt(conexionView.getTxtReceptorPuerto().getText());
+                String ip = conexionView.getTxtEmisorIP().getText();
+                int puerto = Integer.parseInt(conexionView.getTxtEmisorPuerto().getText());
+                System.out.println("Conectando a IP: " + ip + " Puerto: " + puerto);
                 
-                System.out.println("Escuchando en IP: " + ip + " Puerto: " + puerto);
-                ComunicacionEntreProcesos.getInstance().iniciarServidor(puerto);
+                try {
+					ComunicacionEntreProcesos.getInstance().conectar(ip, puerto);
+				} catch (IOException e1) {
+					System.out.println("No fue posible conectarse al monitor");
+					//e1.printStackTrace();
+				}
 
             }
         });
         
+        
     }
     
-    public void estadoEscuchando(String escuchandoEn) {
-    	conexionView.getBtnEscuchar().setEnabled(false);
-    	conexionView.getBtnEscuchar().setText(escuchandoEn);
-    }
-    
-    public void estadoOperadorConectado() {
+    public void estadoConectadoAServidor(String txt) {
+    	conexionView.getBtnConectar().setEnabled(false);
+    	conexionView.getBtnConectar().setText(txt);
     	conexionView.setVisible(false);
-    	abrirVistaMonitor();
+    	abrirVistaMonitor(); 		//se debería abrir la vista de Operador si estamos conectados al monitor
+    								//aunque se haya perdido la conexion con la terminal cliente
+    	
     }
     
     /**
@@ -70,13 +76,17 @@ public class Controlador {
         );
     }
     
-    public void actualizarVistaOperador() {
+    public void actualizarVistaMonitor() {
     	GestorHistorial gestor = GestorHistorial.getInstance();
         monitorView.actualizar(
                 gestor.getUltimosTurnos(),
                 gestor.getUltimoTurnoLlamado()
         );   	
     }
+
+	public void ActualizarVistaNumero(int numero) {
+		monitorView.ActualizarTitulo(numero);
+	}
 
 }
 

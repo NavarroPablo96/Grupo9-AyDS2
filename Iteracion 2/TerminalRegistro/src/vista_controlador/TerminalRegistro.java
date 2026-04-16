@@ -5,7 +5,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.AbstractDocument;
 
-import comuEntreProcesos.Turno;
+import eventos.Turno;
 
 public class TerminalRegistro extends JFrame {
 
@@ -15,6 +15,7 @@ public class TerminalRegistro extends JFrame {
     private JLabel lblTurnoNumero;
     private JLabel lblDetalleTurno;
     private JButton btnRegistrar;
+    JLabel lblTitulo;
 
     /**
      * Create the frame.
@@ -30,7 +31,7 @@ public class TerminalRegistro extends JFrame {
         setContentPane(contentPane);
 
         // Panel superior con título
-        JLabel lblTitulo = new JLabel("Sistema de Turnos");
+        lblTitulo = new JLabel("Sistema de Turnos");
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 24));
         lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
         lblTitulo.setForeground(Color.WHITE);
@@ -165,6 +166,12 @@ public class TerminalRegistro extends JFrame {
 
 	public JButton getBtnRegistrar() {
 		return btnRegistrar;
+	}
+
+
+	public void ActualizarTitulo(int numero) {
+        setTitle("Terminal de Registro "+numero);
+        lblTitulo.setText("Terminal de Registro "+numero);
 	}
     
     

@@ -1,28 +1,26 @@
 package gestorInterfazOperador;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
 
 import comuEntreProcesos.ComunicacionEntreProcesos;
-import comuEntreProcesos.Evento;
-import comuEntreProcesos.EventoLlamarSiguiente;
-import comuEntreProcesos.EventoNuevoTurno;
 import comuEntreProcesos.IReceptorEvento;
-import comuEntreProcesos.IRecibirEvento;
-import comuEntreProcesos.Turno;
+import eventos.Evento;
+import eventos.EventoFilaNoVacia;
+import eventos.EventoFilaVacia;
+import eventos.EventoLlamarSiguiente;
+import eventos.EventoNumeroTerminal;
+import eventos.EventoRellamar;
+import eventos.Turno;
+import eventos.TurnoAsignado;
 import vista_controlador.Controlador;
 
 public class GestorFila implements IReceptorEvento {
 
 	private static GestorFila instance;
-	private static IRecibirEvento notificador;
+	private int NumeroTerminal;
 
     private GestorFila() {
-        this.fila = new ArrayList<>();
         this.ultimoTurnoLlamado = null;
-        this.totalAtendidos = 0;
+        this.CantidadEnEspera = 0;
     }
 
     public static GestorFila getInstance() {
@@ -31,23 +29,11 @@ public class GestorFila implements IReceptorEvento {
         }
         return instance;
     }
+    
 
-    private List<Turno> fila;
     private Turno ultimoTurnoLlamado;
-    private int totalAtendidos;
+    private int CantidadDeVecesLlamado,CantidadEnEspera;
 
-
-
-    //Devuelve los próximos 4 turnos
-    public List<Turno> getProximosTurnos() {
-        List<Turno> proximos = new ArrayList<>();
-
-        for (int i = 0; i < Math.min(4, fila.size()); i++) {
-            proximos.add(fila.get(i));
-        }
-
-        return proximos;
-    }
 
     // Último turno llamado
     public Turno getUltimoTurnoLlamado() {
@@ -56,36 +42,40 @@ public class GestorFila implements IReceptorEvento {
 
     // Cantidad en espera
     public int getCantidadEnEspera() {
-        return fila.size();
+        return this.CantidadEnEspera;
     }
 
     // 🔹 Cantidad atendidos
-    public int getCantidadAtendidos() {
-        return totalAtendidos;
+    public int getCantidadDeVecesLlamado() {
+        return CantidadDeVecesLlamado;
     }
-
-    // lista completa
-    public List<Turno> getFilaCompleta() {
-        return new ArrayList<>(fila);
-    }
-
-    // Método interno para mantener orden
-    private void ordenarFila() {
-        fila.sort(Comparator.comparingInt(Turno::getNumero));
-    }
-    
    
 	@Override
 	public void ArriboEvento(Evento e) {
-	    if (e instanceof EventoNuevoTurno) {
-	        EventoNuevoTurno evento = (EventoNuevoTurno) e;
-	        Turno turno = evento.getTurno();
-	        fila.add(turno);	        // agregar a la lista
-	        ordenarFila();
-	        System.out.println("Llego el EventoNuevoTurno DNI="+turno.getDocumento());
-	        Controlador.getInstance().estadoFilaNoVacia();
+		System.out.println("Llega un evento:"  + e);
+		if (e instanceof EventoNumeroTerminal) {
+	    	EventoNumeroTerminal ent =(EventoNumeroTerminal) e;
+	    	this.NumeroTerminal=ent.getNumero();
+	    	Controlador.getInstance().ActualizarVistaNumero(ent.getNumero());
 	    }
-	    else {
+		else if (e instanceof TurnoAsignado) {
+			
+			TurnoAsignado evento = (TurnoAsignado) e;
+	        Turno turno = evento.getTurno();
+	        this.ultimoTurnoLlamado=turno;
+	        this.CantidadDeVecesLlamado=1;
+	        System.out.println("Llego el TurnoAsignado DNI="+turno.getDocumento());
+	        Controlador.getInstance().actualizarVistaOperador();
+	    }
+		else if(e instanceof EventoFilaNoVacia) {
+			EventoFilaNoVacia EFNV = (EventoFilaNoVacia) e;
+			this.CantidadEnEspera=EFNV.getCantTurno();
+			Controlador.getInstance().estadoFilaNoVacia();
+		}
+	    else if(e instanceof EventoFilaVacia){
+			Controlador.getInstance().estadoFilaVacia(); 	
+	    }
+	    else{
 	    	System.out.println("Llego un Evento");
 	    	System.out.println("Tipo: " + e.getClass().getName());
 	        System.out.println("Origen: " + e.getProcesoOrigen());
@@ -93,36 +83,27 @@ public class GestorFila implements IReceptorEvento {
 	    }
 	}
 	
-	
-    public static void main(String[] args) {
-    	System.out.println("OPERADOR");
 
-    	notificador = ComunicacionEntreProcesos.getInstance();
-    	notificador.suscribirse(GestorFila.getInstance());
-    	
-    	Controlador.getInstance().initControl();
-    	
-    	//GestorFila.getInstance().fila.add(new Turno(7,"38291047","10:42",new Date()));
-    	//GestorFila.getInstance().fila.add(new Turno(8,"20110334","10:44",new Date()));
-    	//GestorFila.getInstance().fila.add(new Turno(9,"30111222","10:45",new Date()));
-    	//GestorFila.getInstance().fila.add(new Turno(10,"40122333","10:47",new Date()));
-    	//GestorFila.getInstance().ordenarFila();
-    }
 
 	public void llamarSiguiente() {
-		if (fila.isEmpty()) {
-			Controlador.getInstance().estadoFilaVacia();
-	    }
-		else {
-			Turno t = fila.remove(0);
-			t.setHoraDeLlamado(new Date());
-			ultimoTurnoLlamado = t;
-			totalAtendidos++;
-			
-			EventoLlamarSiguiente evento = new EventoLlamarSiguiente("Operador", "Monitor", t);
+		String Origen = "TA" + this.NumeroTerminal;
+		EventoLlamarSiguiente evento = new EventoLlamarSiguiente(Origen, "Notificador");
+		ComunicacionEntreProcesos.getInstance().enviarEvento(evento);
+	}
+
+	public void ReNotificar() {
+		String Origen = "TA" + this.NumeroTerminal;
+		if(this.CantidadDeVecesLlamado<=3) {
+			this.CantidadDeVecesLlamado++;
+			EventoRellamar evento = new EventoRellamar(Origen,"Notificador",this.ultimoTurnoLlamado);
 			ComunicacionEntreProcesos.getInstance().enviarEvento(evento);
-			Controlador.getInstance().actualizarVistaOperador();
 		}
+		else {
+			this.CantidadDeVecesLlamado=0;
+			this.ultimoTurnoLlamado=null;
+			Controlador.getInstance().seDebeLlamarSiguiente("El cliente ya fue llamado 3 veces");
+		}
+		Controlador.getInstance().actualizarVistaOperador();
 	}
 
     
