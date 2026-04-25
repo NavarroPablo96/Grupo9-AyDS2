@@ -72,7 +72,7 @@ public class ComunicacionEntreProcesos implements IRecibirEvento {
     	            notificarReceptores(evento);
     	        }
     	    } catch (Exception e) {
-    	    	e.printStackTrace();
+    	    	//e.printStackTrace();
     	        System.out.println("Se perdió la conexión con el servidor");
     	    }
     	}).start();

@@ -51,6 +51,7 @@ public class GestorHistorial implements IReceptorEvento{
 	    if (e instanceof EventoNotificar) {
 	    	EventoNotificar evento = (EventoNotificar) e;
 	        Turno turno = evento.getTurno();
+	        turno.setNumeroTerminal(evento.getNumeroTPA());
 
 
 	        if(turnoActual!=null) {
@@ -72,7 +73,8 @@ public class GestorHistorial implements IReceptorEvento{
 	    else if(e instanceof EventoRellamar) {
 	    	EventoRellamar evento = (EventoRellamar) e;
 	        Turno turnoRellamar = evento.getTurno();
-	    	
+	        turnoRellamar.setNumeroTerminal(evento.getNumeroTPA());
+
 	        if(turnoActual==null) {
 	        	turnoActual=turnoRellamar;
 	        }

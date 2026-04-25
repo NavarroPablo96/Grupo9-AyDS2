@@ -17,7 +17,6 @@ public class Controlador {
 	
     private ConexionFrame conexionView;
     private VistaOperador operadorView;
-    
 
 	private static Controlador instancia;
 
@@ -71,14 +70,29 @@ public class Controlador {
         
     }
     
-    
-    public void estadoFilaVacia() {
+    public void CartelFilaVacia() {
     	operadorView.getBtnLlamar().setText("Fila Vacia");
     	operadorView.getBtnLlamar().setEnabled(false);
-    	operadorView.getBtnNotificar().setEnabled(false);
+		JOptionPane.showMessageDialog(
+        		operadorView,
+                "No hay ningún cliente en la fila, intente más tarde.",
+                "La Fila está vacía",
+                JOptionPane.WARNING_MESSAGE
+        );
+        return;
+
+    }
+    
+    
+    public void estadoFilaVacia() {
+    	GestorFila.getInstance().setFilaVacia(true);
     	actualizarVistaOperador();
     }
+    
+    
     public void estadoFilaNoVacia() {
+    	System.out.println("Controlador.estadoFilaNoVacia()");
+    	GestorFila.getInstance().setFilaVacia(false);
     	operadorView.getBtnLlamar().setText("Llamar siguiente");
     	operadorView.getBtnLlamar().setEnabled(true);	
     	actualizarVistaOperador();
@@ -105,6 +119,7 @@ public class Controlador {
         else {
         	operadorView.getBtnNotificar().setEnabled(true);
         }
+        System.out.println("ACTUALZIANDO Vista OPERADOR - "+gestor.getCantidadEnEspera());
         operadorView.actualizar(
                 gestor.getUltimoTurnoLlamado(),
                 gestor.getCantidadEnEspera(),

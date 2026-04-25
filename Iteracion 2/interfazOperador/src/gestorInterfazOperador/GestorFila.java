@@ -17,6 +17,7 @@ public class GestorFila implements IReceptorEvento {
 
 	private static GestorFila instance;
 	private int NumeroTerminal;
+    private boolean FilaVacia;
 
     private GestorFila() {
         this.ultimoTurnoLlamado = null;
@@ -73,6 +74,7 @@ public class GestorFila implements IReceptorEvento {
 			Controlador.getInstance().estadoFilaNoVacia();
 		}
 	    else if(e instanceof EventoFilaVacia){
+	    	this.CantidadEnEspera=0;
 			Controlador.getInstance().estadoFilaVacia(); 	
 	    }
 	    else{
@@ -83,19 +85,26 @@ public class GestorFila implements IReceptorEvento {
 	    }
 	}
 	
-
+	public void setFilaVacia(boolean vacia) {
+		this.FilaVacia=vacia;
+	}
 
 	public void llamarSiguiente() {
-		String Origen = "TA" + this.NumeroTerminal;
-		EventoLlamarSiguiente evento = new EventoLlamarSiguiente(Origen, "Notificador");
-		ComunicacionEntreProcesos.getInstance().enviarEvento(evento);
+		if(this.FilaVacia) {
+			Controlador.getInstance().CartelFilaVacia();
+		}
+		else {
+			String Origen = "TA" + this.NumeroTerminal;
+			EventoLlamarSiguiente evento = new EventoLlamarSiguiente(Origen,this.NumeroTerminal, "Notificador");
+			ComunicacionEntreProcesos.getInstance().enviarEvento(evento);
+		}
 	}
 
 	public void ReNotificar() {
 		String Origen = "TA" + this.NumeroTerminal;
-		if(this.CantidadDeVecesLlamado<=3) {
+		if(this.CantidadDeVecesLlamado<3) {
 			this.CantidadDeVecesLlamado++;
-			EventoRellamar evento = new EventoRellamar(Origen,"Notificador",this.ultimoTurnoLlamado);
+			EventoRellamar evento = new EventoRellamar(Origen,this.NumeroTerminal,"Notificador",this.ultimoTurnoLlamado);
 			ComunicacionEntreProcesos.getInstance().enviarEvento(evento);
 		}
 		else {

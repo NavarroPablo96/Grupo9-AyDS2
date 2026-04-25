@@ -15,8 +15,12 @@ public class VistaMonitor extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JLabel lblFechaHora;
+	
 	private JLabel lblDniActual;
-	private JLabel lblTurnoActual;
+	
+	private JLabel lblNumeroTurno;
+	private JLabel lblTerminal;
+	
 	private JPanel panelLista;
 	private JLabel lblTitulo;
 	
@@ -59,14 +63,22 @@ public class VistaMonitor extends JFrame {
 		JLabel lblTituloTurno = new JLabel("TURNO DE ATENCIÓN");
 		lblTituloTurno.setFont(new Font("Arial", Font.BOLD, 16));
 		lblTituloTurno.setAlignmentX(Component.CENTER_ALIGNMENT);
+		Font fuentePrincipal = new Font("Arial", Font.BOLD, 16);
 
 		lblDniActual = new JLabel("00.000.000");
-		lblDniActual.setFont(new Font("Arial", Font.BOLD, 32));
+		lblDniActual.setFont(fuentePrincipal);
+		lblDniActual.setForeground(Color.WHITE);
 		lblDniActual.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		lblTurnoActual = new JLabel("Turno #000 - Diríjase al mostrador");
-		lblTurnoActual.setFont(new Font("Arial", Font.PLAIN, 14));
-		lblTurnoActual.setAlignmentX(Component.CENTER_ALIGNMENT);
+		lblNumeroTurno = new JLabel("Turno #000");
+		lblNumeroTurno.setFont(fuentePrincipal);
+		lblNumeroTurno.setForeground(Color.WHITE);
+		lblNumeroTurno.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		lblTerminal = new JLabel("DIRÍJASE A TERMINAL");
+		lblTerminal.setFont(fuentePrincipal);
+		lblTerminal.setForeground(Color.WHITE);
+		lblTerminal.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		JPanel panelTurno = new JPanel();
 		panelTurno.setLayout(new BoxLayout(panelTurno, BoxLayout.Y_AXIS));
@@ -75,23 +87,26 @@ public class VistaMonitor extends JFrame {
 
 		lblTituloTurno.setForeground(Color.LIGHT_GRAY);
 		lblDniActual.setForeground(Color.WHITE);
-		lblTurnoActual.setForeground(Color.WHITE);
+		//lblTurnoActual.setForeground(Color.WHITE);
 
 		panelTurno.add(Box.createVerticalStrut(10));
 		panelTurno.add(lblTituloTurno);
 		panelTurno.add(Box.createVerticalStrut(10));
 		panelTurno.add(lblDniActual);
+		panelTurno.add(Box.createVerticalStrut(10));
+		panelTurno.add(lblNumeroTurno);
 		panelTurno.add(Box.createVerticalStrut(5));
-		panelTurno.add(lblTurnoActual);
+		panelTurno.add(lblTerminal);
 		panelTurno.add(Box.createVerticalStrut(10));
 
 		panelCentro.add(panelTurno);
 		panelCentro.add(Box.createRigidArea(new Dimension(0, 20)));
 
 		// ---- LISTA TURNOS ----
-		JLabel lblListaTitulo = new JLabel("ULTIMOS 5 TURNOS LLAMADOS");
+		JLabel lblListaTitulo = new JLabel("ULTIMOS TURNOS LLAMADOS");
 		lblListaTitulo.setFont(new Font("Arial", Font.BOLD, 14));
 		lblListaTitulo.setForeground(new Color(33, 33, 33));
+		lblListaTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		panelCentro.add(lblListaTitulo);
 		panelCentro.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -109,50 +124,58 @@ public class VistaMonitor extends JFrame {
 	// ================= ACTUALIZAR =================
 	public void actualizar(List<Turno> ultimosTurnos, Turno ultimoTurnoLlamado) {
 
-		// Actualizar turno actual
-		if (ultimoTurnoLlamado != null) {
-			lblDniActual.setText(formatearDni(ultimoTurnoLlamado.getDocumento()));
-			lblTurnoActual.setText("Turno #" +
-					String.format("%03d", ultimoTurnoLlamado.getNumero()) +
-					" - Diríjase al mostrador");
-		}
+	    // Actualizar turno actual
+	    if (ultimoTurnoLlamado != null) {
+	        lblDniActual.setFont(new Font("Arial", Font.BOLD, 16));
+	        lblDniActual.setText(formatearDni(ultimoTurnoLlamado.getDocumento()));
 
-		// Limpiar lista
-		panelLista.removeAll();
+	        lblNumeroTurno.setText("Turno #" +
+	                String.format("%03d", ultimoTurnoLlamado.getNumero()));
 
-		// Mostrar ultimos 5 turnos con el mas reciente en la primera posicion.
-		for (int i = 0; i < ultimosTurnos.size() && i < 5; i++) {
-			Turno t = ultimosTurnos.get(i);
+	        lblTerminal.setText("DIRÍJASE A TERMINAL N° " +
+	                ultimoTurnoLlamado.getTerminal());
+	    }
 
-			JPanel fila = new JPanel(new BorderLayout());
-			fila.setBackground(i == 0 ? new Color(232, 245, 255) : new Color(255, 255, 255));
-			fila.setBorder(BorderFactory.createCompoundBorder(
-			        BorderFactory.createLineBorder(new Color(220, 220, 220), 1, true),
-			        new EmptyBorder(8, 10, 8, 10)
-			));
+	    // Limpiar lista
+	    panelLista.removeAll();
 
-			JLabel lblNumero = new JLabel("#" + String.format("%03d", t.getNumero()));
-			lblNumero.setForeground(new Color(33, 150, 243)); // azul
-			lblNumero.setFont(new Font("Arial", Font.BOLD, 14));
+	    // Mostrar ultimos 5 turnos
+	    for (int i = 0; i < ultimosTurnos.size() && i < 5; i++) {
+	        Turno t = ultimosTurnos.get(i);
 
-			JLabel lblDni = new JLabel(formatearDni(t.getDocumento()));
-			lblDni.setFont(new Font("Arial", Font.BOLD, 14));
-			JLabel lblTiempo = new JLabel(calcularHace(t.getHoraHoraDeLlamado()));
-			lblTiempo.setForeground(Color.GRAY);
+	        JPanel fila = new JPanel(new BorderLayout());
+	        fila.setBackground(i == 0 ? new Color(232, 245, 255) : new Color(255, 255, 255));
+	        fila.setBorder(BorderFactory.createCompoundBorder(
+	                BorderFactory.createLineBorder(new Color(220, 220, 220), 1, true),
+	                new EmptyBorder(8, 10, 8, 10)
+	        ));
 
-			lblNumero.setPreferredSize(new Dimension(60, 20));
-			lblTiempo.setHorizontalAlignment(SwingConstants.RIGHT);
+	        JLabel lblNumero = new JLabel("#" + String.format("%03d", t.getNumero()));
+	        lblNumero.setForeground(new Color(33, 150, 243));
+	        lblNumero.setFont(new Font("Arial", Font.BOLD, 14));
 
-			fila.add(lblNumero, BorderLayout.WEST);
-			fila.add(lblDni, BorderLayout.CENTER);
-			fila.add(lblTiempo, BorderLayout.EAST);
+	        JLabel lblInfo = new JLabel(
+	                formatearDni(t.getDocumento()) +
+	                "                                Terminal N°" + t.getTerminal()
+	        );
+	        lblInfo.setFont(new Font("Arial", Font.BOLD, 14));
 
-			panelLista.add(fila);
-			panelLista.add(Box.createRigidArea(new Dimension(0, 5)));
-		}
+	        JLabel lblTiempo = new JLabel(calcularHace(t.getHoraHoraDeLlamado()));
+	        lblTiempo.setForeground(Color.GRAY);
 
-		panelLista.revalidate();
-		panelLista.repaint();
+	        lblNumero.setPreferredSize(new Dimension(60, 20));
+	        lblTiempo.setHorizontalAlignment(SwingConstants.RIGHT);
+
+	        fila.add(lblNumero, BorderLayout.WEST);
+	        fila.add(lblInfo, BorderLayout.CENTER);
+	        fila.add(lblTiempo, BorderLayout.EAST);
+
+	        panelLista.add(fila);
+	        panelLista.add(Box.createRigidArea(new Dimension(0, 5)));
+	    }
+
+	    panelLista.revalidate();
+	    panelLista.repaint();
 	}
 
 	// ================= HELPERS =================

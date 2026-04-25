@@ -83,13 +83,14 @@ public class EscuchadorTerminal implements Runnable {
 
     // Método para enviar mensajes A ESTE cliente
     public synchronized void enviar(Evento evento) {
+    	System.out.println("Se envia evento:"+evento.getClass());
         try {
             out.writeObject(evento);
             out.flush();
         } catch (IOException e) {
             System.out.println("Error enviando a: " + socket);
         }
-    }
+    }	
 
     public void cerrarConexion() {
         activo = false;

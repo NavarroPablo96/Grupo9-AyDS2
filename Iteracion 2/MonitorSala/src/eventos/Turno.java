@@ -10,7 +10,7 @@ public class Turno implements Serializable {
 	private String Documento,HoraReg;
 	private int Numero;
 	private Date HoraDeLlamado;
-
+	private int NumeroTerminalQueLLama;
 	public Turno(int numero, String documento, String horaReg,Date horaDeLlamado) {
 		Numero = numero;
 		Documento = documento;
@@ -36,5 +36,13 @@ public class Turno implements Serializable {
 	
 	public void setHoraDeLlamado(Date date) {
 		this.HoraDeLlamado=date;
+	}
+
+	public int getTerminal() {
+		return this.NumeroTerminalQueLLama;
+	}
+
+	public void setNumeroTerminal(int numeroTerminalQueLLama) {
+		NumeroTerminalQueLLama = numeroTerminalQueLLama;
 	}
 }

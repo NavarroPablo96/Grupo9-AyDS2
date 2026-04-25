@@ -115,9 +115,15 @@ public class GestorFilaYTerminales implements IReceptorEvento{
 				TurnoAsignado respuesta = new TurnoAsignado("SERVIDOR",TerminalOrigen,t);
 				ComunicacionesConTerminales.getInstance().enviarEvento(respuesta,tipoTerminal,numeroTerminal);
 				
-				EventoNotificar noti = new EventoNotificar(TerminalOrigen,"NOTIFICADORES",t);
+				EventoNotificar noti = new EventoNotificar(TerminalOrigen,numeroTerminal,"NOTIFICADORES",t);
 				ComunicacionesConTerminales.getInstance().publicarNotificadores(noti);
 				ControladorServidor.actualizarVistaServidor();
+				if (fila.isEmpty()) {
+	    	        ComunicacionesConTerminales.getInstance().publicarOperadores(new EventoFilaVacia("Servidor","Operadores"));
+			    }
+				else {
+	    	        ComunicacionesConTerminales.getInstance().publicarOperadores(new EventoFilaNoVacia("Servidor","Operador",cantidadTurnos()));
+				}
 			}
 	    	
 	    }
