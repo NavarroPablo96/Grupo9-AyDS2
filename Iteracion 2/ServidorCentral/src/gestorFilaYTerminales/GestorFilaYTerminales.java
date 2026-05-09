@@ -18,6 +18,7 @@ import eventos.EventoLlamarSiguiente;
 import eventos.EventoNotificar;
 import eventos.EventoNuevoTurno;
 import eventos.EventoRellamar;
+import eventos.EventoSolicitudTurno;
 import eventos.EventoTurnoCreadoConExito;
 
 public class GestorFilaYTerminales implements IReceptorEvento{
@@ -72,8 +73,33 @@ public class GestorFilaYTerminales implements IReceptorEvento{
     	String tipoTerminal = obtenerTipo(TerminalOrigen);
     	int numeroTerminal=obtenerNumero(TerminalOrigen);
     	
-		
-	    if (e instanceof EventoNuevoTurno) {
+		if(e instanceof EventoSolicitudTurno) {
+			System.out.println("Llego el evento EventoSolicitudTurno GestorFilaYTerminales");
+			EventoSolicitudTurno evento = (EventoSolicitudTurno)e;
+        	System.out.println("PROCESO ORIGEN =" + TerminalOrigen);
+        	Evento respuesta = null;
+        	
+        	if(DniRegistrado(evento.getDni())==true) {
+        		//Se debe enviar el evento 
+        		respuesta = new EventoDniExistente("SERVIDOR",TerminalOrigen,evento.getDni());
+        	}
+        	else {
+        		this.numeroTurnoSiguiente++;
+        		Turno nuevo = new Turno(this.numeroTurnoSiguiente,evento.getDni(),evento.getHora(),evento.getHoraReal());
+        		fila.add(nuevo);
+        		ordenarFila();
+        		respuesta = new EventoTurnoCreadoConExito("SERVIDOR",TerminalOrigen,nuevo);
+    	        System.out.println("Llego el EventoSolicitudTurno DNI="+evento.getDni());
+    	        ControladorServidor.actualizarVistaServidor();
+    	        ComunicacionesConTerminales.getInstance().publicarOperadores(new EventoFilaNoVacia("Servidor","Operador",cantidadTurnos()));
+        	}
+        	//FUNCION PARA ENVIAR EVENTO
+        	if(respuesta!=null) {
+        		ComunicacionesConTerminales.getInstance().enviarEvento(respuesta, tipoTerminal, numeroTerminal);
+        	}
+			
+		}
+    	else if (e instanceof EventoNuevoTurno) {
 	        EventoNuevoTurno evento = (EventoNuevoTurno) e;
 	        Turno turno = evento.getTurno();
 	        

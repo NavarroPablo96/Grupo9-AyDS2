@@ -9,7 +9,7 @@ import views.Conexion;
 public class Main {
 
     public static void main(String[] args) {
-        IComunicador comunicador = new Comunicador();
+        IComunicador comunicador = Comunicador.getInstance();
         IVistaConexion vistaConexion = new Conexion();
         ControladorConexion controladorConexion = new ControladorConexion(vistaConexion, comunicador);
         comunicador.setReceptor(controladorConexion);

@@ -17,5 +17,9 @@ public interface IVistaRegistro {
     String getDni();
 
     void ActualizarTitulo(int numero);
+
+	void MensajeErrorDocumentoInvalido();
+
+	void borrarDni();
     
 }

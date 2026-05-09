@@ -1,35 +1,31 @@
 package model;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import eventos.EventoNuevoTurno;
-import eventos.Turno;
-import interfaces.IComunicador;
 import interfaces.IRegistro;
 
-public class GestorTerminal implements IRegistro{
+public class GestorTerminal{
 	
 	private int NumeroTerminal;
-	private IComunicador comunicador;
+	private IRegistro comunicador;
 	
-	public GestorTerminal(IComunicador c) {
+	public GestorTerminal(IRegistro c) {
 		this.comunicador = c;
-	}
-
-	public void nuevoTurno(String dni){
-        
-		Date horaReal = new Date();
-        String hora = new SimpleDateFormat("HH:mm").format(horaReal);
-
-		Turno nuevo = new Turno(-1,dni, hora,horaReal);//TR=TerminalDeRegistro // TA=TerminalDeAtencion // TN=TerminalNotificacion
-		EventoNuevoTurno nuevoTurno = new EventoNuevoTurno("TR"+this.NumeroTerminal,"Servidor",nuevo);
-
-		comunicador.enviarEvento(nuevoTurno);
 	}
 
 	public void setNumeroTerminal(int nro){
 		this.NumeroTerminal = nro;
 	}
+
+	public int getNumero() {
+		return this.NumeroTerminal;
+	}
+
+	public void registrarTurno(String dni) {
+		//El evento que se deberia enviar deberia llamarse SolicitudTurno(DNI,hora,horaReal) 
+		//Tiene todo lo necesario para crear el truno
+		comunicador.nuevoTurno(dni,NumeroTerminal);
+	}
+	
+	
 	// public void CrearTurno(String dni, String hora,Date horaReal) {
 		
 	// 	Turno nuevo = new Turno(-1,dni, hora,horaReal);//TR=TerminalDeRegistro // TA=TerminalDeAtencion // TN=TerminalNotificacion

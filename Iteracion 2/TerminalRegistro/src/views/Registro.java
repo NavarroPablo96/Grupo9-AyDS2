@@ -203,13 +203,37 @@ public class Registro extends JFrame implements IVistaRegistro {
     }
 
     public void errorDniExistente(String dni){
-        JOptionPane.showMessageDialog(this, "El DNI " + dni + " ya se encuentra en la fila.", "Error de registro", JOptionPane.ERROR_MESSAGE);
+    	JOptionPane.showMessageDialog(
+	            this,
+	            "El documento "+dni  +" ya está ingresado en la fila.",
+	            "Documento ya registrado",
+	            JOptionPane.WARNING_MESSAGE
+	    );
+    	this.getTxtDNI().requestFocusInWindow();
     }
 
     public void turnoCreado(Turno turno){
         ActualizaVista(turno);
-        JOptionPane.showMessageDialog(this, "Turno " + turno.getNumero() + " creado exitosamente.", "Turno creado", JOptionPane.INFORMATION_MESSAGE);
+        //JOptionPane.showMessageDialog(this, "Turno " + turno.getNumero() + " creado exitosamente.", "Turno creado", JOptionPane.INFORMATION_MESSAGE);
     }
+
+
+	@Override
+	public void MensajeErrorDocumentoInvalido() {
+		JOptionPane.showMessageDialog(
+                this,
+                "El documento debe ser numerico y tener entre 7 y 8 cifras.",
+                "Documento invalido",
+                JOptionPane.WARNING_MESSAGE
+        );
+        this.getTxtDNI().requestFocusInWindow();
+	}
+
+
+	@Override
+	public void borrarDni() {
+		this.txtDNI.setText("");
+	}
 
 
 }

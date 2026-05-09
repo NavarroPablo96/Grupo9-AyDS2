@@ -1,13 +1,16 @@
 package controllers;
 
-import javax.swing.SwingUtilities;
 
+import comunicacion.Comunicador;
+
+
+import interfaces.IReceptorEvento;
 import eventos.Evento;
 import eventos.EventoConexionExitosa;
+
 import interfaces.IComunicador;
 import interfaces.IControladorConexion;
 import interfaces.IVistaConexion;
-import interfaces.IReceptorEvento;
 import model.GestorTerminal;
 import views.Registro;
 
@@ -36,32 +39,31 @@ public class ControladorConexion implements IControladorConexion, IReceptorEvent
     }
 
     public void iniciar(){
-        SwingUtilities.invokeLater(() -> {
-            vista.abrir();
-        });
+    	vista.abrir();
     }
 
 
     private void finalizar(){
-        vista.cerrar();
-        SwingUtilities.invokeLater(() -> {
-        	Registro vistaRegistro = new Registro();
-        	GestorTerminal modeloRegistro = new GestorTerminal(modelo);
-        	ControladorRegistro controladorRegistro = new ControladorRegistro(vistaRegistro, modeloRegistro);
-        	modelo.setReceptor(controladorRegistro);
-        	
-        	controladorRegistro.iniciar();
-        });
+    	vista.cerrar();
+    }
+    
+    private void iniciarRegistro(int i) {
+    	Registro vistaRegistro = new Registro();
+    	GestorTerminal modeloRegistro = new GestorTerminal(Comunicador.getInstance());
+    	ControladorRegistro controladorRegistro = new ControladorRegistro(vistaRegistro, modeloRegistro);
+    	modelo.setReceptor(controladorRegistro);
+    	controladorRegistro.iniciar(i);
     }
 
     public void recibirEvento(Evento e){
     	System.out.println("RecibirEvento ControladorConexion");
         if (e instanceof EventoConexionExitosa){
+	    	EventoConexionExitosa ECE = (EventoConexionExitosa)e;
             finalizar();
+            iniciarRegistro(ECE.getNumero());
         }
         else{
             System.out.println("error");
         }
     }
-
 }
