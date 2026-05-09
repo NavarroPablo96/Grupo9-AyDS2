@@ -7,7 +7,7 @@ import eventos.Evento;
 import eventos.EventoFilaNoVacia;
 import eventos.EventoFilaVacia;
 import eventos.EventoLlamarSiguiente;
-import eventos.EventoNumeroTerminal;
+import eventos.EventoConexionExitosa;
 import eventos.EventoRellamar;
 import eventos.Turno;
 import eventos.TurnoAsignado;
@@ -54,8 +54,8 @@ public class GestorFila implements IReceptorEvento {
 	@Override
 	public void ArriboEvento(Evento e) {
 		System.out.println("Llega un evento:"  + e);
-		if (e instanceof EventoNumeroTerminal) {
-	    	EventoNumeroTerminal ent =(EventoNumeroTerminal) e;
+		if (e instanceof EventoConexionExitosa) {
+	    	EventoConexionExitosa ent =(EventoConexionExitosa) e;
 	    	this.NumeroTerminal=ent.getNumero();
 	    	Controlador.getInstance().ActualizarVistaNumero(ent.getNumero());
 	    }

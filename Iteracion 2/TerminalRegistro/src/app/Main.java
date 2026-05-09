@@ -12,6 +12,7 @@ public class Main {
         IComunicador comunicador = new Comunicador();
         IVistaConexion vistaConexion = new Conexion();
         ControladorConexion controladorConexion = new ControladorConexion(vistaConexion, comunicador);
+        comunicador.setReceptor(controladorConexion);
         
         controladorConexion.iniciar();
     }

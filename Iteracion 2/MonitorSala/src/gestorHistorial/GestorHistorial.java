@@ -12,7 +12,7 @@ import comuEntreProcesos.IReceptorEvento;
 //import comuEntreProcesos.IRecibirEvento;
 import eventos.Evento;
 import eventos.EventoNotificar;
-import eventos.EventoNumeroTerminal;
+import eventos.EventoConexionExitosa;
 import eventos.EventoRellamar;
 import eventos.Turno;
 import vista_controlador.Controlador;
@@ -65,8 +65,8 @@ public class GestorHistorial implements IReceptorEvento{
 	        Controlador.getInstance().actualizarVistaMonitor();
 	        reproducirSonido();
 	    }
-	    else if(e instanceof EventoNumeroTerminal) {
-	    	EventoNumeroTerminal ent= (EventoNumeroTerminal) e;
+	    else if(e instanceof EventoConexionExitosa) {
+	    	EventoConexionExitosa ent= (EventoConexionExitosa) e;
 	    	this.NumeroTerminal=ent.getNumero();
 	    	Controlador.getInstance().ActualizarVistaNumero(ent.getNumero());
 	    }

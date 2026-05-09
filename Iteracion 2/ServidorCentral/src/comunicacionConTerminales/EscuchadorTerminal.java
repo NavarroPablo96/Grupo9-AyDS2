@@ -9,7 +9,7 @@ import eventos.ConexionTerminal;
 import eventos.Evento;
 import eventos.EventoFilaNoVacia;
 import eventos.EventoFilaVacia;
-import eventos.EventoNumeroTerminal;
+import eventos.EventoConexionExitosa;
 import gestorFilaYTerminales.GestorFilaYTerminales;
 
 public class EscuchadorTerminal implements Runnable {
@@ -40,7 +40,7 @@ public class EscuchadorTerminal implements Runnable {
 			this.numero=ComunicacionesConTerminales.getInstance().AgregarTerminal(primerEvento,this);
             
 			if(this.numero != -1) {//Este es el número de la terminal.
-            	EventoNumeroTerminal ENT=new EventoNumeroTerminal("SERVIDOR","TERMINAL",this.numero) ;
+            	EventoConexionExitosa ENT=new EventoConexionExitosa("SERVIDOR","TERMINAL",this.numero) ;
             	this.activo=true;
             	System.out.println("Se agrego una terminal de tipo="+tipo+" numero="+this.numero);
             	System.out.println("Se envia El EventoNumeroTerminal");

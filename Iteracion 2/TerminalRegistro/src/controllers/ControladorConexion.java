@@ -45,15 +45,17 @@ public class ControladorConexion implements IControladorConexion, IReceptorEvent
     private void finalizar(){
         vista.cerrar();
         SwingUtilities.invokeLater(() -> {
-            Registro vistaRegistro = new Registro();
-            GestorTerminal modeloRegistro = new GestorTerminal(modelo);
-            ControladorRegistro controladorRegistro = new ControladorRegistro(vistaRegistro, modeloRegistro);
-            
-            controladorRegistro.iniciar();
+        	Registro vistaRegistro = new Registro();
+        	GestorTerminal modeloRegistro = new GestorTerminal(modelo);
+        	ControladorRegistro controladorRegistro = new ControladorRegistro(vistaRegistro, modeloRegistro);
+        	modelo.setReceptor(controladorRegistro);
+        	
+        	controladorRegistro.iniciar();
         });
     }
 
     public void recibirEvento(Evento e){
+    	System.out.println("RecibirEvento ControladorConexion");
         if (e instanceof EventoConexionExitosa){
             finalizar();
         }

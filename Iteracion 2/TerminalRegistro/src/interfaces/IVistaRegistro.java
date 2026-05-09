@@ -16,6 +16,6 @@ public interface IVistaRegistro {
 
     String getDni();
 
-    
+    void ActualizarTitulo(int numero);
     
 }

@@ -18,7 +18,10 @@ public class Comunicador implements IComunicador{
     private ObjectOutputStream out;
     
 
-    public void conectar(String ip, int puerto) throws UnknownHostException, IOException {
+    public Comunicador() {
+	}
+
+	public void conectar(String ip, int puerto) throws UnknownHostException, IOException {
     	socket = new Socket(ip, puerto);
 		out = new ObjectOutputStream(socket.getOutputStream());		//IOException
 		in = new ObjectInputStream(socket.getInputStream());		//IOException
@@ -30,10 +33,13 @@ public class Comunicador implements IComunicador{
     	new Thread(() -> {
     	    try {
     	        while (true) {
+    	        	System.out.println("Esperando eventos");
     	            Evento evento = (Evento) in.readObject();
+    	            System.out.println("Llego un Evento"+evento);
     	            receptor.recibirEvento(evento);
     	        }
     	    } catch (Exception e) {
+    	    	e.printStackTrace();
     	        System.out.println("Se perdió la conexión con el servidor");
     	    }
     	}).start();
@@ -60,6 +66,11 @@ public class Comunicador implements IComunicador{
             System.out.println("No hay conexion con el servidor. No se envio el turno.");
         }
     }
+
+	@Override
+	public void setReceptor(IReceptorEvento r) {
+		this.receptor=r;
+	}
 
     
 }
