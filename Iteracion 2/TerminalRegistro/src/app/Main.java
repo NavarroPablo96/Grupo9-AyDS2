@@ -1,15 +1,18 @@
 package app;
 
-import javax.swing.SwingUtilities;
-
-import comuEntreProcesos.ComunicacionEntreProcesos;
-import gestorTurnos.GestorTurnos;
-import vista_controlador.Controlador;
+import comunicacion.Comunicador;
+import controllers.ControladorConexion;
+import interfaces.IComunicador;
+import interfaces.IVistaConexion;
+import views.Conexion;
 
 public class Main {
 
     public static void main(String[] args) {
-    	ComunicacionEntreProcesos.getInstance().suscribirse(GestorTurnos.getInstance());
-        SwingUtilities.invokeLater(() -> Controlador.getInstance().initControl());
+        IComunicador comunicador = new Comunicador();
+        IVistaConexion vistaConexion = new Conexion();
+        ControladorConexion controladorConexion = new ControladorConexion(vistaConexion, comunicador);
+        
+        controladorConexion.iniciar();
     }
 }
