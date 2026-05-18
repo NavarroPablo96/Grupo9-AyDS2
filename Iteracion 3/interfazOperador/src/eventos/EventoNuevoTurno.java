@@ -1,0 +1,19 @@
+package eventos;
+
+public class EventoNuevoTurno extends Evento {
+
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Turno turno;
+
+    public EventoNuevoTurno(String origen, String destino, Turno turno) {
+        super(origen, destino);
+        this.turno = turno;
+    }
+
+    public Turno getTurno() {
+        return turno;
+    }
+}
