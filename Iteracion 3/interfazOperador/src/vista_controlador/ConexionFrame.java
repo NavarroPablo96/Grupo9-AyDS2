@@ -84,10 +84,20 @@ public class ConexionFrame extends JFrame {
 	}
 
 	public JTextField getTxtEmisorIP() {
-	    return txtEmisorIP;
+	    return txtEmisorIP;//1234
 	}
 
 	public JTextField getTxtEmisorPuerto() {
 	    return txtEmisorPuerto;
+	}
+
+	public String getIpSecundario() {
+		return txtEmisorIP.getText();
+        //return txtSecundarioIP.getText();
+	}
+
+	public int getPuertoSecundario() {
+        //return Integer.parseInt(txtEmisorPuerto.getText());
+		return 1235;
 	}
 }

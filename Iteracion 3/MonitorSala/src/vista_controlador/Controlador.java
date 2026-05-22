@@ -48,7 +48,7 @@ public class Controlador {
                 System.out.println("Conectando a IP: " + ipPrimario + " Puerto: " + puertoPrimario);
                 
                 //ComunicacionEntreProcesos.getInstance().conectar(ip, puerto);
-                ComunicacionEntreProcesos.getInstance().conectar(ipPrimario, puertoPrimario,ipSecundario, puertoSecundario,true);
+                ComunicacionEntreProcesos.getInstance().conectar(ipPrimario, puertoPrimario,ipSecundario, puertoSecundario);
 
             }
         });

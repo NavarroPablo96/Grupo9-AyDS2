@@ -32,7 +32,7 @@ public class ControladorConexion implements IControladorConexion, IReceptorEvent
         int puertoSecundario = vista.getPuertoSecundario();
         
 
-        modelo.conectar(ipPrimario, puertoPrimario,ipSecundario,puertoSecundario,true);
+        modelo.conectar(ipPrimario, puertoPrimario,ipSecundario,puertoSecundario);
     }
 
     public void iniciar(){

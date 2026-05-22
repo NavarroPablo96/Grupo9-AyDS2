@@ -55,8 +55,130 @@ public class ComunicacionEntreProcesos implements IRecibirEvento, IEnviarEvento 
     private ObjectOutputStream out;
     private ObjectInputStream in;
     
-    
-    public void conectar(String ip, int puerto) throws UnknownHostException, IOException {
+	//Conectar a primario y secundario con reintento: 
+	private String ip ,ipSecundario;
+	private int puerto, puertoSecundario;
+	private boolean ConectarAPrimario;
+
+
+	public void conectar(String ip, int puerto, String ipSecundario, int puertoSecundario) {
+		this.ip=ip;
+		this.puerto=puerto;
+		this.ipSecundario=ipSecundario;
+		this.puertoSecundario=puertoSecundario;
+		this.ConectarAPrimario=true;
+		conectarInterno(3);
+
+    	Controlador.getInstance().estadoConectadoAServidor("Conectados a Servidor");
+	}
+	
+	private void conectarInterno(int intento) {
+		if(ConectarAPrimario) {
+			if(intento>0) {
+				try {
+					intento --;
+					conectarPrimario();
+				} catch (UnknownHostException e) {
+					System.out.println("No fue posible establecer conexión con el servidor Primario");
+					esperarReconexion();
+					conectarInterno(intento);
+				} catch (IOException e) {
+					System.out.println("No fue posible establecer conexión con el servidor Primario");
+					esperarReconexion();
+					conectarInterno(intento);
+				}
+			}
+			else {
+				this.ConectarAPrimario=false;
+				conectarInterno(3);
+			}
+		}
+		else {
+			if(intento>0) {
+				try {
+					intento --;
+					conectarSecundario();
+				} catch (UnknownHostException e) {
+					System.out.println("No fue posible establecer conexión con el servidor Secundario");
+					esperarReconexion();
+					conectarInterno(intento);
+				} catch (IOException e) {
+					System.out.println("No fue posible establecer conexión con el servidor Secundario");
+					esperarReconexion();
+					conectarInterno(intento);
+				}
+			}
+			else {
+				this.ConectarAPrimario=true;
+				conectarInterno(3);
+			}
+		}
+		
+	}
+	
+	private void esperarReconexion() {
+
+	    try {
+
+	        System.out.println("Reintentando conexión en 3 segundos...");
+	        Thread.sleep(3000);
+
+	    } catch (InterruptedException e) {
+
+	        e.printStackTrace();
+	    }
+	}
+	
+	private void conectarSecundario() throws UnknownHostException, IOException {
+		socket = new Socket(ipSecundario, puertoSecundario);
+		out = new ObjectOutputStream(socket.getOutputStream());		//IOException
+		in = new ObjectInputStream(socket.getInputStream());		//IOException
+		out.flush();
+    	out.writeObject(new ConexionTerminal("terminalAtencion","Servidor","TERMINAL_ATENCION"));
+		out.flush();
+		// Hilo que escucha SIEMPRE
+		new Thread(() -> {
+			try {
+				while (true) {
+					System.out.println("Conectados a Servidor Secundario ip:puerto="+ipSecundario+":"+puertoSecundario);
+					Evento evento = (Evento) in.readObject();
+					System.out.println("Llego un Evento"+evento);
+    	            notificarReceptores(evento);
+					
+				}
+			} catch (Exception e) {
+				System.out.println("Se perdió la conexión con el servidor Secundario");
+				conectar(ip,puerto,ipSecundario,puertoSecundario);
+				
+			}
+		}).start();
+	}
+	private void conectarPrimario() throws UnknownHostException, IOException {
+		socket = new Socket(ip, puerto);
+		out = new ObjectOutputStream(socket.getOutputStream());		//IOException
+		in = new ObjectInputStream(socket.getInputStream());		//IOException
+		out.flush();
+    	out.writeObject(new ConexionTerminal("terminalAtencion","Servidor","TERMINAL_ATENCION"));
+		out.flush();
+		// Hilo que escucha SIEMPRE
+		new Thread(() -> {
+			try {
+				while (true) {
+					System.out.println("Conectados a Servidor Primario ip:puerto="+ip+":"+puerto);
+					Evento evento = (Evento) in.readObject();
+					System.out.println("Llego un Evento"+evento);
+    	            notificarReceptores(evento);
+					
+				}
+			} catch (Exception e) {
+				System.out.println("Se perdió la conexión con el servidor Primario");
+				conectar(ip,puerto,ipSecundario,puertoSecundario);
+				
+			}
+		}).start();
+	}
+	
+    /*public void conectar(String ip, int puerto) throws UnknownHostException, IOException {
     	socket = new Socket(ip, puerto);
 		out = new ObjectOutputStream(socket.getOutputStream());		//IOException
 		in = new ObjectInputStream(socket.getInputStream());		//IOException
@@ -75,7 +197,7 @@ public class ComunicacionEntreProcesos implements IRecibirEvento, IEnviarEvento 
     	    }
     	}).start();
     	Controlador.getInstance().estadoConectadoAServidor("Conectados a Servidor");
-    }
+    }*/
     
     public boolean estaConectado() {
         return socket != null && socket.isConnected() && !socket.isClosed() && out != null;
@@ -97,6 +219,7 @@ public class ComunicacionEntreProcesos implements IRecibirEvento, IEnviarEvento 
             e.printStackTrace();
         }
     }
+    
     
     /*public void iniciarServidor(int puerto) {
     new Thread(() -> {

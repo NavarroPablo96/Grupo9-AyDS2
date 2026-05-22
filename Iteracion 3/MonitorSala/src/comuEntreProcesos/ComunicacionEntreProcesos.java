@@ -85,41 +85,63 @@ public class ComunicacionEntreProcesos implements IRecibirEvento {
         return socket != null && socket.isConnected() && !socket.isClosed() && out != null;
     }
     
+	//Conectar a primario y secundario con reintento: 
 	private String ip ,ipSecundario;
 	private int puerto, puertoSecundario;
+	private boolean ConectarAPrimario;
 	
-	public void conectar(String ip, int puerto, String ipSecundario, int puertoSecundario,boolean ConectarAPrimario) {
+	public void conectar(String ip, int puerto, String ipSecundario, int puertoSecundario) {
 		this.ip=ip;
 		this.puerto=puerto;
 		this.ipSecundario=ipSecundario;
 		this.puertoSecundario=puertoSecundario;
+		this.ConectarAPrimario=true;
+		conectarInterno(3);
+		
+		Controlador.getInstance().estadoConectadoAServidor("Conectados al Servidor");
+	}
+	private void conectarInterno(int intento) {
 		if(ConectarAPrimario) {
-			try {
-				conectarPrimario();
-			} catch (UnknownHostException e) {
-				System.out.println("Se perdió la conexión con el servidor Primario");
-				esperarReconexion();
-				conectar(ip,puerto, ipSecundario, puertoSecundario,false);
-			} catch (IOException e) {
-				System.out.println("Se perdió la conexión con el servidor Primario");
-				esperarReconexion();
-				conectar(ip,puerto, ipSecundario, puertoSecundario,false);
+			if(intento>0) {
+				try {
+					intento --;
+					conectarPrimario();
+				} catch (UnknownHostException e) {
+					System.out.println("No fue posible establecer conexión con el servidor Primario");
+					esperarReconexion();
+					conectarInterno(intento);
+				} catch (IOException e) {
+					System.out.println("No fue posible establecer conexión con el servidor Primario");
+					esperarReconexion();
+					conectarInterno(intento);
+				}
+			}
+			else {
+				this.ConectarAPrimario=false;
+				conectarInterno(3);
 			}
 		}
 		else {
-			try {
-				conectarSecundario();
-			} catch (UnknownHostException e) {
-				System.out.println("Se perdió la conexión con el servidor Secundario");
-				esperarReconexion();
-				conectar(ip,puerto, ipSecundario, puertoSecundario,true);
-			} catch (IOException e) {
-				System.out.println("Se perdió la conexión con el servidor Secundario");
-				esperarReconexion();
-				conectar(ip,puerto, ipSecundario, puertoSecundario,true);
+			if(intento>0) {
+				try {
+					intento --;
+					conectarSecundario();
+				} catch (UnknownHostException e) {
+					System.out.println("No fue posible establecer conexión con el servidor Secundario");
+					esperarReconexion();
+					conectarInterno(intento);
+				} catch (IOException e) {
+					System.out.println("No fue posible establecer conexión con el servidor Secundario");
+					esperarReconexion();
+					conectarInterno(intento);
+				}
+			}
+			else {
+				this.ConectarAPrimario=true;
+				conectarInterno(3);
 			}
 		}
-    	Controlador.getInstance().estadoConectadoAServidor("Conectados al Servidor");
+		
 	}
 	private void esperarReconexion() {
 
@@ -152,7 +174,7 @@ public class ComunicacionEntreProcesos implements IRecibirEvento {
 				}
 			} catch (Exception e) {
 				System.out.println("Se perdió la conexión con el servidor Secundario");
-				conectar(ip,puerto,ipSecundario,puertoSecundario,false);
+				conectar(ip,puerto,ipSecundario,puertoSecundario);
 				
 			}
 		}).start();
@@ -176,7 +198,7 @@ public class ComunicacionEntreProcesos implements IRecibirEvento {
 				}
 			} catch (Exception e) {
 				System.out.println("Se perdió la conexión con el servidor Primario");
-				conectar(ip,puerto,ipSecundario,puertoSecundario,false);
+				conectar(ip,puerto,ipSecundario,puertoSecundario);
 				
 			}
 		}).start();

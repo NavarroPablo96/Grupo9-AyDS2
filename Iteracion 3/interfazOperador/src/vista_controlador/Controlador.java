@@ -2,7 +2,6 @@ package vista_controlador;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
@@ -45,13 +44,11 @@ public class Controlador {
                 String ip = conexionView.getTxtEmisorIP().getText();
                 int puerto = Integer.parseInt(conexionView.getTxtEmisorPuerto().getText());
                 System.out.println("Conectando a IP: " + ip + " Puerto: " + puerto);
+
+                String ipSecundario = conexionView.getIpSecundario();
+                int puertoSecundario = conexionView.getPuertoSecundario();
                 
-                try {
-					ComunicacionEntreProcesos.getInstance().conectar(ip, puerto);
-				} catch (IOException e1) {
-					System.out.println("No fue posible conectarse al monitor");
-					//e1.printStackTrace();
-				}
+                ComunicacionEntreProcesos.getInstance().conectar(ip, puerto, ipSecundario, puertoSecundario);
 
             }
         });
