@@ -1,8 +1,7 @@
-package redundanciaPasiva;
+package gestorServidores;
 
-import comunicacionConTerminales.IConector;
-import gestionDeSincronizacion.I_HeartBeat;
-import gestionDeSincronizacion.I_Sync;
+import gestorSincronizacion.I_HeartBeat;
+import gestorSincronizacion.I_Sync;
 
 public class GestorServidores implements IRedundanciaPasiva{
 	private IConector conector;
@@ -200,11 +199,5 @@ public class GestorServidores implements IRedundanciaPasiva{
 			return true;
 		}
 	}
-
-	@Override
-	public void apagarServidorSecundario() {
-		this.conector.ApagarServidorSecundario();
-	}
-
 
 }

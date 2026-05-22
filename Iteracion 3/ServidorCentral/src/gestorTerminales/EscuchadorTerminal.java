@@ -1,4 +1,4 @@
-package comunicacionConTerminales;
+package gestorTerminales;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -9,10 +9,7 @@ import java.net.Socket;
 import eventos.Evento;
 import eventos.ConexionTerminal;
 import eventos.EventoConexionExitosa;
-import eventos.EventoFilaNoVacia;
-import eventos.EventoFilaVacia;
-
-import gestorFilaYTerminales.GestorFila;
+import gestorEventos.IReceptorEvento;
 
 public class EscuchadorTerminal implements Runnable {
 
@@ -22,9 +19,13 @@ public class EscuchadorTerminal implements Runnable {
     private String tipo; // "TR" o "TPA" (opcional según tu lógica)
     private int numero;
     private boolean activo = false;
+    private IGestorTerminal gestorTerminales;
+    private IReceptorEvento receptor;
 
-    public EscuchadorTerminal(Socket socket) {
+    public EscuchadorTerminal(Socket socket,IGestorTerminal igt,IReceptorEvento receptor) {
         this.socket = socket;
+        this.gestorTerminales=igt;
+        this.receptor=receptor;
         this.numero=-2;
 		try {
 			out = new ObjectOutputStream(socket.getOutputStream());
@@ -44,7 +45,8 @@ public class EscuchadorTerminal implements Runnable {
 			e.printStackTrace();
 		}
 		tipo=primerEvento.getTipoTerminal();
-		this.numero=Comunicador.getInstance().AgregarTerminal(primerEvento,this);
+		this.numero=gestorTerminales.AgregarTerminal(primerEvento, this);
+		//this.numero=Comunicador.getInstance().AgregarTerminal(primerEvento,this);
         
 		if(this.numero != -1) {//Este es el número de la terminal.
         	EventoConexionExitosa ENT=new EventoConexionExitosa("SERVIDOR","TERMINAL",this.numero) ;
@@ -57,16 +59,9 @@ public class EscuchadorTerminal implements Runnable {
         	//y corresponde cerrar el hilo no entrando al while
         	this.activo=false;
         }
+		
 		if ("TERMINAL_ATENCION".equals(tipo)) {
-		    int cantidad = GestorFila.getInstance().getCantidadTurnos();
-		    Evento efilafilaVaciaoNO = null;
-		    if(cantidad>0) {
-		    	efilafilaVaciaoNO=new EventoFilaNoVacia("SERVIDOR","OPERADORES",cantidad);
-		    }
-		    else {
-		    	efilafilaVaciaoNO=new EventoFilaVacia("SERVIDOR","OPERADORES");
-		    }
-		    Comunicador.getInstance().publicarOperadores(efilafilaVaciaoNO);
+			gestorTerminales.TerminalAgregadaConExito();
 		}
     }
 
@@ -82,13 +77,14 @@ public class EscuchadorTerminal implements Runnable {
 
             while (activo) {
                 Evento evento = (Evento) in.readObject();
-            	Comunicador.getInstance().notificarReceptor(evento);
+                this.receptor.ArriboEvento(evento);
             }
 
         } catch (Exception e) {
             System.out.println("Terminal desconectada: " + socket);
             //Se deberia avisar a GestorFilayTerminales.TerminalDesconectada(tipo,numero)
-            Comunicador.getInstance().BajaTerminal(tipo,numero);
+            gestorTerminales.BajaTerminal(tipo, numero);
+            //Comunicador.getInstance().BajaTerminal(tipo,numero);
         } finally {
             cerrarConexion();
         }

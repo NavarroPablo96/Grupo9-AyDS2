@@ -1,8 +1,7 @@
-package gestorFilaYTerminales;
+package gestorFila;
 
 import java.util.Date;
 
-import comunicacionConTerminales.Comunicador;
 import controllers.IActualizarServidor;
 
 import eventos.Evento;
@@ -16,9 +15,7 @@ import eventos.EventoSolicitudTurno;
 import eventos.EventoTurnoCreadoConExito;
 import eventos.Turno;
 import eventos.TurnoAsignado;
-
-import interfaces.IAtencion;
-import interfaces.IRegistro;
+import gestorTerminales.IEnviarEventoClientes;
 
 public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 	
@@ -26,6 +23,12 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 	private IActualizarServidor ControladorServidor;
 	public void setControlador(IActualizarServidor cs) {
 		this.ControladorServidor=cs;
+	}
+	
+	//INTERFAZ GESTOR-TERMINALES
+	private IEnviarEventoClientes gestorTerminales;
+	public void setIEnviar(IEnviarEventoClientes gestorTerminales) {
+		this.gestorTerminales=gestorTerminales;
 	}
 	
 	//PATRON SINGLETON
@@ -71,11 +74,11 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
     		respuesta = new EventoTurnoCreadoConExito("SERVIDOR",TerminalOrigen,nuevo);
 	        System.out.println("Llego el EventoSolicitudTurno DNI="+evento.getDni());
 	        ControladorServidor.actualizarTurnosVistaServidor(this.fila.getListaTurnos());
-	        Comunicador.getInstance().publicarOperadores(new EventoFilaNoVacia("Servidor","Operador",this.fila.getCantidad()));
+	        this.gestorTerminales.publicarOperadores(new EventoFilaNoVacia("Servidor","Operador",this.fila.getCantidad()));
     	}
 		//FUNCION PARA ENVIAR EVENTO
     	if(respuesta!=null) {
-    		Comunicador.getInstance().enviarEvento(respuesta, tipoTerminal, numeroTerminal);
+    		this.gestorTerminales.enviarEvento(respuesta, tipoTerminal, numeroTerminal);
     	}
 	}
 	
@@ -85,23 +88,28 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 		String TerminalOrigen = E.getProcesoOrigen();
 		
 		if (fila.getCantidad()==0) {
-	        Comunicador.getInstance().publicarOperadores(new EventoFilaVacia("Servidor","Operadores"));
+	        this.gestorTerminales.publicarOperadores(new EventoFilaVacia("Servidor","Operadores"));
+	        //Comunicador.getInstance().publicarOperadores(new EventoFilaVacia("Servidor","Operadores"));
 	    }
 		else {
 			Turno t = fila.saca();
 			this.cantidadSaca++;
 			t.setHoraDeLlamado(new Date());
 			TurnoAsignado respuesta = new TurnoAsignado("SERVIDOR",TerminalOrigen,t);
-			Comunicador.getInstance().enviarEvento(respuesta,tipoTerminal,numeroTerminal);
+    		this.gestorTerminales.enviarEvento(respuesta, tipoTerminal, numeroTerminal);
+			//Comunicador.getInstance().enviarEvento(respuesta,tipoTerminal,numeroTerminal);
 			
 			EventoNotificar noti = new EventoNotificar(TerminalOrigen,numeroTerminal,"NOTIFICADORES",t);
-			Comunicador.getInstance().publicarNotificadores(noti);
+    		this.gestorTerminales.publicarNotificadores(noti);
+			//Comunicador.getInstance().publicarNotificadores(noti);
 			ControladorServidor.actualizarTurnosVistaServidor(this.fila.getListaTurnos());
 			if (fila.getCantidad()==0) {
-    	        Comunicador.getInstance().publicarOperadores(new EventoFilaVacia("Servidor","Operadores"));
+		        this.gestorTerminales.publicarOperadores(new EventoFilaVacia("Servidor","Operadores"));
+    	        //Comunicador.getInstance().publicarOperadores(new EventoFilaVacia("Servidor","Operadores"));
 		    }
 			else {
-    	        Comunicador.getInstance().publicarOperadores(new EventoFilaNoVacia("Servidor","Operador",this.fila.getCantidad()));
+		        this.gestorTerminales.publicarOperadores(new EventoFilaNoVacia("Servidor","Operador",this.fila.getCantidad()));
+    	        //Comunicador.getInstance().publicarOperadores(new EventoFilaNoVacia("Servidor","Operador",this.fila.getCantidad()));
 			}
 		}
 	}
@@ -109,7 +117,8 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 	//IAtencion
 	@Override
 	public void Rellamar(EventoRellamar Renoti) {
-		Comunicador.getInstance().publicarNotificadores(Renoti);
+        this.gestorTerminales.publicarNotificadores(Renoti);
+		//Comunicador.getInstance().publicarNotificadores(Renoti);
 	}
 	
 	//IEstadoFila

@@ -1,4 +1,4 @@
-package comunicacionConTerminales;
+package gestorEventos;
 
 import eventos.Evento;
 import eventos.EventoHeartBeat;
@@ -8,11 +8,10 @@ import eventos.EventoSincronizacionEstado;
 import eventos.EventoSolicitudHeartBeat;
 import eventos.EventoSolicitudSincronizacion;
 import eventos.EventoSolicitudTurno;
-import gestionDeSincronizacion.I_HeartBeat;
-import gestionDeSincronizacion.I_Sync;
-import interfaces.IAtencion;
-import interfaces.IReceptorEvento;
-import interfaces.IRegistro;
+import gestorFila.IAtencion;
+import gestorFila.IRegistro;
+import gestorSincronizacion.I_HeartBeat;
+import gestorSincronizacion.I_Sync;
 
 public class GestorEventos implements IReceptorEvento{
 

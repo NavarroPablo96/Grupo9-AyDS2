@@ -1,4 +1,4 @@
-package interfaces;
+package gestorEventos;
 
 import eventos.Evento;
 

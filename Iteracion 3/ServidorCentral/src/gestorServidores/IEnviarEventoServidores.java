@@ -1,8 +1,8 @@
-package comunicacionConTerminales;
+package gestorServidores;
 
 import eventos.Evento;
 
-public interface IEnviarEventoServidor {
+public interface IEnviarEventoServidores {
 	//Se conecta A un Servidor para solicitar
 	//
 	void enviarEventoASincronizador(Evento e);

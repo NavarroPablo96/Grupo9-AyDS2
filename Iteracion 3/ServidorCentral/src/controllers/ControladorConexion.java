@@ -1,6 +1,6 @@
 package controllers;
 
-import redundanciaPasiva.IRedundanciaPasiva;
+import gestorServidores.IRedundanciaPasiva;
 import views.IVistaConexion;
 
 public class ControladorConexion implements IControladorConexion{

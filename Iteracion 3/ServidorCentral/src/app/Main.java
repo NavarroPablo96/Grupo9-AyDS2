@@ -1,30 +1,27 @@
 package app;
 
 
-import comunicacionConTerminales.Comunicador;
-import comunicacionConTerminales.GestorEventos;
-import comunicacionConTerminales.GestorTerminales;
-import comunicacionConTerminales.IConector;
-import comunicacionConTerminales.IEnviarEventoServidor;
-
-import gestorFilaYTerminales.GestorFila;
-import gestorFilaYTerminales.IEstadoFila;
-import gestorFilaYTerminales.IColaTurno;
-import gestorFilaYTerminales.ColaTurno;
-
-import gestionDeSincronizacion.GestorDeSincronizacion;
-import gestionDeSincronizacion.I_HeartBeat;
-import gestionDeSincronizacion.I_Sync;
-import interfaces.IReceptorEvento;
-
-import redundanciaPasiva.IRedundanciaPasiva;
-import redundanciaPasiva.GestorServidores;
-
+import gestorEventos.GestorEventos;
+import gestorEventos.IReceptorEvento;
+import gestorFila.ColaTurno;
+import gestorFila.GestorFila;
+import gestorFila.IColaTurno;
+import gestorFila.IEstadoFila;
+import gestorServidores.Comunicador;
+import gestorServidores.GestorServidores;
+import gestorServidores.IConector;
+import gestorServidores.IEnviarEventoServidores;
+import gestorServidores.IRedundanciaPasiva;
+import gestorSincronizacion.GestorDeSincronizacion;
+import gestorSincronizacion.I_HeartBeat;
+import gestorSincronizacion.I_Sync;
+import gestorTerminales.GestorTerminales;
+import gestorTerminales.IEnviarEventoClientes;
+import gestorTerminales.IGestorTerminal;
 import controllers.ControladorServidor;
 import controllers.ControladorConexion;
 import controllers.IActualizarServidor;
 import controllers.IControladorConexion;
-
 import views.IVistaServidor;
 import views.IVistaConexion;
 import views.Conexion;
@@ -37,6 +34,11 @@ public class Main {
     	GestorEventos.getInstance().setIRegistro(GestorFila.getInstance());
     	GestorEventos.getInstance().setIAtencion(GestorFila.getInstance());
     	
+    	
+    	IEnviarEventoClientes enviador = GestorTerminales.getInstance();
+    	IGestorTerminal gestorTerminales=GestorTerminales.getInstance();
+    	Comunicador.getInstance().setGestorTerminal(gestorTerminales);
+    	GestorFila.getInstance().setIEnviar(enviador);
     	IColaTurno ICT=new ColaTurno();
     	GestorFila.getInstance().setCola(ICT);
     	
@@ -50,11 +52,12 @@ public class Main {
 
     	IVistaConexion cView = new Conexion();
     	IConector comunicador = Comunicador.getInstance();
-    	IEnviarEventoServidor EnviarAOtroServidor = Comunicador.getInstance();
+    	IEnviarEventoServidores EnviarAOtroServidor = Comunicador.getInstance();
     	IEstadoFila gestorFila = GestorFila.getInstance();
     	
     	IRedundanciaPasiva IRP = new GestorServidores(comunicador);
     	Comunicador.getInstance().setGestorServidores(IRP);
+    	
     	I_Sync sincronizador= new GestorDeSincronizacion(gestorFila,EnviarAOtroServidor,IRP);
     	GestorEventos.getInstance().setI_Sync(sincronizador);
     	IRP.setSincronizado(sincronizador);

@@ -1,4 +1,4 @@
-package comunicacionConTerminales;
+package gestorServidores;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -7,20 +7,16 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.Map;
 
 import controllers.IActualizarServidor;
 
-import eventos.ConexionTerminal;
 import eventos.Evento;
-import interfaces.IEnviarEvento;
-import interfaces.IReceptorEvento;
-import redundanciaPasiva.IRedundanciaPasiva;
+import gestorEventos.IReceptorEvento;
+import gestorTerminales.EscuchadorTerminal;
+import gestorTerminales.IGestorTerminal;
 
-public class Comunicador implements IEnviarEvento,IEnviarEventoServidor,IConector{
+public class Comunicador implements IEnviarEventoServidores,IConector{
 
-	
 	//PATRON SINGLETON
 	private static Comunicador instancia;
 	
@@ -35,133 +31,34 @@ public class Comunicador implements IEnviarEvento,IEnviarEventoServidor,IConecto
 		return instancia;
 	}
 	
+	
     //Logica Hay un receptor que se encarga de atajar todos los eventos.
 	private IReceptorEvento receptor;
-	private IActualizarServidor ControladorServidor=null;
+
+	public void setReceptor(IReceptorEvento receptor) {
+		this.receptor=receptor;
+	}
+	
+	public void notificarReceptor(Evento evento) {
+		receptor.ArriboEvento(evento);
+	}
+	
+	//INTERFACES 
 	private IRedundanciaPasiva gestorServidores=null;
+	private IActualizarServidor ControladorServidor=null;
+	private IGestorTerminal igt;
+	
 
 	public void setGestorServidores(IRedundanciaPasiva gestorServidores) {
 		this.gestorServidores=gestorServidores;
 	}
-	public void setReceptor(IReceptorEvento receptor) {
-		this.receptor=receptor;
-	}
 
-    public void notificarReceptor(Evento evento) {
-    	receptor.ArriboEvento(evento);
-    }
-    
-    //
-
-	private Map<Integer, EscuchadorTerminal> terminalesRegistro = new HashMap<>();
-	private Map<Integer, EscuchadorTerminal> terminalesAtencion = new HashMap<>();
-	private Map<Integer, EscuchadorTerminal> terminalesNotificacion = new HashMap<>();
-	
-	public int AgregarTerminal(ConexionTerminal primerEvento,EscuchadorTerminal term) {
-		int resultado=-1;
-		String tipo;
-		tipo=primerEvento.getTipoTerminal();
-		
-		if("TERMINAL_REGISTRO".equals(tipo)) {
-			System.out.println("Se conecto una terminal de tipo registro");
-			resultado=GestorTerminales.getInstance().agregarTerminal(tipo);
-					//.agregarTerminalRegistro();
-			System.out.println("resultado = "+resultado);
-			terminalesRegistro.put(resultado, term);
-		} else if ("TERMINAL_ATENCION".equals(tipo)) {
-		    System.out.println("Se conecto una terminal de tipo atencion");
-			resultado=GestorTerminales.getInstance().agregarTerminal(tipo);
-		    //resultado = GestorTerminales.getInstance().agregarTerminalAtencion();
-		    terminalesAtencion.put(resultado, term);
-		} else if ("TERMINAL_NOTIFICACION".equals(tipo)) {
-		    System.out.println("Se conecto una terminal de tipo notificacion");
-			resultado=GestorTerminales.getInstance().agregarTerminal(tipo);
-			//resultado = GestorTerminales.getInstance().agregarTerminalNotificacion();
-		    terminalesNotificacion.put(resultado, term);
-		} else {
-		    System.out.println("Tipo de terminal desconocido: " + tipo);
-		}
-		
-		return resultado;
-	}
-	
-    //enviarEvento(evento, "TERMINAL_ATENCION", 2);
-	@Override
-	public void enviarEvento(Evento evento,String tipoTerminal,int numeroTerminal) {
-	    EscuchadorTerminal terminal = null;
-	    
-	    
-	    if ("TERMINAL_REGISTRO".equals(tipoTerminal)||"TR".equals(tipoTerminal)) {
-	        terminal = terminalesRegistro.get(numeroTerminal);
-	    } else if ("TERMINAL_ATENCION".equals(tipoTerminal)||"TA".equals(tipoTerminal)) {
-	        terminal = terminalesAtencion.get(numeroTerminal);
-	    } else if ("TERMINAL_NOTIFICACION".equals(tipoTerminal)||"TN".equals(tipoTerminal)) {
-	        terminal = terminalesNotificacion.get(numeroTerminal);
-	    } else {
-	        System.out.println("Tipo de terminal desconocido: " + tipoTerminal);
-	        return;
-	    }
-
-	    
-	    if (terminal != null) {
-	    	System.out.println("Se envia un evento a terminal= "+tipoTerminal+":"+numeroTerminal);
-	        terminal.enviar(evento);
-	    } else {
-	        System.out.println("No se encontró la terminal: " + tipoTerminal + " #" + numeroTerminal);
-	    }
-	}
-	
-	@Override
-	public void enviarEvento(Evento evento, String TerminalDestion) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	public void BajaTerminal(String tipo, int numero) {
-		if (numero <= 0) {
-		        System.out.println("Número de terminal inválido: " + numero);
-		    return;
-		}
-		else {
-			if ("TERMINAL_REGISTRO".equals(tipo)) {
-				terminalesRegistro.remove(numero);
-				// Después de eliminar del map
-				GestorTerminales.getInstance().BajaTerminal(tipo, numero);				
-			} else if ("TERMINAL_ATENCION".equals(tipo)) {
-				terminalesAtencion.remove(numero);
-				// Después de eliminar del map
-				GestorTerminales.getInstance().BajaTerminal(tipo, numero);				
-			} else if ("TERMINAL_NOTIFICACION".equals(tipo)) {
-				terminalesNotificacion.remove(numero);
-				// Después de eliminar del map
-				GestorTerminales.getInstance().BajaTerminal(tipo, numero);
-			} else {
-				System.out.println("Tipo de terminal desconocido: " + tipo);
-				return;
-			}
-			
-		}
-		
-	}
-	
-	public void publicarOperadores(Evento evento) {
-
-	    for (EscuchadorTerminal terminal : terminalesAtencion.values()) {
-	        if (terminal != null) {
-	            terminal.enviar(evento);
-	        }
-	    }
-	}
-	public void publicarNotificadores(Evento evento) {
-
-	    for (EscuchadorTerminal terminal : terminalesNotificacion.values()) {
-	        if (terminal != null) {
-	            terminal.enviar(evento);
-	        }
-	    }
-	}
 	public void setControlador(IActualizarServidor cs) {
 		this.ControladorServidor=cs;
+	}
+	
+	public void setGestorTerminal(IGestorTerminal igt) {
+		this.igt=igt;
 	}
 	
 	//IConector
@@ -169,24 +66,19 @@ public class Comunicador implements IEnviarEvento,IEnviarEventoServidor,IConecto
 	//void iniciarSincronizador(String ip, int puerto);
 	//LOGICA SERVIDOR
 
-	private boolean ServidorEncendido;
-	@Override
-	public void ApagarServidorSecundario() {
-		this.ServidorEncendido=false;
-	}
+	
 	public void iniciarServidor(String ip, int puerto){
 	    new Thread(() -> {
 	        try (ServerSocket serverSocket = new ServerSocket(puerto)) {
 	            System.out.println("Servidor Iniciado en "+ip+":"+puerto);
 	            //ControladorServidor.getInstance().estadoEscuchando("Escuchando en:" + puerto);
 	            this.ControladorServidor.estadoEscuchando("Escuchando Clientes en IP:  "+ip+" : "+puerto);
-	            this.ServidorEncendido=true;
-	            while (this.ServidorEncendido) {
+	            while (true) {
 	                Socket socketCliente = serverSocket.accept();
 	                
 	                System.out.println("Nueva conexion entrante");
 	                
-	                EscuchadorTerminal escuchador = new EscuchadorTerminal(socketCliente);
+	                EscuchadorTerminal escuchador = new EscuchadorTerminal(socketCliente,this.igt,receptor);
 	                
 	                // (opcional pero recomendable) registrar el cliente
 	                //registrarTerminal(escuchador);

@@ -1,4 +1,4 @@
-package gestorFilaYTerminales;
+package gestorFila;
 
 public interface IEstadoFila {
 	IColaTurno getCola();

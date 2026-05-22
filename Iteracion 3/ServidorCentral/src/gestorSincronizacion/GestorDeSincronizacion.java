@@ -1,22 +1,22 @@
-package gestionDeSincronizacion;
+package gestorSincronizacion;
 
-import comunicacionConTerminales.IEnviarEventoServidor;
-import gestorFilaYTerminales.IColaTurno;
-import gestorFilaYTerminales.IEstadoFila;
-import redundanciaPasiva.IRedundanciaPasiva;
 import eventos.Evento;
 import eventos.EventoHeartBeat;
 import eventos.EventoSincronizacionEstado;
 import eventos.EventoSolicitudHeartBeat;
 import eventos.EventoSolicitudSincronizacion;
+import gestorFila.IColaTurno;
+import gestorFila.IEstadoFila;
+import gestorServidores.IEnviarEventoServidores;
+import gestorServidores.IRedundanciaPasiva;
 
 public class GestorDeSincronizacion implements I_Sync,I_HeartBeat{
 	private IEstadoFila gestorFila;
-	private IEnviarEventoServidor enviarAOtroServidor;
+	private IEnviarEventoServidores enviarAOtroServidor;
 	private IRedundanciaPasiva IRP=null;
 	private boolean EsperandoSincro;
 	
-	public GestorDeSincronizacion(IEstadoFila gestorFila, IEnviarEventoServidor enviarAOtroServidor,IRedundanciaPasiva igs) {
+	public GestorDeSincronizacion(IEstadoFila gestorFila, IEnviarEventoServidores enviarAOtroServidor,IRedundanciaPasiva igs) {
 		this.gestorFila=gestorFila;
 		this.enviarAOtroServidor=enviarAOtroServidor;
 		this.IRP=igs;
@@ -44,7 +44,8 @@ public class GestorDeSincronizacion implements I_Sync,I_HeartBeat{
 	    //Si soy secundario tengo que apagar el servidor con Clientes
 	    //Y despues enviar el estado de la cola.
 	    if(IRP.soySecundario()) {
-	    	IRP.apagarServidorSecundario();
+	    	//Esto al final se hace de otra forma
+	    	//IRP.apagarServidorSecundario();
 	    }
 	    
 	    

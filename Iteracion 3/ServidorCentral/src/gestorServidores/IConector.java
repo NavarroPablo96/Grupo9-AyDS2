@@ -1,4 +1,4 @@
-package comunicacionConTerminales;
+package gestorServidores;
 
 public interface IConector {
 	//Comunicacion Con Clientes:
@@ -11,6 +11,5 @@ public interface IConector {
 	public void conectarseASincronizador(String ip, int puerto);
 	public void desconectarseDeSincronizador();
 	public boolean estaConectadoSincronizable();
-	public void ApagarServidorSecundario();
 	
 }

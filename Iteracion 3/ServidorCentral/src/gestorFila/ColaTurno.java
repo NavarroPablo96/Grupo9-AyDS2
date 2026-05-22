@@ -1,4 +1,4 @@
-package gestorFilaYTerminales;
+package gestorFila;
 
 import java.util.List;
 import java.util.ArrayList;

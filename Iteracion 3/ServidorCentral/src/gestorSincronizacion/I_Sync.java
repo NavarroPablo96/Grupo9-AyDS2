@@ -1,6 +1,6 @@
-package gestionDeSincronizacion;
+package gestorSincronizacion;
 
-import gestorFilaYTerminales.IColaTurno;
+import gestorFila.IColaTurno;
 
 public interface I_Sync {
 	void solicitarSincronizacion();

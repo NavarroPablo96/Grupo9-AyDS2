@@ -1,7 +1,7 @@
-package redundanciaPasiva;
+package gestorServidores;
 
-import gestionDeSincronizacion.I_HeartBeat;
-import gestionDeSincronizacion.I_Sync;
+import gestorSincronizacion.I_HeartBeat;
+import gestorSincronizacion.I_Sync;
 
 public interface IRedundanciaPasiva {
 
@@ -16,5 +16,4 @@ public interface IRedundanciaPasiva {
 	public boolean estaConectadoSincronizable();
 	public void NotificarCaidaSincronizador();
 	public boolean soySecundario();
-	public void apagarServidorSecundario();
 }

@@ -1,6 +1,6 @@
 package eventos;
 
-import gestorFilaYTerminales.IColaTurno;
+import gestorFila.IColaTurno;
 
 public class EventoSincronizacionEstado extends Evento {
 

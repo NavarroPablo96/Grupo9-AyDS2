@@ -1,4 +1,4 @@
-package gestionDeSincronizacion;
+package gestorSincronizacion;
 
 import eventos.EventoHeartBeat;
 

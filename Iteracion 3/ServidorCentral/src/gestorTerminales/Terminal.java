@@ -1,4 +1,4 @@
-package gestorFilaYTerminales;
+package gestorTerminales;
 
 public class Terminal {
     private String tipo;
