@@ -16,9 +16,11 @@ public class Conexion extends JFrame implements IVistaConexion {
     private IControladorConexion controlador;
 
     private static final long serialVersionUID = 1L;
-
-
+    
+    // Componentes para Servidor Primario
     private JTextField txtEmisorIP, txtEmisorPuerto;
+    // Componentes nuevos para Servidor Secundario
+    private JTextField txtSecundarioIP, txtSecundarioPuerto;
     private JButton btnConectar;
 
     public Conexion() {
@@ -37,49 +39,66 @@ public class Conexion extends JFrame implements IVistaConexion {
         panelEmisor.setBorder(BorderFactory.createTitledBorder("Terminal de Registro - Conectar"));
         panelEmisor.setLayout(new GridBagLayout());
 
-        txtEmisorIP = new JTextField(15);
+     // --- Inicialización Servidor Primario ---
+        txtEmisorIP = new JTextField(12);
         txtEmisorIP.setText("127.0.0.1");
         ((AbstractDocument) txtEmisorIP.getDocument()).setDocumentFilter(new IPFilter());
-        txtEmisorPuerto = new JTextField(15);
+        
+        txtEmisorPuerto = new JTextField(5);
         txtEmisorPuerto.setText("1234");
         ((AbstractDocument) txtEmisorPuerto.getDocument()).setDocumentFilter(new PuertoFilter());
-        btnConectar = new JButton("Conectar");
 
-        GridBagConstraints gbcLabelIPEmisor = new GridBagConstraints();
-        gbcLabelIPEmisor.gridx = 0;
-        gbcLabelIPEmisor.gridy = 0;
-        gbcLabelIPEmisor.insets = new Insets(5, 5, 5, 5);
-        gbcLabelIPEmisor.fill = GridBagConstraints.HORIZONTAL;
-        panelEmisor.add(new JLabel("IP:"), gbcLabelIPEmisor);
+        // --- Inicialización Servidor Secundario (NUEVOS) ---
+        txtSecundarioIP = new JTextField(12);
+        txtSecundarioIP.setText("127.0.0.1");
+        ((AbstractDocument) txtSecundarioIP.getDocument()).setDocumentFilter(new IPFilter());
+        
+        txtSecundarioPuerto = new JTextField(5);
+        txtSecundarioPuerto.setText("1235"); // Puerto por defecto que tenías abajo
+        ((AbstractDocument) txtSecundarioPuerto.getDocument()).setDocumentFilter(new PuertoFilter());
+        btnConectar = new JButton("Conectar");// Configuración base de la grilla
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        GridBagConstraints gbcTxtIPEmisor = new GridBagConstraints();
-        gbcTxtIPEmisor.gridx = 1;
-        gbcTxtIPEmisor.gridy = 0;
-        gbcTxtIPEmisor.insets = new Insets(5, 5, 5, 5);
-        gbcTxtIPEmisor.fill = GridBagConstraints.HORIZONTAL;
-        panelEmisor.add(txtEmisorIP, gbcTxtIPEmisor);
+        // ==========================================
+        // FILA 0: Servidor Primario
+        // ==========================================
+        gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.0;
+        panelEmisor.add(new JLabel("Serv. Primario:"), gbc);
 
-        GridBagConstraints gbcLabelPuertoEmisor = new GridBagConstraints();
-        gbcLabelPuertoEmisor.gridx = 0;
-        gbcLabelPuertoEmisor.gridy = 1;
-        gbcLabelPuertoEmisor.insets = new Insets(5, 5, 5, 5);
-        gbcLabelPuertoEmisor.fill = GridBagConstraints.HORIZONTAL;
-        panelEmisor.add(new JLabel("Puerto:"), gbcLabelPuertoEmisor);
+        gbc.gridx = 1; gbc.weightx = 1.0;
+        panelEmisor.add(txtEmisorIP, gbc);
 
-        GridBagConstraints gbcTxtPuertoEmisor = new GridBagConstraints();
-        gbcTxtPuertoEmisor.gridx = 1;
-        gbcTxtPuertoEmisor.gridy = 1;
-        gbcTxtPuertoEmisor.insets = new Insets(5, 5, 5, 5);
-        gbcTxtPuertoEmisor.fill = GridBagConstraints.HORIZONTAL;
-        panelEmisor.add(txtEmisorPuerto, gbcTxtPuertoEmisor);
+        gbc.gridx = 2; gbc.weightx = 0.0;
+        panelEmisor.add(new JLabel(":"), gbc);
 
-        GridBagConstraints gbcBtnConectar = new GridBagConstraints();
-        gbcBtnConectar.gridx = 0;
-        gbcBtnConectar.gridy = 2;
-        gbcBtnConectar.gridwidth = 2;
-        gbcBtnConectar.insets = new Insets(5, 5, 5, 5);
-        gbcBtnConectar.fill = GridBagConstraints.HORIZONTAL;
-        panelEmisor.add(btnConectar, gbcBtnConectar);
+        gbc.gridx = 3; gbc.weightx = 0.3;
+        panelEmisor.add(txtEmisorPuerto, gbc);
+
+        // ==========================================
+        // FILA 1: Servidor Secundario (NUEVA)
+        // ==========================================
+        gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.0;
+        panelEmisor.add(new JLabel("Serv. Secundario:"), gbc);
+
+        gbc.gridx = 1; gbc.weightx = 1.0;
+        panelEmisor.add(txtSecundarioIP, gbc);
+
+        gbc.gridx = 2; gbc.weightx = 0.0;
+        panelEmisor.add(new JLabel(":"), gbc);
+
+        gbc.gridx = 3; gbc.weightx = 0.3;
+        panelEmisor.add(txtSecundarioPuerto, gbc);
+
+        // ==========================================
+        // FILA 2: Botón Conectar (Ocupa todo el ancho)
+        // ==========================================
+        gbc.gridx = 0; gbc.gridy = 2;
+        gbc.gridwidth = 4;
+        gbc.weightx = 1.0;
+        gbc.insets = new Insets(12, 6, 6, 6);
+        panelEmisor.add(btnConectar, gbc);
 
         contentPane.add(panelEmisor);
     }
@@ -123,14 +142,13 @@ public class Conexion extends JFrame implements IVistaConexion {
 
 	@Override
 	public String getIpSecundario() {
-		return "127.0.0.1";
-        //return txtEmisorIP.getText();
+        return txtSecundarioIP.getText();
 	}
 
 	@Override
 	public int getPuertoSecundario() {
-		return 1235;
-        //return Integer.parseInt(txtEmisorPuerto.getText());
+        return Integer.parseInt(txtSecundarioPuerto.getText());
 	}
+	
 
 }

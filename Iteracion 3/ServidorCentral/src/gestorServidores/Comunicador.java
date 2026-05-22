@@ -128,6 +128,12 @@ public class Comunicador implements IEnviarEventoServidores,IConector{
 		}
 		this.conectado=false;
 	}
+	
+	@Override
+	public boolean estoyConectadoASincronizador() {
+		return this.conectado;
+	}
+	
 	//Se conecta Al Servidor para enviar solicitudes,
 	//Pero en la siguiente función recibimos EventoSincronizacionEstado
 	@Override
@@ -147,18 +153,22 @@ public class Comunicador implements IEnviarEventoServidores,IConector{
 						evento = (Evento) inR.readObject();
 						notificarReceptor(evento);
 					} catch (ClassNotFoundException | IOException e) {
-						System.out.println("Se cerro la conexion con Sincronizador");
+						System.out.println("Comunicador-150-Se cerro la conexion con Sincronizador");
 						this.conectado=false;
 						this.gestorServidores.NotificarCaidaSincronizador();
 					}
 				}
 			}).start();
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("No se pudo conectar al servidor sincronizador");
+			this.conectado=false;
+			this.ControladorServidor.estadoEscuchando("Servidor no conectado");
+			//e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("No se pudo conectar al servidor sincronizador");
+			this.ControladorServidor.estadoEscuchando("Servidor no conectado");
+			this.conectado=false;
+			// e.printStackTrace();
 		}
 	}
 	
@@ -169,7 +179,22 @@ public class Comunicador implements IEnviarEventoServidores,IConector{
 	private ObjectOutputStream outSS;
 	private ObjectInputStream inSS;
 	private boolean SincronizableConectado=false;
-	
+
+	private void funcionParaRechazarAServidoresTerciarios(ServerSocket serverSocket) {
+		new Thread(() -> {
+			while(SincronizableConectado) {
+				try {
+					Socket socketCandidato = serverSocket.accept();
+					socketCandidato.close(); 
+					System.out.println("Un servidor terciario intento conectarse");
+                    continue;
+				} catch (IOException e) {
+					System.out.println("Exception - Comunicador 184 - FuncionParaRechazar Conexion de Servidores");
+				}
+				
+			}
+        }).start();
+	}
 	@Override
 	public void iniciarSincronizador(String ip, int puerto) {
 		SincronizableConectado=false;
@@ -182,6 +207,7 @@ public class Comunicador implements IEnviarEventoServidores,IConector{
 
 	            socketSS = serverSocket.accept();
 	            SincronizableConectado=true;
+	            funcionParaRechazarAServidoresTerciarios(serverSocket);
 	            inSS = new ObjectInputStream(socketSS.getInputStream());
 	            outSS = new ObjectOutputStream(socketSS.getOutputStream());
 	            while (true) {
@@ -211,6 +237,7 @@ public class Comunicador implements IEnviarEventoServidores,IConector{
 	
 	@Override
 	public boolean estaConectadoSincronizable() {
+		//Esta funcion la usa el gestor de Sincronización para saber cuando dejar de enviarHeartbeat
 		return this.SincronizableConectado;
 	}
 	

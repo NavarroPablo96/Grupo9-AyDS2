@@ -15,6 +15,7 @@ import eventos.EventoSolicitudTurno;
 import eventos.EventoTurnoCreadoConExito;
 import eventos.Turno;
 import eventos.TurnoAsignado;
+
 import gestorTerminales.IEnviarEventoClientes;
 
 public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
@@ -46,7 +47,7 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 		return instancia;
 	}
 	
-	//GESTION DE FILAS
+	//INTERFAZ CON ICOLATURNO //GESTION DE FILAS  //
 	private IColaTurno fila;
 	private int numeroTurnoSiguiente;
 	private int cantidadPone;

@@ -10,7 +10,6 @@ public class ControladorServidor implements IActualizarServidor{
 
 	private IVistaServidor vista;
 	private IVistaConexion vistaConexion;
-	private String Escuchando;
 
 	
 	
@@ -27,7 +26,6 @@ public class ControladorServidor implements IActualizarServidor{
 
 	@Override
 	public void estadoEscuchando(String escuchandoEn) {
-		this.Escuchando=escuchandoEn;
 		vistaConexion.desactivarBoton(escuchandoEn);
 		this.vistaConexion.cerrar();
     	this.vista.mostrar();

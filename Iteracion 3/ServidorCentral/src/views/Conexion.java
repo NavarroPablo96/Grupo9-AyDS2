@@ -1,28 +1,34 @@
 package views;
 
-
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-
 import javax.swing.*;
 import javax.swing.text.AbstractDocument;
-
 import controllers.IControladorConexion;
 
-public class Conexion extends JFrame implements IVistaConexion{
+
+public class Conexion extends JFrame implements IVistaConexion {
 
     private static final long serialVersionUID = 1L;
 
-    private JTextField txtReceptorIP, txtReceptorPuerto;
+    // Usamos arreglos para manejar los 4 pares de manera indexada
+    private JTextField[] txtIPs;
+    private JTextField[] txtPuertos;
     private JButton btnEscuchar;
     private IControladorConexion controlador;
 
+    // Constantes para identificar qué índice corresponde a cada rol
+    private static final int INDEX_CP = 0;
+    private static final int INDEX_SP = 1;
+    private static final int INDEX_CS = 2;
+    private static final int INDEX_SS = 3;
 
     public Conexion() {
-        setTitle("Conexión - Servidor");
+        setTitle("Conexión - Servidor primario y secundario");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 400, 200);
+        // Aumentamos el tamaño de la ventana para que entren cómodamente los nuevos campos
+        setBounds(100, 100, 450, 320); 
 
         JPanel contentPane = new JPanel();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
@@ -30,150 +36,152 @@ public class Conexion extends JFrame implements IVistaConexion{
         setContentPane(contentPane);
 
         // -------------------
-        // PANEL SERVIDOR - ESCUCHA
+        // PANEL SERVIDOR - ESCUCHA (Rediseñado para 4 direcciones)
         // -------------------
         JPanel panelReceptor = new JPanel();
-        panelReceptor.setBorder(BorderFactory.createTitledBorder("Servidor - Escuchar"));
+        panelReceptor.setBorder(BorderFactory.createTitledBorder("Configuración de (IP : Puerto)"));
         panelReceptor.setLayout(new GridBagLayout());
 
-        txtReceptorIP = new JTextField(15);
-        txtReceptorIP.setText("127.0.0.1");
-        ((AbstractDocument) txtReceptorIP.getDocument()).setDocumentFilter(new IPFilter());
-        txtReceptorPuerto = new JTextField(15);
-        txtReceptorPuerto.setText("1234");
-        ((AbstractDocument) txtReceptorPuerto.getDocument()).setDocumentFilter(new PuertoFilter());
+        // Inicializamos los arreglos para los 4 elementos
+        txtIPs = new JTextField[4];
+        txtPuertos = new JTextField[4];
+
+        // Etiquetas sugeridas para guiar al usuario sobre qué es cada IP:Puerto
+        String[] nombresRoles = { "Clientes Primario:", "Sincronizacion Primario:", "Clientes Secundario:", "Sincronizacion Secundario:" };
+        String[] ipsPorDefecto = { "127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1" };
+        String[] puertosPorDefecto = { "1234", "2234", "1235", "2235" };
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Bucle para construir la grilla dinámicamente sin repetir código
+        for (int i = 0; i < 4; i++) {
+            // 1. Columna 0: Etiqueta del Rol
+            gbc.gridx = 0;
+            gbc.gridy = i;
+            gbc.weightx = 0.0;
+            panelReceptor.add(new JLabel(nombresRoles[i]), gbc);
+
+            // 2. Columna 1: Campo de texto para la IP
+            txtIPs[i] = new JTextField(12);
+            txtIPs[i].setText(ipsPorDefecto[i]);
+            ((AbstractDocument) txtIPs[i].getDocument()).setDocumentFilter(new IPFilter());
+            
+            gbc.gridx = 1;
+            gbc.weightx = 1.0;
+            panelReceptor.add(txtIPs[i], gbc);
+
+            // 3. Columna 2: Separador visual ":"
+            gbc.gridx = 2;
+            gbc.weightx = 0.0;
+            panelReceptor.add(new JLabel(":"), gbc);
+
+            // 4. Columna 3: Campo de texto para el Puerto
+            txtPuertos[i] = new JTextField(5);
+            txtPuertos[i].setText(puertosPorDefecto[i]);
+            ((AbstractDocument) txtPuertos[i].getDocument()).setDocumentFilter(new PuertoFilter());
+            
+            gbc.gridx = 3;
+            gbc.weightx = 0.3;
+            panelReceptor.add(txtPuertos[i], gbc);
+        }
+
+        // Botón Escuchar al final de la grilla (ocupa toda la fila inferior)
         btnEscuchar = new JButton("Escuchar");
-
-        GridBagConstraints gbcLabelIPReceptor = new GridBagConstraints();
-        gbcLabelIPReceptor.gridx = 0;
-        gbcLabelIPReceptor.gridy = 0;
-        gbcLabelIPReceptor.insets = new Insets(5, 5, 5, 5);
-        gbcLabelIPReceptor.fill = GridBagConstraints.HORIZONTAL;
-        panelReceptor.add(new JLabel("IP:"), gbcLabelIPReceptor);
-
-        GridBagConstraints gbcTxtIPReceptor = new GridBagConstraints();
-        gbcTxtIPReceptor.gridx = 1;
-        gbcTxtIPReceptor.gridy = 0;
-        gbcTxtIPReceptor.insets = new Insets(5, 5, 5, 5);
-        gbcTxtIPReceptor.fill = GridBagConstraints.HORIZONTAL;
-        panelReceptor.add(txtReceptorIP, gbcTxtIPReceptor);
-
-        GridBagConstraints gbcLabelPuertoReceptor = new GridBagConstraints();
-        gbcLabelPuertoReceptor.gridx = 0;
-        gbcLabelPuertoReceptor.gridy = 1;
-        gbcLabelPuertoReceptor.insets = new Insets(5, 5, 5, 5);
-        gbcLabelPuertoReceptor.fill = GridBagConstraints.HORIZONTAL;
-        panelReceptor.add(new JLabel("Puerto:"), gbcLabelPuertoReceptor);
-
-        GridBagConstraints gbcTxtPuertoReceptor = new GridBagConstraints();
-        gbcTxtPuertoReceptor.gridx = 1;
-        gbcTxtPuertoReceptor.gridy = 1;
-        gbcTxtPuertoReceptor.insets = new Insets(5, 5, 5, 5);
-        gbcTxtPuertoReceptor.fill = GridBagConstraints.HORIZONTAL;
-        panelReceptor.add(txtReceptorPuerto, gbcTxtPuertoReceptor);
-
-        GridBagConstraints gbcBtnEscuchar = new GridBagConstraints();
-        gbcBtnEscuchar.gridx = 0;
-        gbcBtnEscuchar.gridy = 2;
-        gbcBtnEscuchar.gridwidth = 2;
-        gbcBtnEscuchar.insets = new Insets(5, 5, 5, 5);
-        gbcBtnEscuchar.fill = GridBagConstraints.HORIZONTAL;
-        panelReceptor.add(btnEscuchar, gbcBtnEscuchar);
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 4; // Cruza las 4 columnas
+        gbc.weightx = 1.0;
+        gbc.insets = new Insets(15, 6, 6, 6);
+        panelReceptor.add(btnEscuchar, gbc);
 
         contentPane.add(panelReceptor);
-        contentPane.add(Box.createVerticalStrut(20));
     }
 
-/*	public JButton getBtnEscuchar() {
-		return this.btnEscuchar;
-	}
+    @Override
+    public void mostrar() {
+        this.setVisible(true);
+    }
 
-	public JTextField getTxtReceptorIP() {
-		return this.txtReceptorIP;
-	}
+    @Override
+    public void cerrar() {
+        this.setVisible(false);
+    }
 
-	public JTextField getTxtReceptorPuerto() {
-		return this.txtReceptorPuerto;
-	}
-*/
-    
-    
-	@Override
-	public void mostrar() {
-		this.setVisible(true);
-	}
+    @Override
+    public void setController(IControladorConexion c) {
+        this.controlador = c;
+        setActionListener();
+    }
 
-	@Override
-	public void cerrar() {
-		this.setVisible(false);
-	}
+    private void setActionListener() {
+        this.btnEscuchar.addActionListener(e -> controlador.establecerConexion());
+    }
 
-/*	@Override
-	public String getIP() {
-		return txtReceptorIP.getText();
-	}
+    // --- Getters de IPs vinculados a los campos de la UI ---
 
-	@Override
-	public int getPuerto() {
-		return Integer.parseInt(txtReceptorPuerto.getText());
-	}
-*/
+    @Override
+    public String getIP_Cp() {
+        return txtIPs[INDEX_CP].getText().trim();
+    }
 
-	@Override
-	public void setController(IControladorConexion c) {
-		this.controlador = c;
-		setActionListener();
-	}
+    @Override
+    public String getIP_Sp() {
+        return txtIPs[INDEX_SP].getText().trim();
+    }
 
-	private void setActionListener() {
-		this.btnEscuchar.addActionListener(e -> controlador.establecerConexion());
-	}
+    @Override
+    public String getIP_Cs() {
+        return txtIPs[INDEX_CS].getText().trim();
+    }
 
-	@Override
-	public String getIP_Cp() {
-		return txtReceptorIP.getText();
-	}
+    @Override
+    public String getIP_Ss() {
+        return txtIPs[INDEX_SS].getText().trim();
+    }
 
-	@Override
-	public String getIP_Sp() {
-		return txtReceptorIP.getText();
-	}
+    // --- Getters de Puertos vinculados a los campos de la UI con conversión a entero ---
 
-	@Override
-	public String getIP_Cs() {
-		return txtReceptorIP.getText();
-	}
+    @Override
+    public int getPuerto_Cp() {
+        try {
+            return Integer.parseInt(txtPuertos[INDEX_CP].getText().trim());
+        } catch (NumberFormatException e) {
+            return 1234; // Fallback por seguridad
+        }
+    }
 
-	@Override
-	public String getIP_Ss() {
-		return txtReceptorIP.getText();
-	}
+    @Override
+    public int getPuerto_Sp() {
+        try {
+            return Integer.parseInt(txtPuertos[INDEX_SP].getText().trim());
+        } catch (NumberFormatException e) {
+            return 2234;
+        }
+    }
 
-	@Override
-	public int getPuerto_Cp() {
-		//return Integer.parseInt(txtReceptorPuerto.getText());
-		return 1234;
-	}
+    @Override
+    public int getPuerto_Cs() {
+        try {
+            return Integer.parseInt(txtPuertos[INDEX_CS].getText().trim());
+        } catch (NumberFormatException e) {
+            return 1235;
+        }
+    }
 
-	@Override
-	public int getPuerto_Sp() {
-		return 2234;
-	}
+    @Override
+    public int getPuerto_Ss() {
+        try {
+            return Integer.parseInt(txtPuertos[INDEX_SS].getText().trim());
+        } catch (NumberFormatException e) {
+            return 2235;
+        }
+    }
 
-	@Override
-	public int getPuerto_Cs() {
-		return 1235;
-	}
-
-	@Override
-	public int getPuerto_Ss() {
-		return 2235;
-	}
-
-	@Override
-	public void desactivarBoton(String escuchandoEn) {
-		this.btnEscuchar.setEnabled(false);
-		this.btnEscuchar.setText(escuchandoEn);
-		
-	}
+    @Override
+    public void desactivarBoton(String escuchandoEn) {
+        this.btnEscuchar.setEnabled(false);
+        this.btnEscuchar.setText(escuchandoEn);
+    }
 }

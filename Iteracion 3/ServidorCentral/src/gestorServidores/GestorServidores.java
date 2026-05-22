@@ -61,9 +61,14 @@ public class GestorServidores implements IRedundanciaPasiva{
 			);
 		System.out.println("En Gestor Servidores");
 		if(hayServidorPrimario()) {
-			System.out.println("El ip-puerto principal esta ocupado");
-			this.soyPrimario=false;
-			SoySecundario();
+			if(hayServidorSecundario()==true) {
+				System.out.println("HOla GestorServidores65");
+			}
+			else {
+				System.out.println("El ip-puerto principal esta ocupado");
+				this.soyPrimario=false;
+				SoySecundario();
+			}
 		}
 		else {
 			System.out.println("El ip-puerto principal esta libre, entonces soy primario");
@@ -94,11 +99,11 @@ public class GestorServidores implements IRedundanciaPasiva{
 		if(hayServidorSecundario()) {//OBjetivo : Sincronizarse y empezar a funcionar normal.
 			//Supongo que el ip-puerto de sincronización Secundario está activo también ...
 			this.conector.conectarseASincronizador(ipSincronizacionSecundario,puertoSincronizacionSecundario);
-			Sincronizacion();
+			solicitarSincronizacion();
 		}
 		else {//Objetivo no requiere sincronizarse porque 
 			//no hay Secundario. Solo empezar a funcionar normal.
-			funcionamientoPrimarioNormal();
+			abrirServidores();
 		}
 	}
 
@@ -108,10 +113,16 @@ public class GestorServidores implements IRedundanciaPasiva{
 		//Y suponemos que está funcionando el sincronizador en 2234
 		//Soy el servidor secundario me conecto al sincronizador del primario.
 		this.conector.conectarseASincronizador(ipSincronizador, puertoSincronizador);
-		Sincronizacion();
+		if(this.conector.estoyConectadoASincronizador()) {
+			solicitarSincronizacion();			
+		}
+		else {
+			
+		}
+		
 	}
 	
-	private void Sincronizacion() {
+	private void solicitarSincronizacion() {
 		//IConector.ConectarseAlOtroServidor();
 		//Para Enviar Y Recibir Eventos...
 		//Cuando Reciba un Evento De Servidor
@@ -138,19 +149,24 @@ public class GestorServidores implements IRedundanciaPasiva{
 	public void notificarEstadoSincronizado() {
 		
 		if(this.estoyFuncionando==false) {
+			//Esto se ejecuta cada vez que se recibe una sincronización, para avisarnos que estamos sincronizados.
+			//Cuando solicitamos la primer sincronización puede que desiemos solicitar HeartBeat o iniciar el servidorDeClientes.
+			//Pero si ya estamos haciendo algo de eso entonces no queremos hacer nada.
 			this.estoyFuncionando=true;
-			if(this.soyPrimario) {
+			solicitarHeartBeat();
+			
+			/*if(this.soyPrimario) {
 				this.conector.desconectarseDeSincronizador();
 				funcionamientoPrimarioNormal();
 			}
 			else {
 				funcionamientoSecundarioNormal();
-			}
+			}*/
 		}
 		
 	}
 	
-	private void funcionamientoPrimarioNormal() {
+	private void abrirServidores() {
 		//Se supone que nuestro servidor ya hizo la correspondiente Sincronización.
 		//Suponemos que no hay servidor Secundario.
 		this.conector.iniciarSincronizador(ipSincronizador,puertoSincronizador);
@@ -159,7 +175,7 @@ public class GestorServidores implements IRedundanciaPasiva{
 		System.out.println("ServidorPrimario-Iniciado");
 	}
 
-	private void funcionamientoSecundarioNormal() {
+	private void solicitarHeartBeat() {
 		//Ya sincronizado:
 		System.out.println("GestorServidores-160-Solicito heartbeat");
 		this.heart.solicitarHeartBeat();
@@ -180,10 +196,13 @@ public class GestorServidores implements IRedundanciaPasiva{
 
 	@Override
 	public void NotificarCaidaSincronizador() {
-		if(this.soyPrimario) {
-			//no pasa nada, el secundario se desconecto
+		//Se cayo el primario
+		if(soyPrimario) {
+			System.out.println("Se cayo el secundario, abrimos Servidor primario");
+			this.conector.iniciarServidor(ipServidor, puertoServidor);
+			this.conector.iniciarSincronizador(ipSincronizador, puertoSincronizador);			
 		}
-		else {//Se cayo el primario
+		else {
 			System.out.println("Se cayo el primario, abrimos Servidor secundario");
 			this.conector.iniciarServidor(ipClienteSecundario, puertoClienteSecundario);
 			this.conector.iniciarSincronizador(ipSincronizacionSecundario, puertoSincronizacionSecundario);
