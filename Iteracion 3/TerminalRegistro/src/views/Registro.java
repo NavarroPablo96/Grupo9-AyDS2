@@ -5,9 +5,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.AbstractDocument;
 
+import controllers.IControladorRegistro;
 import eventos.Turno;
-import interfaces.IControladorRegistro;
-import interfaces.IVistaRegistro;
 
 public class Registro extends JFrame implements IVistaRegistro {
 

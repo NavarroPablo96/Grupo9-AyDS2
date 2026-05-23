@@ -1,4 +1,6 @@
-package interfaces;
+package comunicacion;
+
+import gestorEventos.IReceptorEvento;
 
 public interface IComunicador {
     

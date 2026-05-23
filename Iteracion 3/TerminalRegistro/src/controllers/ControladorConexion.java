@@ -1,20 +1,9 @@
 package controllers;
 
+import comunicacion.IComunicador;
+import views.IVistaConexion;
 
-import comunicacion.Comunicador;
-
-
-import interfaces.IReceptorEvento;
-import eventos.Evento;
-import eventos.EventoConexionExitosa;
-
-import interfaces.IComunicador;
-import interfaces.IControladorConexion;
-import interfaces.IVistaConexion;
-import model.GestorTerminal;
-import views.Registro;
-
-public class ControladorConexion implements IControladorConexion, IReceptorEvento{
+public class ControladorConexion implements IControladorConexion{
     
     private IVistaConexion vista;
     private IComunicador modelo;
@@ -40,27 +29,7 @@ public class ControladorConexion implements IControladorConexion, IReceptorEvent
     }
 
 
-    private void finalizar(){
+    public void finalizar(){
     	vista.cerrar();
-    }
-    
-    private void iniciarRegistro(int i) {
-    	Registro vistaRegistro = new Registro();
-    	GestorTerminal modeloRegistro = new GestorTerminal(Comunicador.getInstance());
-    	ControladorRegistro controladorRegistro = new ControladorRegistro(vistaRegistro, modeloRegistro);
-    	modelo.setReceptor(controladorRegistro);
-    	controladorRegistro.iniciar(i);
-    }
-
-    public void recibirEvento(Evento e){
-    	System.out.println("RecibirEvento ControladorConexion");
-        if (e instanceof EventoConexionExitosa){
-	    	EventoConexionExitosa ECE = (EventoConexionExitosa)e;
-            finalizar();
-            iniciarRegistro(ECE.getNumero());
-        }
-        else{
-            System.out.println("error");
-        }
     }
 }

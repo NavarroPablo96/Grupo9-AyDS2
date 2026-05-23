@@ -1,5 +1,6 @@
-package interfaces;
+package views;
 
+import controllers.IControladorRegistro;
 import eventos.Turno;
 
 public interface IVistaRegistro {

@@ -8,8 +8,7 @@ import java.awt.Insets;
 import javax.swing.*;
 import javax.swing.text.AbstractDocument;
 
-import interfaces.IControladorConexion;
-import interfaces.IVistaConexion;
+import controllers.IControladorConexion;
 
 public class Conexion extends JFrame implements IVistaConexion {
 

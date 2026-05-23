@@ -1,4 +1,4 @@
-package interfaces;
+package comunicacion;
 
 public interface IRegistro {
 

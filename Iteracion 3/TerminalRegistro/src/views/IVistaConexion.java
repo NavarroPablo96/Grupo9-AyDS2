@@ -1,4 +1,6 @@
-package interfaces;
+package views;
+
+import controllers.IControladorConexion;
 
 public interface IVistaConexion {
     void abrir();
