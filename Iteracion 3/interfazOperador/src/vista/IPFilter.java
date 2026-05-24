@@ -1,4 +1,4 @@
-package vista_controlador;
+package vista;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;

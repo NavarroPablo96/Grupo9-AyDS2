@@ -1,4 +1,4 @@
-package vista_controlador;
+package vista;
 
 import javax.swing.text.*;
 

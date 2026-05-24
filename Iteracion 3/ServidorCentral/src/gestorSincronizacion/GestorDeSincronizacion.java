@@ -83,7 +83,7 @@ public class GestorDeSincronizacion implements I_Sync,I_HeartBeat{
 	            this.enviarAOtroServidor.enviarEventoASincrionizable(e);
 
 	            try {
-	                // Espera 1 segundo
+	                // Espera 3 segundo
 	                Thread.sleep(3000);
 	            } catch (InterruptedException ex) {
 	                // Si el hilo es interrumpido, termina

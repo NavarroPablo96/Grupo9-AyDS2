@@ -1,18 +1,21 @@
-package vista_controlador;
+package vista;
 
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import controller.IControladorOperador;
 import eventos.Turno;
 
-public class VistaOperador extends JFrame {
+public class VistaOperador extends JFrame implements IVistaOperador{
 
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
     private JLabel lblHeader;
     private JButton btnLlamar;
     private JButton btnNotificar;
+
+    private IControladorOperador controlador;
     
     public JButton getBtnLlamar() {
 		return btnLlamar;
@@ -28,6 +31,7 @@ public class VistaOperador extends JFrame {
     private JLabel lblLlamados;
     
     public VistaOperador() {
+		this.setVisible(false);
         setTitle("Panel de Operador");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 650, 345);
@@ -144,8 +148,74 @@ public class VistaOperador extends JFrame {
 
         return panel;
     }
+
+
     
-    public void actualizar(Turno ultimoTurno,int enEspera,int CantLlamados) {
+    private void setActionListeners(){
+        btnLlamar.addActionListener(e -> controlador.llamarCliente());
+        btnNotificar.addActionListener(e -> controlador.rellamarCliente());
+    }
+    
+    //VISTA OPERADOR
+    public void ActualizarTitulo(int numero) {
+        setTitle("Puesto de Atencion "+numero);
+        lblHeader.setText("Puesto de Atencion " + numero);
+	}
+
+	public void setControlador(IControladorOperador c) {
+		this.controlador = c;
+		setActionListeners();
+	}
+	public void abrir() {
+		this.setVisible(true);
+	}
+	public void cerrar() {
+		this.setVisible(false);
+	}
+	@Override
+	public void estadoLlamando() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void ActualizarVistaNumero(int a) {
+        setTitle("Puesto de Atencion "+a);
+        lblHeader.setText("Puesto de Atencion " + a);
+	}
+	
+	
+	
+	@Override
+	public void CartelFilaVacia() {
+
+    	this.getBtnLlamar().setText("Fila Vacia");
+    	this.getBtnLlamar().setEnabled(false);
+		JOptionPane.showMessageDialog(
+        		this,
+                "No hay ningún cliente en la fila, intente más tarde.",
+                "La Fila está vacía",
+                JOptionPane.WARNING_MESSAGE
+        );
+        return;
+	}
+	@Override
+	public void CartelSeDebeLlamarSiguiente() {
+    	this.getBtnNotificar().setEnabled(false);
+        JOptionPane.showMessageDialog(
+        		this,
+                "El cliente ya fue llamado 3 veces, se debe proceder con el siguiente.",
+                "Cliente llamado muchas veces",
+                JOptionPane.WARNING_MESSAGE
+        );
+        return;
+		
+	}
+	@Override
+	public void ActivarBotonNotificar(boolean b) {
+    	this.btnNotificar.setEnabled(b);		
+	}
+	@Override
+	public void actualizar(Turno ultimoTurno,int enEspera,int CantLlamados) {
 
         //Ultimo turno llamado
         if (ultimoTurno != null) {
@@ -157,10 +227,12 @@ public class VistaOperador extends JFrame {
         lblEnEspera.setText(String.valueOf(enEspera));
         lblLlamados.setText(String.valueOf(CantLlamados));
     }
-
-	public void ActualizarTitulo(int numero) {
-        setTitle("Puesto de Atencion "+numero);
-        lblHeader.setText("Puesto de Atencion " + numero);
+	@Override
+	public void estadoFilaNoVacia() {
+		this.getBtnLlamar().setText("Llamar siguiente");
+		this.getBtnLlamar().setEnabled(true);	
 	}
+		
+	
 
 }
