@@ -1,0 +1,137 @@
+package gestorTerminales;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.SocketException;
+
+import eventos.Evento;
+import eventos.ConexionTerminal;
+import eventos.EventoConexionExitosa;
+import gestorEventos.IReceptorEvento;
+
+public class EscuchadorTerminal implements Runnable {
+
+    private Socket socket;
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
+    private String tipo; // "TR" o "TPA" (opcional según tu lógica)
+    private int numero;
+    private boolean activo = false;
+    private IGestorTerminal gestorTerminales;
+    private IReceptorEvento receptor;
+
+    public EscuchadorTerminal(Socket socket,IGestorTerminal igt,IReceptorEvento receptor) {
+        this.socket = socket;
+        this.gestorTerminales=igt;
+        this.receptor=receptor;
+        this.numero=-2;
+		try {
+			out = new ObjectOutputStream(socket.getOutputStream());
+			in = new ObjectInputStream(socket.getInputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+    private void AgregarTerminal() {
+    	// IMPORTANTE: primero Output, después Input		
+
+		System.out.println("EscuchadorTerminal-39-Terminal conectada: " + socket);
+    	ConexionTerminal primerEvento=null;
+		try {
+			primerEvento = (ConexionTerminal) in.readObject();
+		} catch (ClassNotFoundException | IOException e) {//ClassNotFountException //IOException
+			e.printStackTrace();
+		}
+		tipo=primerEvento.getTipoTerminal();
+		this.numero=gestorTerminales.AgregarTerminal(primerEvento, this);
+		//this.numero=Comunicador.getInstance().AgregarTerminal(primerEvento,this);
+        
+		if(this.numero != -1) {//Este es el número de la terminal.
+        	EventoConexionExitosa ECE=new EventoConexionExitosa("SERVIDOR","TERMINAL",this.numero) ;
+        	this.activo=true;
+        	System.out.println("Se agrego una terminal de tipo="+tipo+" numero="+this.numero);
+        	enviar (ECE);
+        }
+        else {
+        	// menos uno es porque no fue posible agregar la terminal 
+        	//y corresponde cerrar el hilo no entrando al while
+        	this.activo=false;
+        }
+		
+		gestorTerminales.TerminalAgregadaConExito(tipo,this.numero);
+    }
+
+    @Override
+    public void run() {
+    	
+    	
+        try {
+        	AgregarTerminal();
+        	//En este punto ya se agrego la Terminal a la lista de correspondiente
+        	//Hay 3 listas de terminal.
+        	//En este while este hilo escucha a esta terimnal.
+
+            while (activo) {
+                Evento evento = (Evento) in.readObject();
+                this.receptor.ArriboEvento(evento);
+            }
+
+        } catch(SocketException asd) {
+        	System.out.println(" ");
+            System.out.println("82EscuchadorTerminal - Terminal desconectada: " + socket);
+        }catch (Exception e) {
+        	e.printStackTrace();
+            System.out.println("89EscuchadorTerminal - Ocurrio una exception que no es SocketException: " + socket);
+        } finally {
+        	//Se deberia avisar a GestorFilayTerminales.TerminalDesconectada(tipo,numero)
+        	gestorTerminales.BajaTerminal(tipo, numero);
+        	//Comunicador.getInstance().BajaTerminal(tipo,numero);
+            cerrarConexion();
+        }
+    }
+
+    // Método para enviar mensajes A ESTE cliente
+    public synchronized void enviar(Evento evento) {
+    	System.out.println("EscuchadorTerminal-99-Se envia evento:"+evento.getClass());
+        try {
+            out.writeObject(evento);
+            out.flush();
+        } catch (IOException e) {
+        	e.printStackTrace();
+            System.out.println("EscuchadoTerminal 100 - Error enviando a: " + socket);
+        }
+        
+    }	
+
+    public void cerrarConexion() {
+        activo = false;
+        try {
+            if (in != null) in.close();
+            if (out != null) out.close();
+            if (socket != null && !socket.isClosed()) socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("EscuchadorTerminal-113- Error en cerrarConexion");
+        }
+    }
+
+    // Getters útiles
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+    
+    public void setNumero(int numero) {
+        this.numero = numero;
+    }
+    
+
+    public Socket getSocket() {
+        return socket;
+    }
+}

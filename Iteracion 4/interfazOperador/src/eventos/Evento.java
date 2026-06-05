@@ -1,0 +1,26 @@
+package eventos;
+
+import java.io.Serializable;
+
+public abstract class Evento implements Serializable {
+
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String procesoOrigen;
+    private String procesoDestino;
+
+    public Evento(String procesoOrigen, String procesoDestino) {
+        this.procesoOrigen = procesoOrigen;
+        this.procesoDestino = procesoDestino;
+    }
+
+    public String getProcesoOrigen() {
+        return procesoOrigen;
+    }
+
+    public String getProcesoDestino() {
+        return procesoDestino;
+    }
+}
