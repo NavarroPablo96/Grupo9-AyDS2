@@ -83,7 +83,10 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 		System.out.println("GestorFila80 - GUARDAR ESTADOCOLA()");
 		EstadoCola ec = new EstadoCola();
 
-		IColaTurno filaEncriptada = this.encriptarFila(this.fila);
+		IColaTurno filaParaEncriptar = fila.generarCopia();
+
+		IColaTurno filaEncriptada = this.encriptarFila(filaParaEncriptar);
+
 		ec.setCola((ColaTurno)filaEncriptada,this.numeroTurnoSiguiente,this.cantidadPone,this.cantidadSaca);
 
 		if(this.gestorPersistencia!=null) {
@@ -107,7 +110,8 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 	
 	private void guardarHistorial() {
 		System.out.println("GestorFila89 - GUARDAR HISTORIAL()");
-		Historial historialEncriptado = this.encriptarHistorial(this.historial);
+		Historial historialParaEncriptar = historial.generarCopia();
+		Historial historialEncriptado = this.encriptarHistorial(historialParaEncriptar);
 		if(this.gestorPersistencia!=null) {
 			this.gestorPersistencia.guardarHistorial(historialEncriptado);
 		}
@@ -127,7 +131,7 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 
 	private Historial desencriptarHistorial(Historial h){
 		if (h.getTurnoActual() != null) {
-			h.getTurnoActual().setDocumento(encriptador.encriptar(h.getTurnoActual().getDocumento()));
+			h.getTurnoActual().setDocumento(encriptador.desencriptar(h.getTurnoActual().getDocumento()));
 		}
 		if (h.getHistorial() != null) {
 			for (Turno t : h.getHistorial()) {
@@ -139,7 +143,8 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 
 	private void guardarLlamados() {
 		System.out.println("GestorFila94 - GUARDAR LLAMADOS()");
-		RegistroRellamar encriptado = this.encriptarRellamados(this.llamados);
+		RegistroRellamar llamadosParaEncriptar = llamados.generarCopia();
+		RegistroRellamar encriptado = this.encriptarRellamados(llamadosParaEncriptar);
 		if(this.gestorPersistencia!=null) {
 			this.gestorPersistencia.guardarLlamados(encriptado);
 		}
@@ -224,7 +229,9 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
     		System.out.println(fila.getListaTurnos());
     		this.cantidadPone++;
     		this.fila.ordenar();
-    		respuesta = new EventoTurnoCreadoConExito("SERVIDOR",TerminalOrigen,nuevo);
+			guardarEstadoCola();
+			Turno turnoRta = new Turno(this.numeroTurnoSiguiente,evento.getDni(),evento.getHora(),evento.getHoraReal());
+    		respuesta = new EventoTurnoCreadoConExito("SERVIDOR",TerminalOrigen,turnoRta);
 	        System.out.println("Llego el EventoSolicitudTurno DNI="+dni);
 	        ControladorServidor.actualizarTurnosVistaServidor(this.fila.getListaTurnos());
 	        this.gestorTerminales.publicarOperadores(new EventoFilaNoVacia("Servidor","Operador",this.fila.getCantidad()));
@@ -232,7 +239,6 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
     	}
 		//FUNCION PARA ENVIAR EVENTO
     	if(respuesta!=null) {
-    			guardarEstadoCola();
     		this.gestorTerminales.enviarEvento(respuesta, tipoTerminal, numeroTerminal);
     	}
 	}
@@ -248,14 +254,15 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 	    }
 		else {
 			Turno t = fila.saca();
+
+			Turno tEncriptado = new Turno(t.getNumero(), t.getDocumento(), t.getHoraRegistro(), t.getHoraHoraDeLlamado());
+			tEncriptado.setDocumento(encriptador.encriptar(tEncriptado.getDocumento()));
 			this.cantidadSaca++;
 			t.setHoraDeLlamado(new Date());
-			TurnoAsignado respuesta = new TurnoAsignado("SERVIDOR",TerminalOrigen,t);
+			TurnoAsignado respuesta = new TurnoAsignado("SERVIDOR",TerminalOrigen,tEncriptado);
     		this.gestorTerminales.enviarEvento(respuesta, tipoTerminal, numeroTerminal);
 			//Comunicador.getInstance().enviarEvento(respuesta,tipoTerminal,numeroTerminal);
-			
-			t.setDocumento(encriptador.encriptar(t.getDocumento()));
-			EventoNotificar noti = new EventoNotificar(TerminalOrigen,numeroTerminal,"NOTIFICADORES",t);
+			EventoNotificar noti = new EventoNotificar(TerminalOrigen,numeroTerminal,"NOTIFICADORES",tEncriptado);
     		this.gestorTerminales.publicarNotificadores(noti);
 			//Comunicador.getInstance().publicarNotificadores(noti);
 //ITE 3:
@@ -283,18 +290,17 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 	//IAtencion
 	@Override
 	public void Rellamar(EventoRellamar Renoti) {
-		Turno turnoRellamar = Renoti.getTurno();
-		turnoRellamar.setDocumento(encriptador.encriptar(turnoRellamar.getDocumento()));
+		Turno t = Renoti.getTurno();
+		Turno tEncriptado = new Turno(t.getNumero(), t.getDocumento(), t.getHoraRegistro(), t.getHoraHoraDeLlamado());
+		tEncriptado.setDocumento(encriptador.encriptar(tEncriptado.getDocumento()));
         this.gestorTerminales.publicarNotificadores(Renoti);
-
-		turnoRellamar.setDocumento(encriptador.desencriptar(turnoRellamar.getDocumento()));
-        turnoRellamar.setNumeroTerminal(Renoti.getNumeroTPA());
-		this.historial.rellamar(turnoRellamar);
+        t.setNumeroTerminal(Renoti.getNumeroTPA());
+		this.historial.rellamar(t);
 		this.llamados.rellamar(Renoti.getNumeroTPA());
 		guardarHistorial();
 		guardarLlamados();
 		//Comunicador.getInstance().publicarNotificadores(Renoti);
-		this.actualizadorServidorSecundario.enviarActualizacion(new EventoActualizacionRellamar(turnoRellamar,Renoti.getNumeroTPA()));
+		this.actualizadorServidorSecundario.enviarActualizacion(new EventoActualizacionRellamar(tEncriptado,Renoti.getNumeroTPA()));
 	}
 	
 	//IEstadoFila

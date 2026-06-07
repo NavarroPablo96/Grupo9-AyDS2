@@ -81,7 +81,8 @@ public class ColaTurno implements IColaTurno {
 	    ColaTurno copia = new ColaTurno();
 
 	    for (Turno t : this.fila) {
-	        copia.pone(t);
+			Turno tCopia = new Turno(t.getNumero(), t.getDocumento(), t.getHoraRegistro(), t.getHoraHoraDeLlamado());
+	        copia.pone(tCopia);
 	    }
 
 	    return copia;

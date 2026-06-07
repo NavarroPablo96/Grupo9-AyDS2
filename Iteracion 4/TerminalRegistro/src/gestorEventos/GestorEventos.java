@@ -7,11 +7,14 @@ import eventos.EventoConexionExitosa;
 import eventos.EventoDniExistente;
 import eventos.EventoTurnoCreadoConExito;
 import eventos.Turno;
+import factory.SeguridadFactory;
+import seguridad.ISeguridadStrategy;
 
 public class GestorEventos implements IReceptorEvento{
 	
 	IControladorConexion cConexion;
 	IControladorRegistro cRegistro;
+	ISeguridadStrategy encriptador;
 	
 	public GestorEventos(IControladorConexion controladorConexion, IControladorRegistro controladorRegistro){
 		this.cConexion=controladorConexion;
@@ -25,6 +28,9 @@ public class GestorEventos implements IReceptorEvento{
         if (e instanceof EventoConexionExitosa){
 	    	EventoConexionExitosa ECE = (EventoConexionExitosa)e;
 			this.cRegistro.setEncriptadorApi(this.cConexion.getTipoEncriptado(), this.cConexion.getClave());
+			ISeguridadStrategy crypt = SeguridadFactory.crearEncriptador(this.cConexion.getTipoEncriptado());
+			setEncriptador(crypt);
+			encriptador.setClave(cConexion.getClave());			
 	    	this.cConexion.finalizar();
 	    	this.cRegistro.iniciar(ECE.getNumero());
         }
@@ -35,6 +41,7 @@ public class GestorEventos implements IReceptorEvento{
 	    else if(e instanceof EventoTurnoCreadoConExito){
 	    	EventoTurnoCreadoConExito evento = (EventoTurnoCreadoConExito) e;
 	    	Turno nuevo=evento.getTurno();
+			nuevo.setDocumento(encriptador.desencriptar(nuevo.getDocumento()));
 	    	this.cRegistro.turnoCreado(nuevo);
 	    	System.out.println("El turno fue creado con éxito");
 	    }
@@ -43,26 +50,8 @@ public class GestorEventos implements IReceptorEvento{
         }
     }
 	
-/*	public void recibirEvento(Evento e) {
-		System.out.println("RecibirEvento-ControladorRegistro");
-        if(e instanceof EventoDniExistente){
-	    	EventoDniExistente evento = (EventoDniExistente) e;
-	    	this.vista.errorDniExistente(evento.getDni());
-	    }
-	    else if(e instanceof EventoTurnoCreadoConExito){
-	    	EventoTurnoCreadoConExito evento = (EventoTurnoCreadoConExito) e;
-	    	Turno nuevo=evento.getTurno();
-	    	this.vista.turnoCreado(nuevo);
-	    	System.out.println("El turno fue creado con éxito");
-	    }
-	    else if(e instanceof EventoConexionExitosa){
-	    	System.out.println("HOLA EventoConexionExitosa En ControladorRegistro");	    	
-	    }
-	    else{
-	    	System.out.println("EVENTO DESCONOCIDO - TR-GestorTurnos-ArriboEvento");
-	    	
-	    }
-	}*/
-	
-	
+	private void setEncriptador(ISeguridadStrategy encriptador){
+		this.encriptador = encriptador;
+	}
+
 }

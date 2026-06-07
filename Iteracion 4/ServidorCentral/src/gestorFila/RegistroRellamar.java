@@ -63,7 +63,14 @@ public class RegistroRellamar implements Serializable {
 	public RegistroRellamar generarCopia() {
 	    RegistroRellamar copia = new RegistroRellamar();
 	    for (Llamado l : this.llamados) {
-	        copia.getLlamados().add(l);
+			Turno t = l.getTurno();
+	        copia.getLlamados().add(
+				new Llamado(
+					new Turno(t.getNumero(), t.getDocumento(), t.getHoraRegistro(), t.getHoraHoraDeLlamado()), 
+					l.getCantidadVecesLlamado(), 
+					l.getNumeroTerminal()
+				)
+			);
 	    }
 	    return copia;
 	}

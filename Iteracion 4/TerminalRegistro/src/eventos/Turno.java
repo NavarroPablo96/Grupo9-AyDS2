@@ -41,5 +41,9 @@ public class Turno implements Serializable {
 		this.Numero=numeroTurno;
 	}
 
+	public void setDocumento(String dni){
+		this.Documento = dni;
+	}
+
 
 }

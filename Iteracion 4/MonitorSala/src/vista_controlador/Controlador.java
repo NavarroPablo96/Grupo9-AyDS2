@@ -5,6 +5,10 @@ import java.awt.event.ActionListener;
 
 import comuEntreProcesos.ComunicacionEntreProcesos;
 import gestorHistorial.GestorHistorial;
+import seguridad.Cesar;
+import seguridad.DES;
+import seguridad.ISeguridadStrategy;
+import seguridad.XOR;
 
 
 public class Controlador {
@@ -46,7 +50,21 @@ public class Controlador {
                 int puertoSecundario = conexionView.getPuertoSecundario();
                 //System.out.println("Conectando a IP: " + ip + " Puerto: " + puerto);
                 System.out.println("Conectando a IP: " + ipPrimario + " Puerto: " + puertoPrimario);
-                
+
+                String tipoEncriptador = conexionView.getTipoEncriptado();
+                String clave = conexionView.getClave();
+                ISeguridadStrategy encriptador;
+                if (tipoEncriptador.equals("DES")){
+                    encriptador = new DES();
+                }
+                else if (tipoEncriptador.equals("XOR")){
+                    encriptador = new XOR();
+                }
+                else{
+                    encriptador = new Cesar();
+                }
+                encriptador.setClave(clave);
+                GestorHistorial.getInstance().setEncriptador(encriptador);
                 //ComunicacionEntreProcesos.getInstance().conectar(ip, puerto);
                 ComunicacionEntreProcesos.getInstance().conectar(ipPrimario, puertoPrimario,ipSecundario, puertoSecundario);
 

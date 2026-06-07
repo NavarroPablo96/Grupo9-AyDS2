@@ -89,7 +89,7 @@ public class GestorLlamado implements ILlamado, IReceptorEvento{
 	        this.ultimoTurnoLlamado=turno;
 			this.ultimoTurnoLlamado.setDocumento(encriptador.desencriptar(this.ultimoTurnoLlamado.getDocumento()));
 	        this.CantidadDeVecesLlamado=1;
-	        System.out.println("Llego el TurnoAsignado DNI="+turno.getDocumento());
+	        System.out.println("Llego el TurnoAsignado DNI="+ultimoTurnoLlamado.getDocumento());
 	        controlador.actualizarVistaOperador();
 	    }
 		else if(e instanceof EventoFilaNoVacia) {
