@@ -1,15 +1,16 @@
 package controllers;
 
-import gestorServidores.IRedundanciaPasiva;
+import app.ConfiguracionServidorDTO;
+import app.IServidorFacade;
 import views.IVistaConexion;
 
-public class ControladorConexion implements IControladorConexion{
+public class ControladorConexion implements IControladorConexion {
 	private IVistaConexion vista;
-	private IRedundanciaPasiva gestorServidores;
+	private IServidorFacade facade;
 	
-	public ControladorConexion(IVistaConexion cV,IRedundanciaPasiva gS) {
-		this.gestorServidores=gS;
-		this.vista=cV;
+	public ControladorConexion(IVistaConexion cV, IServidorFacade facade) {
+		this.facade = facade;
+		this.vista = cV;
 		this.vista.mostrar();
 		this.vista.setController(this);
 	}
@@ -35,13 +36,16 @@ public class ControladorConexion implements IControladorConexion{
 		String tipoEncriptado 				= vista.getTipoEncriptado();
 		String clave 						= vista.getClave();
 
-		System.out.println("Boton Escuchar ->GestorServidores");
-		this.gestorServidores.iniciarServidor(
+		System.out.println("Boton Escuchar -> ServidorFacade");
+		ConfiguracionServidorDTO config = new ConfiguracionServidorDTO(
 				ipClientePrimario,			puertoClientePrimario,
 				ipSincronizacionPrimario,	puertoSincronizacionPrimario,
 				ipClienteSecundario,		puertoClienteSecundario,
 				ipSincronizacionSecundario,	puertoSincronizacionSecundario,
 				fabricaParaRecuperar,		fabricaParaGuardar,
-				tipoEncriptado, 			clave);
+				tipoEncriptado, 			clave
+		);
+		this.facade.iniciar(config);
 	}
 }
+
