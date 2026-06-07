@@ -113,7 +113,7 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 
 	private Historial desencriptarHistorial(Historial h){
 		if (h.getTurnoActual() != null) {
-			h.getTurnoActual().setDocumento(encriptador.encriptar(h.getTurnoActual().getDocumento()));
+			h.getTurnoActual().setDocumento(encriptador.desencriptar(h.getTurnoActual().getDocumento()));
 		}
 		if (h.getHistorial() != null) {
 			for (Turno t : h.getHistorial()) {
@@ -238,6 +238,8 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 			t.setDocumento(encriptador.encriptar(t.getDocumento()));
 			EventoNotificar noti = new EventoNotificar(TerminalOrigen,numeroTerminal,"NOTIFICADORES",t);
     		this.gestorTerminales.publicarNotificadores(noti);
+
+			t.setDocumento(encriptador.desencriptar(t.getDocumento()));
 			//Comunicador.getInstance().publicarNotificadores(noti);
 //ITE 4:
     		this.historial.llamarSiguiente(t,numeroTerminal);
