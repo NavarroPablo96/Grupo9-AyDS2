@@ -23,9 +23,10 @@ public class API_Servidor implements IAtencion{
     
     public void renotificar(int nroTerminal, Turno ultimo){
 		String Origen = "TA" + nroTerminal;
-    ultimo.setDocumento(encriptador.encriptar(ultimo.getDocumento()));
+    Turno ultimoCopia = new Turno(ultimo.getNumero(), ultimo.getDocumento(), ultimo.getHoraRegistro(), ultimo.getHoraHoraDeLlamado());
+    ultimoCopia.setDocumento(encriptador.encriptar(ultimoCopia.getDocumento()));
 
-		EventoRellamar evento = new EventoRellamar(Origen, nroTerminal, "Notificador",ultimo);
+		EventoRellamar evento = new EventoRellamar(Origen, nroTerminal, "Notificador",ultimoCopia);
 		conexion.enviarEvento(evento);
     }
 
