@@ -45,4 +45,8 @@ public class Turno implements Serializable {
 	public void setNumeroTerminal(int numeroTerminalQueLLama) {
 		NumeroTerminalQueLLama = numeroTerminalQueLLama;
 	}
+
+	public void setDocumento(String dni){
+		this.Documento = dni;
+	}
 }

@@ -24,6 +24,7 @@ public class GestorEventos implements IReceptorEvento{
     	System.out.println("RecibirEvento ControladorConexion");
         if (e instanceof EventoConexionExitosa){
 	    	EventoConexionExitosa ECE = (EventoConexionExitosa)e;
+			this.cRegistro.setEncriptadorApi(this.cConexion.getTipoEncriptado(), this.cConexion.getClave());
 	    	this.cConexion.finalizar();
 	    	this.cRegistro.iniciar(ECE.getNumero());
         }

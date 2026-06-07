@@ -1,13 +1,15 @@
 package controller;
 
+import factory.SeguridadFactory;
 import gestores.ILlamado;
+import seguridad.ISeguridadStrategy;
 import vista.IVistaOperador;
 
 public class ControladorOperador implements IControladorOperador{
 
     private IVistaOperador vista;
     private ILlamado gestorLlamado;
-
+    
     public ControladorOperador(IVistaOperador vista, ILlamado gestorLlamado){
         this.vista = vista;
         this.gestorLlamado = gestorLlamado;
@@ -95,5 +97,14 @@ public class ControladorOperador implements IControladorOperador{
 		
 	}
 
+    @Override
+    public void setEncriptadorApi(String tipo, String clave){
+        ISeguridadStrategy x = SeguridadFactory.crearEncriptador(tipo);
+
+        x.setClave(clave);
+
+        gestorLlamado.setEncriptadorApi(x);
+
+    }
 
 }

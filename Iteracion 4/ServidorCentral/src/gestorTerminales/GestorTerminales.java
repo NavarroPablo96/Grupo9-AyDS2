@@ -273,7 +273,8 @@ public class GestorTerminales implements IEnviarEventoClientes,IGestorTerminal{
 		    	Llamado llamado = registro.getLlamado(numero);
 		    	if(llamado!=null) {
 		    		System.out.println("GestorTerminales 274 - Creando EventoRecuperacionRellamado");
-		    		EventoRecuperacionRellamado evr = new EventoRecuperacionRellamado(llamado.getTurno(),llamado.getCantidadVecesLlamado(),llamado.getNumeroTerminal());
+					Turno t = llamado.getTurno();
+		    		EventoRecuperacionRellamado evr = new EventoRecuperacionRellamado(t,llamado.getCantidadVecesLlamado(),llamado.getNumeroTerminal());			
 		    		enviarEvento(evr,tipo,numero);
 		    	}
 		    }

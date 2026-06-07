@@ -34,11 +34,16 @@ public class Conexion extends JFrame implements IVistaConexion {
     private JRadioButton rbGuaXml;
     private JRadioButton rbGuaJson;
 
+    // Componentes para Encriptación
+    private JRadioButton rbCesar, rbDES, rbXOR;
+    private ButtonGroup bgEncriptado;
+    private JTextField txtClave;
+
     public Conexion() {
         setTitle("Conexión - Servidor primario y secundario");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // Aumentamos el tamaño de la ventana para que entren cómodamente los nuevos campos
-        setBounds(100, 100, 450, 400); 
+        setBounds(100, 100, 450, 550); 
 
         JPanel contentPane = new JPanel();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
@@ -96,15 +101,8 @@ public class Conexion extends JFrame implements IVistaConexion {
             gbc.weightx = 0.3;
             panelReceptor.add(txtPuertos[i], gbc);
         }
-
-        // Botón Escuchar al final de la grilla (ocupa toda la fila inferior)
-        btnEscuchar = new JButton("Escuchar");
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.gridwidth = 4; // Cruza las 4 columnas
-        gbc.weightx = 1.0;
-        gbc.insets = new Insets(15, 6, 6, 6);
-        panelReceptor.add(btnEscuchar, gbc);
+        
+        // ... (el botón se agregará al final) ...
 
         // ==============================
 		 // MÉTODO DE RECUPERACIÓN
@@ -172,6 +170,55 @@ public class Conexion extends JFrame implements IVistaConexion {
 		
 		 panelReceptor.add(panelGuardar, gbc);
 	     
+	     // ==============================
+		 // ENCRIPTADO
+		 // ==============================
+		 JPanel panelEncriptado = new JPanel();
+		 panelEncriptado.setBorder(BorderFactory.createTitledBorder("Encriptado"));
+		 
+		 rbCesar = new JRadioButton("César");
+		 rbDES = new JRadioButton("DES");
+		 rbXOR = new JRadioButton("XOR");
+		 rbCesar.setSelected(true);
+		 
+		 bgEncriptado = new ButtonGroup();
+		 bgEncriptado.add(rbCesar);
+		 bgEncriptado.add(rbDES);
+		 bgEncriptado.add(rbXOR);
+		 
+		 panelEncriptado.add(rbCesar);
+		 panelEncriptado.add(rbDES);
+		 panelEncriptado.add(rbXOR);
+		 
+		 gbc.gridx = 0;
+		 gbc.gridy = 7;
+		 gbc.gridwidth = 4;
+		 gbc.insets = new Insets(6, 6, 6, 6);
+		 panelReceptor.add(panelEncriptado, gbc);
+		 
+		 // ==============================
+		 // CLAVE ENCRIPTADO
+		 // ==============================
+		 JPanel panelClave = new JPanel();
+		 panelClave.add(new JLabel("Clave: "));
+		 txtClave = new JTextField(15);
+         txtClave.setText("messi");
+		 panelClave.add(txtClave);
+		 
+		 gbc.gridy = 8;
+		 panelReceptor.add(panelClave, gbc);
+
+         // ==============================
+         // BOTÓN ESCUCHAR
+         // ==============================
+         btnEscuchar = new JButton("Escuchar");
+         gbc.gridx = 0;
+         gbc.gridy = 9;
+         gbc.gridwidth = 4;
+         gbc.weightx = 1.0;
+         gbc.insets = new Insets(15, 6, 6, 6);
+         panelReceptor.add(btnEscuchar, gbc);
+
         contentPane.add(panelReceptor);
     }
 
@@ -278,4 +325,16 @@ public class Conexion extends JFrame implements IVistaConexion {
             return "XML";
         return "JSON";
     }
+
+	@Override
+	public String getTipoEncriptado() {
+	    if (rbDES.isSelected()) return "DES";
+	    if (rbXOR.isSelected()) return "XOR";
+	    return "Cesar";
+	}
+
+	@Override
+	public String getClave() {
+	    return txtClave.getText();
+	}
 }

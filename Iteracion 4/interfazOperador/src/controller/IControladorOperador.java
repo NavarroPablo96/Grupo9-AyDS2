@@ -16,4 +16,6 @@ public interface IControladorOperador {
 	void abrir();
 	
 	void cerrar();
+
+    void setEncriptadorApi(String tipo, String clave);
 }

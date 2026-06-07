@@ -57,31 +57,6 @@ public class ComunicacionEntreProcesos implements IRecibirEvento {
     private ObjectInputStream in;
     private ObjectOutputStream out;
     
-    /*
-    public void conectar(String ip, int puerto) throws UnknownHostException, IOException {
-    	socket = new Socket(ip, puerto);
-		out = new ObjectOutputStream(socket.getOutputStream());		//IOException
-		in = new ObjectInputStream(socket.getInputStream());		//IOException
-		
-    	out.flush();
-    	out.writeObject(new ConexionTerminal("terminalNotificacion","Servidor","TERMINAL_NOTIFICACION"));
-    	out.flush();
-    	// Hilo que escucha SIEMPRE
-    	new Thread(() -> {
-    	    try {
-    	        while (true) {
-    	            Evento evento = (Evento) in.readObject();
-    	            notificarReceptores(evento);
-    	        }
-    	    } catch (Exception e) {
-    	    	//e.printStackTrace();
-    	        System.out.println("Se perdió la conexión con el servidor");
-    	    }
-    	}).start();
-    	Controlador.getInstance().estadoConectadoAServidor("Conectados al Servidor");
-    }
-
-    */
     public boolean estaConectado() {
         return socket != null && socket.isConnected() && !socket.isClosed() && out != null;
     }

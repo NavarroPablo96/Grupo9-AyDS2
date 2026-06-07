@@ -32,6 +32,8 @@ public class ControladorConexion implements IControladorConexion{
 		int puertoSincronizacionSecundario	= vista.getPuerto_Ss();
 		String fabricaParaRecuperar			= vista.getFabricaRecuperar();
 		String fabricaParaGuardar			= vista.getFabricaGuardar(); 
+		String tipoEncriptado 				= vista.getTipoEncriptado();
+		String clave 						= vista.getClave();
 
 		System.out.println("Boton Escuchar ->GestorServidores");
 		this.gestorServidores.iniciarServidor(
@@ -39,6 +41,7 @@ public class ControladorConexion implements IControladorConexion{
 				ipSincronizacionPrimario,	puertoSincronizacionPrimario,
 				ipClienteSecundario,		puertoClienteSecundario,
 				ipSincronizacionSecundario,	puertoSincronizacionSecundario,
-				fabricaParaRecuperar,		fabricaParaGuardar);
+				fabricaParaRecuperar,		fabricaParaGuardar,
+				tipoEncriptado, 			clave);
 	}
 }

@@ -11,4 +11,6 @@ public interface IControladorRegistro {
 	void errorDniExistente(String dni);
 
 	void turnoCreado(Turno nuevo);
+
+	void setEncriptadorApi(String tipo, String clave);
 }

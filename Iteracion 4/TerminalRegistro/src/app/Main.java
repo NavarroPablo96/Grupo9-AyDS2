@@ -15,7 +15,6 @@ import controllers.IControladorRegistro;
 
 import gestorEventos.IReceptorEvento;
 import model.GestorRegistro;
-import model.IGestorRegistro;
 import gestorEventos.GestorEventos;
 
 public class Main {
@@ -27,7 +26,7 @@ public class Main {
         IControladorConexion controladorConexion = new ControladorConexion(vistaConexion, comunicador);	//controlador
         
         IVistaRegistro vistaRegistro = new Registro();
-        IGestorRegistro modeloRegistro = new GestorRegistro(API_Servidor.getInstance());
+        GestorRegistro modeloRegistro = new GestorRegistro(API_Servidor.getInstance());
         IControladorRegistro controladorRegistro = new ControladorRegistro(vistaRegistro, modeloRegistro);
         
         

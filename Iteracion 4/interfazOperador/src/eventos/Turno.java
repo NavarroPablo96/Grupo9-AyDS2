@@ -37,4 +37,8 @@ public class Turno implements Serializable {
 		this.HoraDeLlamado=date;
 	}
 
+	public void setDocumento(String dni){
+		this.Documento = dni;
+	}
+
 }

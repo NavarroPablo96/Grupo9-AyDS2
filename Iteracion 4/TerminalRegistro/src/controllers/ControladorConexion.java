@@ -7,6 +7,8 @@ public class ControladorConexion implements IControladorConexion{
     
     private IVistaConexion vista;
     private IComunicador modelo;
+    private String tipoEncriptado;
+    private String clave;
 
     public ControladorConexion(IVistaConexion vista, IComunicador modelo){
         this.vista = vista;
@@ -20,6 +22,9 @@ public class ControladorConexion implements IControladorConexion{
         String ipSecundario = vista.getIpSecundario();
         int puertoSecundario = vista.getPuertoSecundario();
         
+        this.tipoEncriptado = vista.getTipoEncriptado();
+        this.clave = vista.getClave();
+
 
         modelo.conectar(ipPrimario, puertoPrimario,ipSecundario,puertoSecundario);
     }
@@ -31,5 +36,15 @@ public class ControladorConexion implements IControladorConexion{
 
     public void finalizar(){
     	vista.cerrar();
+    }
+
+    @Override
+    public String getTipoEncriptado(){
+        return this.tipoEncriptado;
+    }
+
+    @Override
+    public String getClave(){
+        return this.clave;
     }
 }

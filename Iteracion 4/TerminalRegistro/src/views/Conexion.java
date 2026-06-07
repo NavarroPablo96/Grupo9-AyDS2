@@ -20,12 +20,18 @@ public class Conexion extends JFrame implements IVistaConexion {
     private JTextField txtEmisorIP, txtEmisorPuerto;
     // Componentes nuevos para Servidor Secundario
     private JTextField txtSecundarioIP, txtSecundarioPuerto;
+    
+    // Componentes para Encriptación
+    private JRadioButton rbCesar, rbDES, rbXOR;
+    private ButtonGroup bgEncriptado;
+    private JTextField txtClave;
+
     private JButton btnConectar;
 
     public Conexion() {
         setTitle("Conexión - Terminal Registro");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 400, 190);
+        setBounds(100, 100, 450, 280);
 
         JPanel contentPane = new JPanel();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
@@ -55,6 +61,21 @@ public class Conexion extends JFrame implements IVistaConexion {
         txtSecundarioPuerto = new JTextField(5);
         txtSecundarioPuerto.setText("1235"); // Puerto por defecto que tenías abajo
         ((AbstractDocument) txtSecundarioPuerto.getDocument()).setDocumentFilter(new PuertoFilter());
+        
+        // --- Inicialización Encriptación ---
+        rbCesar = new JRadioButton("César");
+        rbDES = new JRadioButton("DES");
+        rbXOR = new JRadioButton("XOR");
+        rbCesar.setSelected(true); // default
+        
+        bgEncriptado = new ButtonGroup();
+        bgEncriptado.add(rbCesar);
+        bgEncriptado.add(rbDES);
+        bgEncriptado.add(rbXOR);
+        
+        txtClave = new JTextField(15);
+        txtClave.setText("messi");
+        
         btnConectar = new JButton("Conectar");// Configuración base de la grilla
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(6, 6, 6, 6);
@@ -91,9 +112,32 @@ public class Conexion extends JFrame implements IVistaConexion {
         panelEmisor.add(txtSecundarioPuerto, gbc);
 
         // ==========================================
-        // FILA 2: Botón Conectar (Ocupa todo el ancho)
+        // FILA 2: Opciones de Encriptado
         // ==========================================
-        gbc.gridx = 0; gbc.gridy = 2;
+        gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0.0;
+        panelEmisor.add(new JLabel("Encriptado:"), gbc);
+        
+        JPanel pnlRadios = new JPanel();
+        pnlRadios.add(rbCesar);
+        pnlRadios.add(rbDES);
+        pnlRadios.add(rbXOR);
+        
+        gbc.gridx = 1; gbc.gridwidth = 3; gbc.weightx = 1.0;
+        panelEmisor.add(pnlRadios, gbc);
+        
+        // ==========================================
+        // FILA 3: Clave de Encriptado
+        // ==========================================
+        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 1; gbc.weightx = 0.0;
+        panelEmisor.add(new JLabel("Clave:"), gbc);
+        
+        gbc.gridx = 1; gbc.gridwidth = 3; gbc.weightx = 1.0;
+        panelEmisor.add(txtClave, gbc);
+
+        // ==========================================
+        // FILA 4: Botón Conectar (Ocupa todo el ancho)
+        // ==========================================
+        gbc.gridx = 0; gbc.gridy = 4;
         gbc.gridwidth = 4;
         gbc.weightx = 1.0;
         gbc.insets = new Insets(12, 6, 6, 6);
@@ -149,5 +193,15 @@ public class Conexion extends JFrame implements IVistaConexion {
         return Integer.parseInt(txtSecundarioPuerto.getText());
 	}
 	
+	@Override
+	public String getTipoEncriptado() {
+	    if (rbDES.isSelected()) return "DES";
+	    if (rbXOR.isSelected()) return "XOR";
+	    return "Cesar";
+	}
 
+	@Override
+	public String getClave() {
+	    return txtClave.getText();
+	}
 }

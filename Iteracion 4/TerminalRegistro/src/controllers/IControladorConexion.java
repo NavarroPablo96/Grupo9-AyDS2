@@ -7,4 +7,8 @@ public interface IControladorConexion {
     void establecerConexion();
     
     void finalizar();
+
+    String getTipoEncriptado();
+    String getClave();
+
 }

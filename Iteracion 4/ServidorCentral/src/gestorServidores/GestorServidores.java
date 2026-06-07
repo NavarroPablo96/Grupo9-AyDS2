@@ -7,6 +7,10 @@ import persistencia.FabricaJSON;
 import persistencia.FabricaTXT;
 import persistencia.FabricaXML;
 import persistencia.GestorPersistencia;
+import seguridad.Cesar;
+import seguridad.DES;
+import seguridad.ISeguridadStrategy;
+import seguridad.XOR;
 
 public class GestorServidores implements IRedundanciaPasiva{
 	private IConector conector;
@@ -50,7 +54,8 @@ public class GestorServidores implements IRedundanciaPasiva{
 		String ipSincronizador, 			int puertoSincronizador,
 		String ipClienteSecundario, 		int puertoClienteSecundario, 
 		String ipSincronizacionSecundario,	int puertoSincronizacionSecundario,
-		String fabricaRecuperar,				String fabricaPersistir)
+		String fabricaRecuperar,			String fabricaPersistir,
+		String tipoEncriptado, 				String clave)
 	{
 		this.ipServidor=ipServidor;
 		this.ipSincronizador=ipSincronizador;
@@ -72,6 +77,7 @@ public class GestorServidores implements IRedundanciaPasiva{
 			);
 		
 		configuracionPersistencia(fabricaRecuperar,fabricaPersistir);
+		configuracionEncriptado(tipoEncriptado, clave);
 		
 		System.out.println("En Gestor Servidores");
 		if(hayServidorPrimario()) {
@@ -89,6 +95,24 @@ public class GestorServidores implements IRedundanciaPasiva{
 			this.soyPrimario=true;
 			SoyPrimario();
 		}
+	}
+
+	private void configuracionEncriptado(String tipo, String clave){
+    	if ("XOR".equals(tipo)) {
+			ISeguridadStrategy x = new XOR();
+			x.setClave(clave);
+    	    GestorFila.getInstance().setEncriptador(x);
+    	}
+    	else if ("DES".equals(tipo)) {
+			ISeguridadStrategy x = new DES();
+			x.setClave(clave);
+    	    GestorFila.getInstance().setEncriptador(x);
+    	}
+    	else if ("Cesar".equals(tipo)) {
+			ISeguridadStrategy x = new Cesar();
+			x.setClave(clave);
+    	    GestorFila.getInstance().setEncriptador(x);
+    	}	
 	}
 	
 	private void configuracionPersistencia(String fabricaRecuperar, String fabricaPersistir) {

@@ -10,4 +10,6 @@ public interface IVistaConexion {
     void setController(IControladorConexion c);
 	String getIpSecundario();
 	int getPuertoSecundario();
+	String getTipoEncriptado();
+	String getClave();
 }

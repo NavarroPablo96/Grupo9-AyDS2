@@ -5,6 +5,7 @@ package gestores;
 import comunicacion.IAtencion;
 import controller.ControladorOperador;
 import interfaces.IReceptorEvento;
+import seguridad.ISeguridadStrategy;
 import eventos.Evento;
 import eventos.EventoConexionExitosa;
 import eventos.EventoFilaNoVacia;
@@ -21,6 +22,7 @@ public class GestorLlamado implements ILlamado, IReceptorEvento{
     private int CantidadDeVecesLlamado, CantidadEnEspera;
 	private IAtencion apiServidor;
 	private ControladorOperador controlador;
+	private ISeguridadStrategy encriptador;
 
 	public GestorLlamado(IAtencion apiServidor){
 		this.apiServidor = apiServidor;
@@ -85,6 +87,7 @@ public class GestorLlamado implements ILlamado, IReceptorEvento{
 			TurnoAsignado evento = (TurnoAsignado) e;
 	        Turno turno = evento.getTurno();
 	        this.ultimoTurnoLlamado=turno;
+			this.ultimoTurnoLlamado.setDocumento(encriptador.desencriptar(this.ultimoTurnoLlamado.getDocumento()));
 	        this.CantidadDeVecesLlamado=1;
 	        System.out.println("Llego el TurnoAsignado DNI="+turno.getDocumento());
 	        controlador.actualizarVistaOperador();
@@ -103,6 +106,7 @@ public class GestorLlamado implements ILlamado, IReceptorEvento{
 	    else if(e instanceof EventoRecuperacionRellamado){
 	    	EventoRecuperacionRellamado err=(EventoRecuperacionRellamado)e;
 	    	this.ultimoTurnoLlamado = err.getTurno();
+			this.ultimoTurnoLlamado.setDocumento(encriptador.desencriptar(this.ultimoTurnoLlamado.getDocumento()));
 	    	this.CantidadDeVecesLlamado = err.getCantidadVecesLlamado();
 	    	controlador.actualizarVistaOperador();
 	    }
@@ -127,5 +131,11 @@ public class GestorLlamado implements ILlamado, IReceptorEvento{
 	@Override
 	public Turno getUltimoTurno() {
 		return this.ultimoTurnoLlamado;
+	}
+
+	@Override
+	public void setEncriptadorApi(ISeguridadStrategy crypt){
+		this.apiServidor.setEncriptador(crypt);
+		this.encriptador=crypt;
 	}
 }

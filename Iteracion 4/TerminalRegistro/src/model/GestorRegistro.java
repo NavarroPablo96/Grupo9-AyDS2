@@ -5,7 +5,7 @@ import comunicacion.IRegistro;
 public class GestorRegistro implements IGestorRegistro{
 	
 	private int NumeroTerminal;
-	private IRegistro comunicador;
+	public IRegistro comunicador;
 	
 	public GestorRegistro(IRegistro c) {
 		this.comunicador = c;
@@ -31,11 +31,5 @@ public class GestorRegistro implements IGestorRegistro{
 	}
 	
 	
-	// public void CrearTurno(String dni, String hora,Date horaReal) {
-		
-	// 	Turno nuevo = new Turno(-1,dni, hora,horaReal);//TR=TerminalDeRegistro // TA=TerminalDeAtencion // TN=TerminalNotificacion
-	// 	EventoNuevoTurno nuevoTurno = new EventoNuevoTurno("TR"+this.NumeroTerminal,"Servidor",nuevo);
-	// 	ComunicacionEntreProcesos.getInstance().enviarEvento(nuevoTurno);
-	// 	//Controlador.getInstance().ActualizarVista(nuevo);
-	// }
+	
 }

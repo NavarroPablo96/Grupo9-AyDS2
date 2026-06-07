@@ -18,5 +18,7 @@ public interface IVistaConexion {
 	public int getPuerto_Ss();
 	public String getFabricaRecuperar();
 	public String getFabricaGuardar();
+	public String getTipoEncriptado();
+	public String getClave();
 	
 }

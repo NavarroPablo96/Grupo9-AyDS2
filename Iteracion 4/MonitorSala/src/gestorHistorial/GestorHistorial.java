@@ -15,11 +15,16 @@ import eventos.EventoRecuperacionHistorial;
 import eventos.EventoConexionExitosa;
 import eventos.EventoRellamar;
 import eventos.Turno;
+import seguridad.ISeguridadStrategy;
 import vista_controlador.Controlador;
 
 public class GestorHistorial implements IReceptorEvento{
 	private static GestorHistorial instancia;
-	//private static IRecibirEvento notificador;
+	private ISeguridadStrategy encriptador;
+	
+	public void setEncriptador(ISeguridadStrategy encriptador){
+		this.encriptador = encriptador;
+	}
 	
 	private static final int MAX_TURNOS_EN_PANTALLA = 4;
 	private ArrayList<Turno> historial;
@@ -51,8 +56,12 @@ public class GestorHistorial implements IReceptorEvento{
 	    if (e instanceof EventoNotificar) {
 	    	EventoNotificar evento = (EventoNotificar) e;
 	        Turno turno = evento.getTurno();
+
+			turno.setDocumento(encriptador.desencriptar(turno.getDocumento()));
+
 	        turno.setNumeroTerminal(evento.getNumeroTPA());
 
+			
 
 	        if(turnoActual!=null) {
 	        	historial.add(0, turnoActual);
@@ -73,6 +82,9 @@ public class GestorHistorial implements IReceptorEvento{
 	    else if(e instanceof EventoRellamar) {
 	    	EventoRellamar evento = (EventoRellamar) e;
 	        Turno turnoRellamar = evento.getTurno();
+
+			turnoRellamar.setDocumento(encriptador.desencriptar(turnoRellamar.getDocumento()));
+
 	        turnoRellamar.setNumeroTerminal(evento.getNumeroTPA());
 
 	        if(turnoActual==null) {

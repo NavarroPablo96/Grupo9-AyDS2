@@ -24,7 +24,10 @@ public class ControladorConexion implements IControladorConexion{
         int puertoPrimario = vista.getPuerto();
         String ipSecundario = vista.getIpSecundario();
         int puertoSecundario = vista.getPuertoSecundario();
-        
+        String tipoEncriptado = vista.getTipoEncriptado();
+        String clave          = vista.getClave();       
+
+        controladorOperador.setEncriptadorApi(tipoEncriptado, clave);
 
         modelo.conectar(ipPrimario, puertoPrimario,ipSecundario,puertoSecundario);
         estadoConectadoAServidor("Conectados a Servidor");

@@ -1,6 +1,7 @@
 package gestores;
 
 import eventos.Turno;
+import seguridad.ISeguridadStrategy;
 
 public interface ILlamado {
     int getIntentos();
@@ -12,4 +13,6 @@ public interface ILlamado {
     Turno getUltimoTurnoLlamado();
     int getCantidadEnEspera();
     int getCantidadDeVecesLlamado();
+
+    void setEncriptadorApi(ISeguridadStrategy crypt);
 }

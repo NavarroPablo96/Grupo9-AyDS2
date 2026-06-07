@@ -1,16 +1,18 @@
 package controllers;
 
 import eventos.Turno;
-import model.IGestorRegistro;
+import factory.SeguridadFactory;
+import model.GestorRegistro;
+import seguridad.ISeguridadStrategy;
 import views.IVistaRegistro;
 
 public class ControladorRegistro implements IControladorRegistro{
     
     private IVistaRegistro vista;
     
-    private IGestorRegistro modelo;
+    private GestorRegistro modelo;
 
-    public ControladorRegistro(IVistaRegistro vista, IGestorRegistro modelo){
+    public ControladorRegistro(IVistaRegistro vista, GestorRegistro modelo){
         this.vista = vista;
         this.modelo = modelo;
 
@@ -54,5 +56,15 @@ public class ControladorRegistro implements IControladorRegistro{
     	this.vista.turnoCreado(nuevo);
 	}
 	
+
+    @Override
+    public void setEncriptadorApi(String tipo, String clave){
+        ISeguridadStrategy x = SeguridadFactory.crearEncriptador(tipo);
+
+        x.setClave(clave);
+
+        modelo.comunicador.setEncriptador(x);
+
+    }
 	
 }

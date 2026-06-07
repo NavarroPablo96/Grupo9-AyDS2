@@ -11,7 +11,8 @@ public interface IRedundanciaPasiva {
 		    String ipSincronizador,	    		int puertoSincronizador, 
 		    String ipClienteSecundario, 		int puertoClienteSecundario, 
 		    String ipSincronizacionSecundario, 	int puertoSincronizacionSecundario,
-		    String fabricaCarga,				String fabricaPersistencia);
+		    String fabricaCarga,				String fabricaPersistencia,
+			String tipoEncriptado, 				String clave);
 	public void setSincronizado(I_Sync sincronizador);
 	public void setI_HeartBeat(I_HeartBeat iHB);
 	public boolean estaConectadoSincronizable();

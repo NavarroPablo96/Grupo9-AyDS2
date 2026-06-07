@@ -26,6 +26,10 @@ public class Turno implements Serializable {
 		return Documento;
 	}
 
+	public void setDocumento(String documento) {
+		Documento = documento;
+	}
+
 	public String getHoraRegistro() {
 		return HoraReg;
 	}
