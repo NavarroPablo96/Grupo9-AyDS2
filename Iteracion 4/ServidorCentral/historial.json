@@ -1,0 +1,39 @@
+{
+  "historial": [
+    {
+      "Documento": "Rz4cX0Y/1qgkDBqo2KrzdRFkX9ajXuoyzYdwrDDwmwQ\u003d",
+      "HoraReg": "20:24",
+      "Numero": 4,
+      "HoraDeLlamado": "Jun 7, 2026, 8:24:28 PM",
+      "NumeroTerminalQueLLama": 1
+    },
+    {
+      "Documento": "N+oBLVHbwSONnzjaHtZ0B2QbuNAbvjbGn1HnqZlBBNiBmNlFkrAnIRZ7uY9/d6ZmViMRShxPDOqSA6RpyPwXh82HcKww8JsE",
+      "HoraReg": "20:23",
+      "Numero": 3,
+      "HoraDeLlamado": "Jun 7, 2026, 8:24:39 PM",
+      "NumeroTerminalQueLLama": 2
+    },
+    {
+      "Documento": "j4xpM/PtoXW2BXuwSYSE8mSwZ1Rb0pu+odfffEfs2h1UBZEwRYa40llCu1F9uA5SV3BTKPel3zw4NCGixNk5/As0pYmWPRX5kBScOZgUSgLXRLAolyr6C8nl8Ne8sdVJzYdwrDDwmwQ\u003d",
+      "HoraReg": "20:23",
+      "Numero": 2,
+      "HoraDeLlamado": "Jun 7, 2026, 8:24:09 PM",
+      "NumeroTerminalQueLLama": 1
+    },
+    {
+      "Documento": "8WMXTvmSj9C7KY6oS7mlq8gVw3ovu45u8x5+A6/2Zuw7uy0cuJQRxkdWJ8FjlZFuonznF65gTv+RRZubLvcb7zanyLyjx1EMD0FmX3UgFrCKNu5O4nenlCZcBsSr3q65BdFYtyBND7oQmrqoQaCe4asTBpL8CSPPUm4ZfcU351SKfQ9YqAF8bZHOSGahpied",
+      "HoraReg": "20:22",
+      "Numero": 1,
+      "HoraDeLlamado": "Jun 7, 2026, 8:23:59 PM",
+      "NumeroTerminalQueLLama": 1
+    }
+  ],
+  "turnoActual": {
+    "Documento": "LRk8lVZd+DMVx6VWCsubEhFkX9ajXuoyzYdwrDDwmwQ\u003d",
+    "HoraReg": "20:24",
+    "Numero": 5,
+    "HoraDeLlamado": "Jun 7, 2026, 8:24:31 PM",
+    "NumeroTerminalQueLLama": 0
+  }
+}

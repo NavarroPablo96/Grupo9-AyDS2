@@ -73,6 +73,7 @@ public class Conexion extends JFrame implements IVistaConexion {
         bgEncriptado.add(rbXOR);
         
         txtClave = new JTextField(15);
+        txtClave.setText("messi");
 
         btnConectar = new JButton("Conectar");// Configuración base de la grilla
         GridBagConstraints gbc = new GridBagConstraints();

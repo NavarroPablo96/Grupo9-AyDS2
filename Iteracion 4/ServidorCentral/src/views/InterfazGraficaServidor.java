@@ -111,7 +111,7 @@ public class InterfazGraficaServidor extends JFrame implements IVistaServidor{
 
         
         //COMENTAR ESTA LINEA PARA PODER VER LA CONSOLA, es decir la siguiente linea
-        //redirigirSystemOut();
+        redirigirSystemOut();
     }
 
     // -------------------

@@ -101,12 +101,12 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
         return fila;	
 	}
 
-    // private IColaTurno desencriptarFila(IColaTurno fila){
-    //     for (eventos.Turno t : fila.getListaTurnos()) {
-    //         t.setDocumento(encriptador.desencriptar(t.getDocumento()));
-    //     }
-    //     return fila;
-    // }
+    private IColaTurno desencriptarFila(IColaTurno fila){
+    	for (eventos.Turno t : fila.getListaTurnos()) {
+    		t.setDocumento(encriptador.desencriptar(t.getDocumento()));
+    	}
+    	return fila;
+	}
 	
 	private void guardarHistorial() {
 		System.out.println("GestorFila89 - GUARDAR HISTORIAL()");
@@ -182,6 +182,10 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 					int nts = estadoCola.getNumeroTurnoSiguiente();
 					int cantP = estadoCola.getCantidadPone();
 					int cantS = estadoCola.getCantidadSaca();
+					
+					System.out.println("GestorFila92-cargarEstado() muestro la cola desencriptada");
+					IColaTurno colaDesencriptada = this.desencriptarFila(ict);
+					colaDesencriptada.mostrarCola();
 					setEstado(ict,nts,cantP, cantS);
 				}
 				else {
@@ -213,8 +217,9 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 	public void nuevoTurno(EventoSolicitudTurno evento, String tipoTerminal, int numeroTerminal) {
 		String TerminalOrigen = evento.getProcesoOrigen();
 		Evento respuesta =null;
-
+		
 		String dni = encriptador.desencriptar(evento.getDni());
+		System.out.println("GestorFila dni=encriptador.desencriptar(evento.getDni())="+dni);
 		
 		if(this.fila.DniRegistrado(dni)==true) {
     		//Se debe enviar el evento 

@@ -1,0 +1,26 @@
+{
+  "llamados": [
+    {
+      "turno": {
+        "Documento": "Rz4cX0Y/1qgkDBqo2KrzdRFkX9ajXuoyzYdwrDDwmwQ\u003d",
+        "HoraReg": "20:24",
+        "Numero": 4,
+        "HoraDeLlamado": "Jun 7, 2026, 8:24:40 PM",
+        "NumeroTerminalQueLLama": 0
+      },
+      "cantidadVecesLlamado": 2,
+      "numeroTerminal": 1
+    },
+    {
+      "turno": {
+        "Documento": "LRk8lVZd+DMVx6VWCsubEhFkX9ajXuoyzYdwrDDwmwQ\u003d",
+        "HoraReg": "20:24",
+        "Numero": 5,
+        "HoraDeLlamado": "Jun 7, 2026, 8:25:04 PM",
+        "NumeroTerminalQueLLama": 0
+      },
+      "cantidadVecesLlamado": 2,
+      "numeroTerminal": 2
+    }
+  ]
+}

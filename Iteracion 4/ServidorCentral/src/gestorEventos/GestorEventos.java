@@ -60,8 +60,8 @@ public class GestorEventos implements IReceptorEvento{
     		String TerminalOrigen = e.getProcesoOrigen();
         	String tipoTerminal = obtenerTipo(TerminalOrigen);
         	int numeroTerminal=obtenerNumero(TerminalOrigen);
-			System.out.println("Gestor Eventos - Llego el evento EventoSolicitudTurno");
 			EventoSolicitudTurno evento = (EventoSolicitudTurno)e;
+			System.out.println("Gestor Eventos - Llego el evento EventoSolicitudTurno.getDni()= "+evento.getDni());
         	registro.nuevoTurno(evento,tipoTerminal,numeroTerminal);
 		}
 	    else if(e instanceof EventoLlamarSiguiente) {

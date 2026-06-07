@@ -62,6 +62,7 @@ public ConexionFrame() {
     bgEncriptado.add(rbXOR);
     
     txtClave = new JTextField(15);
+    txtClave.setText("messi");
     btnConectar = new JButton("Conectar");
 
     GridBagConstraints gbc = new GridBagConstraints();
