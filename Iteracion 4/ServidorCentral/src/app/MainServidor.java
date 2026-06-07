@@ -13,6 +13,7 @@ import gestorServidores.IConector;
 import gestorServidores.IEnviarEventoServidores;
 import gestorServidores.IRedundanciaPasiva;
 import gestorSincronizacion.GestorDeSincronizacion;
+import gestorSincronizacion.IActualizacion;
 import gestorSincronizacion.I_HeartBeat;
 import gestorSincronizacion.I_Sync;
 import gestorTerminales.GestorTerminales;
@@ -64,6 +65,7 @@ public class MainServidor {
     	
     	I_Sync sincronizador= new GestorDeSincronizacion(gestorFila,EnviarAOtroServidor,IRP);
     	GestorEventos.getInstance().setI_Sync(sincronizador);
+    	GestorFila.getInstance().setActualizador((IActualizacion)sincronizador);
     	IRP.setSincronizado(sincronizador);
     	
     	I_HeartBeat IHB = (I_HeartBeat)sincronizador;

@@ -6,7 +6,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import javax.swing.*;
-import javax.swing.text.AbstractDocument;
 
 public class ConexionFrame extends JFrame {    private static final long serialVersionUID = 1L;
 

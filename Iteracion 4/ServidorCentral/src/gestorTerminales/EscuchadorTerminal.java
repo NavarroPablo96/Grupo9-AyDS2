@@ -27,12 +27,6 @@ public class EscuchadorTerminal implements Runnable {
         this.gestorTerminales=igt;
         this.receptor=receptor;
         this.numero=-2;
-		try {
-			out = new ObjectOutputStream(socket.getOutputStream());
-			in = new ObjectInputStream(socket.getInputStream());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
     }
     private void AgregarTerminal() {
     	// IMPORTANTE: primero Output, después Input		
@@ -43,6 +37,9 @@ public class EscuchadorTerminal implements Runnable {
 			primerEvento = (ConexionTerminal) in.readObject();
 		} catch (ClassNotFoundException | IOException e) {//ClassNotFountException //IOException
 			e.printStackTrace();
+		}
+		if(primerEvento==null) {
+			return;
 		}
 		tipo=primerEvento.getTipoTerminal();
 		this.numero=gestorTerminales.AgregarTerminal(primerEvento, this);
@@ -65,8 +62,18 @@ public class EscuchadorTerminal implements Runnable {
 
     @Override
     public void run() {
-    	
-    	
+    	try {
+			out = new ObjectOutputStream(socket.getOutputStream());
+			in = new ObjectInputStream(socket.getInputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        
+    	if (in == null || out == null) {
+            cerrarConexion();
+            return;
+        }
+        
         try {
         	AgregarTerminal();
         	//En este punto ya se agrego la Terminal a la lista de correspondiente

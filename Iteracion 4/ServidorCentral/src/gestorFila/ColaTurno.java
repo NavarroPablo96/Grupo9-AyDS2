@@ -86,5 +86,10 @@ public class ColaTurno implements IColaTurno {
 
 	    return copia;
 	}
+
+	@Override
+	public synchronized void sacarEspecifico(int numero) {
+	    fila.removeIf(t -> t.getNumero() == numero);
+	}
 	
 }

@@ -18,4 +18,5 @@ public interface IRedundanciaPasiva {
 	public boolean estaConectadoSincronizable();
 	public void NotificarCaidaSincronizador();
 	public boolean soySecundario();
+	public void NotificarAusenciaHeartBeat();
 }

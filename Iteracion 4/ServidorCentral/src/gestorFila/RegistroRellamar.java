@@ -1,13 +1,18 @@
 package gestorFila;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import eventos.Turno;
 
-public class RegistroRellamar {
+public class RegistroRellamar implements Serializable {
 
-    private List<Llamado> llamados ;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private List<Llamado> llamados ;
 
     public RegistroRellamar() {
     	this.llamados=new ArrayList<Llamado>();
@@ -53,6 +58,24 @@ public class RegistroRellamar {
 	        }
 	    }
 	    return null;
+	}
+
+	public RegistroRellamar generarCopia() {
+	    RegistroRellamar copia = new RegistroRellamar();
+	    for (Llamado l : this.llamados) {
+	        copia.getLlamados().add(l);
+	    }
+	    return copia;
+	}
+
+
+	public void mostrar() {
+	    System.out.println("=== RegistroRellamar ===");
+	    System.out.println("Cantidad de llamados: " + llamados.size());
+	    for (Llamado l : llamados) {
+	        System.out.println("Terminal: " + l.getNumeroTerminal()+ " | Turno: " + l.getTurno().getNumero()
+	        		+ " | Veces llamado: " + l.getCantidadVecesLlamado());
+	    }
 	}
 	
 }

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import eventos.ConexionTerminal;
@@ -148,8 +147,8 @@ public class ComunicadorRegistro implements IComunicador{
 					receptor.recibirEvento(evento);
 					
 				}
-			}catch(SocketException asd) {
-	        	System.out.println(" ");
+			}catch(IOException asd) { //| SocketException | EOFException | ConnectException 
+				System.out.println(" ");
 				System.out.println("Se perdió la conexión con el servidor Secundario");
 				conectar(ip,puerto,ipSecundario,puertoSecundario);
 	        }catch (Exception e) {
@@ -175,8 +174,8 @@ public class ComunicadorRegistro implements IComunicador{
 					receptor.recibirEvento(evento);
 					
 				}
-			}catch(SocketException asd) {
-	        	System.out.println(" ");
+			}catch(IOException asd) { //| SocketException | EOFException | ConnectException 
+				System.out.println(" ");
 				System.out.println("Se perdió la conexión con el servidor Primario");
 				conectar(ip,puerto,ipSecundario,puertoSecundario);
 	        }catch (Exception e) {

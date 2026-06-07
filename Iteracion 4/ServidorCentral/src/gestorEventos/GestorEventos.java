@@ -1,6 +1,7 @@
 package gestorEventos;
 
 import eventos.Evento;
+import eventos.EventoDeActualizacion;
 import eventos.EventoHeartBeat;
 import eventos.EventoLlamarSiguiente;
 import eventos.EventoRellamar;
@@ -46,8 +47,14 @@ public class GestorEventos implements IReceptorEvento{
 	
 	@Override
 	public void ArriboEvento(Evento e) {
-		System.out.println("");
-		System.out.println("");
+	
+		if(e instanceof EventoHeartBeat) {
+			
+		}
+		else {
+			System.out.println("");
+			System.out.println("");
+		}
 
     	if(e instanceof EventoSolicitudTurno) {
     		String TerminalOrigen = e.getProcesoOrigen();
@@ -72,12 +79,12 @@ public class GestorEventos implements IReceptorEvento{
 	    }
 	    else if (e instanceof EventoSolicitudSincronizacion) {
 			System.out.println("Gestor Eventos72 - Llego el evento EventoSolicitudSincronizacion");
-			sincronizador.enviarEstadoCola();
+			sincronizador.enviarEstadoSistema();
 	    }
 	    else if (e instanceof EventoSincronizacionEstado) {
 	    	EventoSincronizacionEstado estado = (EventoSincronizacionEstado)e;
 	    	System.out.println("GestorEventos-77: estado.getCola().getCantidad()="+estado.getCola().getCantidad());
-	    	sincronizador.recibirEstadoCola(estado.getCola(),estado.getCt(),estado.getCp(),estado.getCs());
+	    	sincronizador.recibirEstadoSistema(estado.getCola(),estado.getNts(),estado.getCp(),estado.getCs(),estado.getHistorial(),estado.getLlamados());
 	    }
 	    else if (e instanceof EventoSolicitudHeartBeat) {
 	    	heart.iniciarEnviosHeartBeat();
@@ -85,6 +92,10 @@ public class GestorEventos implements IReceptorEvento{
 	    else if (e instanceof EventoHeartBeat) {
 	    	EventoHeartBeat latido=(EventoHeartBeat)e;
 	    	heart.recibirHeartbeat(latido);
+	    }	    	
+	    else if(e instanceof EventoDeActualizacion){	//Esto es todo nuevo.
+	    	System.out.println("Llego un evento de Actualizacion:"+e.getClass().getName());
+	    	sincronizador.recibirActualizacion(e);
 	    }	    	
 	    else {
 	    	System.out.println("Llego un Evento");

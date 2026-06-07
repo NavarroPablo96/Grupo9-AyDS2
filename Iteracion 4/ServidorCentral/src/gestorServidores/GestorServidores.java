@@ -265,6 +265,12 @@ public class GestorServidores implements IRedundanciaPasiva{
 
 	@Override
 	public void NotificarCaidaSincronizador() {
+		//Se cayo el primario	//Esto notifica el comunicador
+		System.out.println("GestorServidores - Se cayo el servidor que sincroniza");
+	}
+
+	@Override
+	public void NotificarAusenciaHeartBeat() {
 		//Se cayo el primario
 		if(soyPrimario) {
 			System.out.println("Se cayo el secundario, abrimos Servidor primario");
@@ -287,5 +293,5 @@ public class GestorServidores implements IRedundanciaPasiva{
 			return true;
 		}
 	}
-
+	
 }

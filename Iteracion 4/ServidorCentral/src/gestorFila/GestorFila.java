@@ -5,6 +5,9 @@ import java.util.List;
 import controllers.IActualizarServidor;
 
 import eventos.Evento;
+import eventos.EventoActualizacionLlamarSiguiente;
+import eventos.EventoActualizacionNuevoTurno;
+import eventos.EventoActualizacionRellamar;
 import eventos.EventoDniExistente;
 import eventos.EventoFilaNoVacia;
 import eventos.EventoFilaVacia;
@@ -15,7 +18,7 @@ import eventos.EventoSolicitudTurno;
 import eventos.EventoTurnoCreadoConExito;
 import eventos.Turno;
 import eventos.TurnoAsignado;
-
+import gestorSincronizacion.IActualizacion;
 import gestorTerminales.IEnviarEventoClientes;
 import persistencia.GestorPersistencia;
 import seguridad.ISeguridadStrategy;
@@ -43,6 +46,12 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 		this.gestorPersistencia=gestorPersistencia;
 	}
 	
+	//INTERFAZ GESTOR ACTUALIZACION:
+	private IActualizacion actualizadorServidorSecundario;
+	public void setActualizador(IActualizacion gestorSincronizacion) {
+		this.actualizadorServidorSecundario=gestorSincronizacion;
+	}
+	
 	//PATRON SINGLETON
 	private static GestorFila instancia;
 	
@@ -68,15 +77,18 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 	private int cantidadSaca;
     private RegistroRellamar llamados;
     private Historial historial; 
-
+    
+  //PERSISTENCIA---------------------------------------------------------------
 	private void guardarEstadoCola() {
 		System.out.println("GestorFila80 - GUARDAR ESTADOCOLA()");
 		EstadoCola ec = new EstadoCola();
 
 		IColaTurno filaEncriptada = this.encriptarFila(this.fila);
-
 		ec.setCola((ColaTurno)filaEncriptada,this.numeroTurnoSiguiente,this.cantidadPone,this.cantidadSaca);
-		this.gestorPersistencia.guardarCola(ec);
+
+		if(this.gestorPersistencia!=null) {
+			this.gestorPersistencia.guardarCola(ec);
+		}
 	}
 
 	private IColaTurno encriptarFila(IColaTurno fila){
@@ -96,7 +108,9 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 	private void guardarHistorial() {
 		System.out.println("GestorFila89 - GUARDAR HISTORIAL()");
 		Historial historialEncriptado = this.encriptarHistorial(this.historial);
-		this.gestorPersistencia.guardarHistorial(historialEncriptado);
+		if(this.gestorPersistencia!=null) {
+			this.gestorPersistencia.guardarHistorial(historialEncriptado);
+		}
 	}
 
 	private Historial encriptarHistorial(Historial h){
@@ -126,7 +140,9 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 	private void guardarLlamados() {
 		System.out.println("GestorFila94 - GUARDAR LLAMADOS()");
 		RegistroRellamar encriptado = this.encriptarRellamados(this.llamados);
-		this.gestorPersistencia.guardarLlamados(encriptado);
+		if(this.gestorPersistencia!=null) {
+			this.gestorPersistencia.guardarLlamados(encriptado);
+		}
 	}
 
 	private RegistroRellamar encriptarRellamados(RegistroRellamar r){
@@ -150,38 +166,40 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 	}
 	
 	public void cargarEstado() {
-		EstadoCola estadoCola = gestorPersistencia.cargarCola();
-		if (estadoCola != null) {
+		if(this.gestorPersistencia!=null) {
+			EstadoCola estadoCola = gestorPersistencia.cargarCola();
+			if (estadoCola != null) {
+				
+				IColaTurno ict = estadoCola.getCola();
+				if(ict!=null) {
+					System.out.println("GestorFila92-cargarEstado() muestro la cola que llega desde la persistencia:");
+					ict.mostrarCola();
+					int nts = estadoCola.getNumeroTurnoSiguiente();
+					int cantP = estadoCola.getCantidadPone();
+					int cantS = estadoCola.getCantidadSaca();
+					setEstado(ict,nts,cantP, cantS);
+				}
+				else {
+					setEstado(new ColaTurno(),0,0,0);
+				}
+			}
 			
-			IColaTurno ict = estadoCola.getCola();
-			if(ict!=null) {
-				System.out.println("GestorFila92-cargarEstado() muestro la cola que llega desde la persistencia:");
-				ict.mostrarCola();
-				int nts = estadoCola.getNumeroTurnoSiguiente();
-				int cantP = estadoCola.getCantidadPone();
-				int cantS = estadoCola.getCantidadSaca();
-				setEstado(ict,nts,cantP, cantS);
+			this.historial = this.gestorPersistencia.cargarHistorial();
+			if(this.historial==null) {
+				this.historial=new Historial();
 			}
-			else {
-				setEstado(new ColaTurno(),0,0,0);
+			else{
+				this.historial = this.desencriptarHistorial(this.historial);
 			}
+			this.llamados = this.gestorPersistencia.cargarLlamados();
+			if(this.llamados==null) {
+				this.llamados = new RegistroRellamar();
+			}
+			else{
+				this.llamados = this.desencriptarRellamados(this.llamados);
+			}
+			System.out.println("GestorFila 100 - CargarEstado() NumeroDeTurnoSiguiente="+this.numeroTurnoSiguiente);
 		}
-		
-		this.historial = this.gestorPersistencia.cargarHistorial();
-		if(this.historial==null) {
-			this.historial=new Historial();
-		}
-		else{
-			this.historial = this.desencriptarHistorial(this.historial);
-		}
-		this.llamados = this.gestorPersistencia.cargarLlamados();
-		if(this.llamados==null) {
-			this.llamados = new RegistroRellamar();
-		}
-		else{
-			this.llamados = this.desencriptarRellamados(this.llamados);
-		}
-		System.out.println("GestorFila 100 - CargarEstado() NumeroDeTurnoSiguiente="+this.numeroTurnoSiguiente);
 	}
 	
 	
@@ -210,6 +228,7 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 	        System.out.println("Llego el EventoSolicitudTurno DNI="+dni);
 	        ControladorServidor.actualizarTurnosVistaServidor(this.fila.getListaTurnos());
 	        this.gestorTerminales.publicarOperadores(new EventoFilaNoVacia("Servidor","Operador",this.fila.getCantidad()));
+	        this.actualizadorServidorSecundario.enviarActualizacion(new EventoActualizacionNuevoTurno(nuevo));
     	}
 		//FUNCION PARA ENVIAR EVENTO
     	if(respuesta!=null) {
@@ -239,6 +258,8 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 			EventoNotificar noti = new EventoNotificar(TerminalOrigen,numeroTerminal,"NOTIFICADORES",t);
     		this.gestorTerminales.publicarNotificadores(noti);
 			//Comunicador.getInstance().publicarNotificadores(noti);
+//ITE 3:
+    		this.actualizadorServidorSecundario.enviarActualizacion(new EventoActualizacionLlamarSiguiente(t,numeroTerminal));
 //ITE 4:
     		this.historial.llamarSiguiente(t,numeroTerminal);
     		this.llamados.llamarSiguiente(numeroTerminal, t);
@@ -273,6 +294,7 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 		guardarHistorial();
 		guardarLlamados();
 		//Comunicador.getInstance().publicarNotificadores(Renoti);
+		this.actualizadorServidorSecundario.enviarActualizacion(new EventoActualizacionRellamar(turnoRellamar,Renoti.getNumeroTPA()));
 	}
 	
 	//IEstadoFila
@@ -289,16 +311,16 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 		return this.cantidadPone;
 	}
 	@Override
-	public int getCantidadTurnos() {
-		return this.fila.getCantidad();
+	public int getNumeroTurnoSiguiente() {
+		return this.numeroTurnoSiguiente;
 	}
 	@Override
-	public void setEstado(IColaTurno c, int cantidadTurnos, int cantidadPone, int cantidadSaca) {
+	public void setEstado(IColaTurno c, int numeroTurnoSiguiente, int cantidadPone, int cantidadSaca) {
 		this.fila=c;
 		this.cantidadPone =cantidadPone;
 		this.cantidadSaca= cantidadSaca;
-		this.numeroTurnoSiguiente=cantidadTurnos;
-		System.out.println("GestorFila200-setEstado(cola) - Se actualizo el estado de la cola cantidad_turno="+c.getCantidad());						
+		this.numeroTurnoSiguiente=numeroTurnoSiguiente;
+		System.out.println("GestorFila200-setEstado(cola) - Se actualizo el estado de la cola NumSiguienteTurno="+this.numeroTurnoSiguiente);
 		ControladorServidor.actualizarTurnosVistaServidor(this.fila.getListaTurnos());
 		//private int numeroTurnoSiguiente;
 	}
@@ -316,6 +338,64 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 
 	public void setEncriptador(ISeguridadStrategy encriptador){
 		this.encriptador = encriptador;
+	}
+
+	@Override
+	public void setHistorial(Historial historial) {
+		System.out.println("Se actualizo el historial historial==null?"+(historial==null));
+		this.historial=historial;
+		this.historial.mostrar();
+		
+	}
+
+	@Override
+	public void setRegistro(RegistroRellamar registro) {
+		this.llamados=registro;
+		System.out.println("Se actualizo Registro llamados:");
+		this.llamados.mostrar();
+		
+	}
+
+	@Override
+	public void actualizacionNuevoTurno(Turno t) {
+		this.numeroTurnoSiguiente++;	//Lo mismo que nuevoTurno pero más sencillo
+		fila.pone(t);
+		this.cantidadPone++;
+		this.fila.ordenar();
+		ControladorServidor.actualizarTurnosVistaServidor(this.fila.getListaTurnos());
+		
+	}
+
+	@Override
+	public void actualizacionLlamarSiguiente(int numeroTerminalQueLlama, Turno turnoLlamado) {
+		//System.out.println("Se recibió una Actualizacion de llamar siguiente, estado antes de la actualización");
+		//this.fila.mostrarCola();
+		//this.historial.mostrar();
+		//this.llamados.mostrar();
+
+		fila.sacarEspecifico(turnoLlamado.getNumero());
+		this.cantidadSaca++;
+		this.historial.llamarSiguiente(turnoLlamado,numeroTerminalQueLlama);
+		this.llamados.llamarSiguiente(numeroTerminalQueLlama, turnoLlamado);
+
+		//System.out.println("Sistema despues de actulizacion llamar siguiente");
+		//this.fila.mostrarCola();
+		//this.historial.mostrar();
+		//this.llamados.mostrar();
+		ControladorServidor.actualizarTurnosVistaServidor(this.fila.getListaTurnos());
+	}
+
+	@Override
+	public void actualizacionRellamar(int numeroTerminalQueLlama, Turno turnoLlamado) {
+		this.historial.rellamar(turnoLlamado);
+		this.llamados.rellamar(numeroTerminalQueLlama);
+		//guardarHistorial();
+		//guardarLlamados();
+		
+	}
+
+	public int getCantidadTurnos() {
+		return this.fila.getCantidad();
 	}
 	
 }

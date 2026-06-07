@@ -243,8 +243,13 @@ public class Comunicador implements IEnviarEventoServidores,IConector{
 	
 	public void enviarEventoASincrionizable(Evento e) {
 		try {
-			outSS.writeObject(e);
-			outSS.flush();
+			if(outSS!=null) {
+				outSS.writeObject(e);
+				outSS.flush();
+			}
+			else {
+				System.out.println("No se puede enviar evento a sincronizable, outSS es null");
+			}
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -253,14 +258,13 @@ public class Comunicador implements IEnviarEventoServidores,IConector{
 	
 	@Override
 	public boolean estaLibre(String ipServidor, int puertoServidor) {
-		boolean respuesta=true;
-		try {
-			ServerSocket serverSocket = new ServerSocket(puertoServidor);
-			serverSocket.close();
-		} catch (IOException e) {
-			respuesta=false;
-		}
-		return respuesta;
+	    try (Socket socket = new Socket(ipServidor, puertoServidor)) {
+	        // Si llegué acá, alguien está escuchando
+	        return false;
+	    } catch (IOException e) {
+	        // No pude conectarme
+	        return true;
+	    }
 	}
 	
 }

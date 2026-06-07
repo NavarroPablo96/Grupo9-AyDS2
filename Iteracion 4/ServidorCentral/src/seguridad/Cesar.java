@@ -33,6 +33,11 @@ public class Cesar implements ISeguridadStrategy{
     }
 
     public void setClave(String clave){
-        this.desplazamiento = Integer.parseInt(clave);
+    	if(clave.length()>3) {
+    		this.desplazamiento=clave.length();
+    	}
+    	else {
+    		this.desplazamiento = Integer.parseInt(clave);
+    	}
     }
 }

@@ -16,5 +16,5 @@ public interface IColaTurno extends Serializable {
 	boolean DniRegistrado(String documento);
 	void mostrarCola();
 	IColaTurno generarCopia();
-
+	void sacarEspecifico(int numero);
 }

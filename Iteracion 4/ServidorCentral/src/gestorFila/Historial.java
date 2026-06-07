@@ -1,10 +1,16 @@
 package gestorFila;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import eventos.Turno;
 
-public class Historial {
+public class Historial implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final int MAX_TURNOS_EN_PANTALLA = 4;
 	
 	private ArrayList<Turno>historial ;
@@ -69,5 +75,20 @@ public class Historial {
 
 	public void setTurnoActual(Turno turno) {
 		this.turnoActual=turno;
+	}
+	
+	public void mostrar() {
+		System.out.println("Turno Actual #"+this.turnoActual.getNumero()+" Dni:"+this.turnoActual.getDocumento());
+		System.out.println("Historial.size()="+this.historial.size());
+	}
+
+
+	public Historial generarCopia() {
+	    Historial copia = new Historial();
+	    copia.turnoActual = this.turnoActual;
+	    for (Turno t : this.historial) {
+	        copia.historial.add(t);
+	    }
+	    return copia;
 	}
 }
