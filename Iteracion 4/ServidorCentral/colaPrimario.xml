@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<cola>
+    <metadatos>
+        <cantidadPone>4</cantidadPone>
+        <cantidadSaca>2</cantidadSaca>
+        <numeroTurnoSiguiente>4</numeroTurnoSiguiente>
+    </metadatos>
+    <turnos>
+        <turno>
+            <numero>3</numero>
+            <documento>dtOR/tVej7jNh3CsMPCbBA==</documento>
+            <horaRegistro>01:56</horaRegistro>
+            <horaLlamado>1780894617648</horaLlamado>
+        </turno>
+        <turno>
+            <numero>4</numero>
+            <documento>HxlPcpHPnsjNh3CsMPCbBA==</documento>
+            <horaRegistro>01:56</horaRegistro>
+            <horaLlamado>1780894619793</horaLlamado>
+        </turno>
+    </turnos>
+</cola>

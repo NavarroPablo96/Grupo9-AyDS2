@@ -87,7 +87,8 @@ public class Historial implements Serializable{
 	    Historial copia = new Historial();
 	    copia.turnoActual = new Turno(turnoActual.getNumero(), turnoActual.getDocumento(), turnoActual.getHoraRegistro(), turnoActual.getHoraHoraDeLlamado());
 	    for (Turno t : this.historial) {
-	        copia.historial.add(t);
+			Turno tCopia = new Turno(t.getNumero(), t.getDocumento(), t.getHoraRegistro(), t.getHoraHoraDeLlamado());
+	        copia.historial.add(tCopia);
 	    }
 	    return copia;
 	}
