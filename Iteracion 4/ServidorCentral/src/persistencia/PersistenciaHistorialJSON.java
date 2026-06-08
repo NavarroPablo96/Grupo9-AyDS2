@@ -1,5 +1,6 @@
 package persistencia;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -24,7 +25,11 @@ public class PersistenciaHistorialJSON implements IPersistenciaHistorial {
 
     @Override
     public void guardarHistorial(Historial historial) {
+        File archivo = new File(this.ARCHIVO);
 
+        if (archivo.exists()) {
+            archivo.delete();
+        }
         try (FileWriter writer = new FileWriter(ARCHIVO)) {
 
             gson.toJson(historial, writer);

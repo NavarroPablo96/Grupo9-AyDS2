@@ -1,5 +1,6 @@
 package persistencia;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -24,7 +25,11 @@ public class PersistenciaLlamadoJSON implements IPersistenciaLlamado {
 
     @Override
     public void guardarLlamados(RegistroRellamar llamados) {
+        File archivo = new File(this.ARCHIVO);
 
+        if (archivo.exists()) {
+            archivo.delete();
+        }
         try (FileWriter writer = new FileWriter(ARCHIVO)) {
 
             gson.toJson(llamados, writer);

@@ -27,6 +27,11 @@ public class PersistenciaColaXML implements IPersistenciaCola {
     }
 	@Override
 	public void guardarCola(EstadoCola estado) {
+        File archivo = new File(this.ARCHIVO);
+
+        if (archivo.exists()) {
+            archivo.delete();
+        }
 	    try {
 	        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder builder = factory.newDocumentBuilder();

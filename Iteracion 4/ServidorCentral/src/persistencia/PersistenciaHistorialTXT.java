@@ -19,6 +19,11 @@ public class PersistenciaHistorialTXT implements IPersistenciaHistorial {
 	}
 	@Override
 	public void guardarHistorial(Historial historial) {
+        File archivo = new File(this.NombreArchivo);
+
+        if (archivo.exists()) {
+            archivo.delete();
+        }
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(this.NombreArchivo))) {
         	bw.write("HISTORIAL");
             bw.newLine();

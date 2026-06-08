@@ -22,6 +22,11 @@ public class PersistenciaLlamadoTXT implements IPersistenciaLlamado {
 
 	@Override
 	public void guardarLlamados(RegistroRellamar llamados) {
+        File archivo = new File(this.NombreArchivo);
+
+        if (archivo.exists()) {
+            archivo.delete();
+        }
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(NombreArchivo))) {
             bw.write("LLAMADOS");
             bw.newLine();

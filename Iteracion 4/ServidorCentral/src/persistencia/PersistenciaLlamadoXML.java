@@ -23,7 +23,11 @@ public class PersistenciaLlamadoXML implements IPersistenciaLlamado {
     
     @Override
     public void guardarLlamados(RegistroRellamar llamados) {
+        File archivo = new File(this.ARCHIVO);
 
+        if (archivo.exists()) {
+            archivo.delete();
+        }
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();

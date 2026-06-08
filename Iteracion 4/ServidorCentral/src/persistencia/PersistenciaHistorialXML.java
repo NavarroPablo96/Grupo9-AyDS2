@@ -21,7 +21,11 @@ public class PersistenciaHistorialXML implements IPersistenciaHistorial {
     
     @Override
     public void guardarHistorial(Historial historial) {
+        File archivo = new File(this.ARCHIVO);
 
+        if (archivo.exists()) {
+            archivo.delete();
+        }
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();

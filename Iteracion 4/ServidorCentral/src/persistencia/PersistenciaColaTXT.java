@@ -22,6 +22,12 @@ public class PersistenciaColaTXT implements IPersistenciaCola {
 
 	@Override
 	public void guardarCola(EstadoCola cola) {
+        File archivo = new File(this.NombreArchivo);
+
+        if (archivo.exists()) {
+            archivo.delete();
+        }
+        
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(this.NombreArchivo))) {
 
             bw.write("COLA");

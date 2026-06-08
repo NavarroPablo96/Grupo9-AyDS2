@@ -380,7 +380,7 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 		this.cantidadPone++;
 		this.fila.ordenar();
 		ControladorServidor.actualizarTurnosVistaServidor(this.fila.getListaTurnos());
-		
+		guardarEstadoCola();
 	}
 
 	@Override
@@ -400,15 +400,20 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 		//this.historial.mostrar();
 		//this.llamados.mostrar();
 		ControladorServidor.actualizarTurnosVistaServidor(this.fila.getListaTurnos());
+		
+		
+		guardarEstadoCola();
+		guardarHistorial();
+		guardarLlamados();
 	}
 
 	@Override
 	public void actualizacionRellamar(int numeroTerminalQueLlama, Turno turnoLlamado) {
 		this.historial.rellamar(turnoLlamado);
 		this.llamados.rellamar(numeroTerminalQueLlama);
-		//guardarHistorial();
-		//guardarLlamados();
 		
+		guardarHistorial();
+		guardarLlamados();		
 	}
 
 	public int getCantidadTurnos() {
