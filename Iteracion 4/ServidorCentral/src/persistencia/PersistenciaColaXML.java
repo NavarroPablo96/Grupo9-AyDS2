@@ -20,7 +20,11 @@ import gestorFila.ColaTurno;
 import gestorFila.EstadoCola;
 
 public class PersistenciaColaXML implements IPersistenciaCola {
+    private String ARCHIVO = "";
 
+    public PersistenciaColaXML(String archivo) {
+    	this.ARCHIVO=archivo;
+    }
 	@Override
 	public void guardarCola(EstadoCola estado) {
 	    try {
@@ -73,7 +77,7 @@ public class PersistenciaColaXML implements IPersistenciaCola {
 	        TransformerFactory tf = TransformerFactory.newInstance();
 	        Transformer transformer = tf.newTransformer();
 	        transformer.setOutputProperty( OutputKeys.INDENT, "yes");
-	        transformer.transform(new DOMSource(doc), new StreamResult(new File("cola.xml")));
+	        transformer.transform(new DOMSource(doc), new StreamResult(new File(this.ARCHIVO)));
 	        System.out.println( "PersistenciaColaXML - Cola guardada");
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -82,7 +86,7 @@ public class PersistenciaColaXML implements IPersistenciaCola {
 
 	@Override
 	public EstadoCola cargarCola() {
-	    File archivo = new File("cola.xml");
+	    File archivo = new File(this.ARCHIVO);
 	    EstadoCola estado = new EstadoCola();
 	    if (!archivo.exists()) {
 	        return estado;

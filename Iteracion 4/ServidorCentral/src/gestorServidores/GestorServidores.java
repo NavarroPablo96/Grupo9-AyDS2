@@ -76,7 +76,6 @@ public class GestorServidores implements IRedundanciaPasiva{
 			    "\n===================================\n"
 			);
 		
-		configuracionPersistencia(fabricaRecuperar,fabricaPersistir);
 		configuracionEncriptado(tipoEncriptado, clave);
 		
 		System.out.println("En Gestor Servidores");
@@ -87,12 +86,14 @@ public class GestorServidores implements IRedundanciaPasiva{
 			else {
 				System.out.println("El ip-puerto principal esta ocupado");
 				this.soyPrimario=false;
+				configuracionPersistencia(fabricaRecuperar,fabricaPersistir,false);
 				SoySecundario();
 			}
 		}
 		else {
 			System.out.println("El ip-puerto principal esta libre, entonces soy primario");
 			this.soyPrimario=true;
+			configuracionPersistencia(fabricaRecuperar,fabricaPersistir,true);
 			SoyPrimario();
 		}
 	}
@@ -115,34 +116,27 @@ public class GestorServidores implements IRedundanciaPasiva{
     	}	
 	}
 	
-	private void configuracionPersistencia(String fabricaRecuperar, String fabricaPersistir) {
-		// ====================
-    	// RECUPERAR
-    	// ====================
-
-    	if ("TXT".equals(fabricaRecuperar)) {
-    	    gestorPersistencia.setPersistenciaCargado(new FabricaTXT());
-    	}
-    	else if ("JSON".equals(fabricaRecuperar)) {
-    	    gestorPersistencia.setPersistenciaCargado(new FabricaJSON());
-    	}
-    	else if ("XML".equals(fabricaRecuperar)) {
-    	    gestorPersistencia.setPersistenciaCargado(new FabricaXML());
-    	}
-
-    	// ====================
-    	// GUARDAR
-    	// ====================
-
-    	if ("TXT".equals(fabricaPersistir)) {
-    	    gestorPersistencia.setPersistenciaGuardado(new FabricaTXT());
-    	}
-    	else if ("JSON".equals(fabricaPersistir)) {
-    	    gestorPersistencia.setPersistenciaGuardado(new FabricaJSON());
-    	}
-    	else if ("XML".equals(fabricaPersistir)) {
-    	    gestorPersistencia.setPersistenciaGuardado(new FabricaXML());
-    	}
+	private void configuracionPersistencia(String fabricaRecuperar, String fabricaPersistir, boolean soyPrimarioArchivo) {
+		if ("TXT".equals(fabricaRecuperar)) {
+			gestorPersistencia.setPersistenciaCargado(new FabricaTXT(soyPrimarioArchivo));
+		}
+		else if ("JSON".equals(fabricaRecuperar)) {
+			gestorPersistencia.setPersistenciaCargado(new FabricaJSON(soyPrimarioArchivo));
+		}
+		else if ("XML".equals(fabricaRecuperar)) {
+			gestorPersistencia.setPersistenciaCargado(new FabricaXML(soyPrimarioArchivo));
+		}
+		
+		
+		if ("TXT".equals(fabricaPersistir)) {
+			gestorPersistencia.setPersistenciaGuardado(new FabricaTXT(soyPrimarioArchivo));
+		}
+		else if ("JSON".equals(fabricaPersistir)) {
+			gestorPersistencia.setPersistenciaGuardado(new FabricaJSON(soyPrimarioArchivo));
+		}
+		else if ("XML".equals(fabricaPersistir)) {
+			gestorPersistencia.setPersistenciaGuardado(new FabricaXML(soyPrimarioArchivo));
+		}
 	}
 
 	private boolean hayServidorSecundario() {

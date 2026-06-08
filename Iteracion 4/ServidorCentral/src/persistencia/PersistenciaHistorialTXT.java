@@ -12,10 +12,14 @@ import eventos.Turno;
 import gestorFila.Historial;
 
 public class PersistenciaHistorialTXT implements IPersistenciaHistorial {
-
+	private String NombreArchivo = "";
+	
+	public PersistenciaHistorialTXT(String nombreArchivo){
+		this.NombreArchivo=nombreArchivo;
+	}
 	@Override
 	public void guardarHistorial(Historial historial) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("historial.txt"))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(this.NombreArchivo))) {
         	bw.write("HISTORIAL");
             bw.newLine();
             if (historial != null) {
@@ -63,7 +67,7 @@ public class PersistenciaHistorialTXT implements IPersistenciaHistorial {
 	
 	@Override
 	public Historial cargarHistorial() {
-		File archivo = new File("historial.txt");
+		File archivo = new File(this.NombreArchivo);
 		Historial historial = new Historial();
 		if (!archivo.exists()) {
 		    return historial;

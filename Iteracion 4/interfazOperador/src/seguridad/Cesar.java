@@ -32,7 +32,14 @@ public class Cesar implements ISeguridadStrategy{
         return decrypt;
     }
 
+    //clave = numero de 0 a 99, o string "messi" por ejemplo
     public void setClave(String clave){
-        this.desplazamiento = Integer.parseInt(clave);
+        if (clave.length()>=3){
+           this.desplazamiento = clave.length(); 
+        }
+        else{
+            this.desplazamiento = Integer.parseInt(clave);
+        }
+        
     }
 }

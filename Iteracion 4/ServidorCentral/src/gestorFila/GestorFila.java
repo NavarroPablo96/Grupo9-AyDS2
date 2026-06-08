@@ -338,6 +338,24 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 		System.out.println("GestorFila200-setEstado(cola) - Se actualizo el estado de la cola NumSiguienteTurno="+this.numeroTurnoSiguiente);
 		ControladorServidor.actualizarTurnosVistaServidor(this.fila.getListaTurnos());
 		//private int numeroTurnoSiguiente;
+		guardarEstadoCola();
+	}
+	
+	@Override
+	public void setHistorial(Historial historial) {
+		System.out.println("Se actualizo el historial historial==null?"+(historial==null));
+		this.historial=historial;
+		this.historial.mostrar();
+		guardarHistorial();
+	}
+
+	@Override
+	public void setRegistro(RegistroRellamar registro) {
+		this.llamados=registro;
+		System.out.println("Se actualizo Registro llamados:");
+		this.llamados.mostrar();
+		guardarLlamados();
+		
 	}
 	public void setCola(IColaTurno iCT) {
 		this.fila=iCT;
@@ -353,22 +371,6 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 
 	public void setEncriptador(ISeguridadStrategy encriptador){
 		this.encriptador = encriptador;
-	}
-
-	@Override
-	public void setHistorial(Historial historial) {
-		System.out.println("Se actualizo el historial historial==null?"+(historial==null));
-		this.historial=historial;
-		this.historial.mostrar();
-		
-	}
-
-	@Override
-	public void setRegistro(RegistroRellamar registro) {
-		this.llamados=registro;
-		System.out.println("Se actualizo Registro llamados:");
-		this.llamados.mostrar();
-		
 	}
 
 	@Override

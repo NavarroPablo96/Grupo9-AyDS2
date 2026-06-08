@@ -14,7 +14,13 @@ import java.io.File;
 import java.util.Date;
 
 public class PersistenciaLlamadoXML implements IPersistenciaLlamado {
+    private String ARCHIVO = "";
 
+    public PersistenciaLlamadoXML(String archivo) {
+    	this.ARCHIVO=archivo;
+    }
+    
+    
     @Override
     public void guardarLlamados(RegistroRellamar llamados) {
 
@@ -59,7 +65,7 @@ public class PersistenciaLlamadoXML implements IPersistenciaLlamado {
 
             transformer.transform(
                     new DOMSource(doc),
-                    new StreamResult(new File("llamados.xml"))
+                    new StreamResult(new File(this.ARCHIVO))
             );
 
             System.out.println("PersistenciaLlamadoXML - guardado OK");
@@ -74,7 +80,7 @@ public class PersistenciaLlamadoXML implements IPersistenciaLlamado {
 
     	RegistroRellamar registro = new RegistroRellamar();
         try {
-            File file = new File("llamados.xml");
+            File file = new File(this.ARCHIVO);
             if (!file.exists()) return registro;
 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

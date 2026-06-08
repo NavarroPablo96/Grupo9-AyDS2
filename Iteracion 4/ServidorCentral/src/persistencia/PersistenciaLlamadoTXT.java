@@ -13,10 +13,16 @@ import gestorFila.Llamado;
 import gestorFila.RegistroRellamar;
 
 public class PersistenciaLlamadoTXT implements IPersistenciaLlamado {
+	
+	private String NombreArchivo = "";
+	
+	public PersistenciaLlamadoTXT(String nombreArchivo){
+		this.NombreArchivo=nombreArchivo;
+	}
 
 	@Override
 	public void guardarLlamados(RegistroRellamar llamados) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("llamados.txt"))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(NombreArchivo))) {
             bw.write("LLAMADOS");
             bw.newLine();
             if (llamados != null) {
@@ -53,7 +59,7 @@ public class PersistenciaLlamadoTXT implements IPersistenciaLlamado {
 
 	@Override
 	public RegistroRellamar cargarLlamados() {
-		File archivo = new File("llamados.txt");
+		File archivo = new File(NombreArchivo);
 		RegistroRellamar registro= new RegistroRellamar();
         if (!archivo.exists()) {
             return registro;

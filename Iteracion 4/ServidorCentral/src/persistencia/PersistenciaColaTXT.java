@@ -13,10 +13,16 @@ import gestorFila.ColaTurno;
 import gestorFila.EstadoCola;
 
 public class PersistenciaColaTXT implements IPersistenciaCola {
+	
+	private String NombreArchivo = "";
+	
+	public PersistenciaColaTXT(String nombreArchivo){
+		this.NombreArchivo=nombreArchivo;
+	}
 
 	@Override
 	public void guardarCola(EstadoCola cola) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("cola.txt"))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(this.NombreArchivo))) {
 
             bw.write("COLA");
             bw.newLine();
@@ -53,7 +59,7 @@ public class PersistenciaColaTXT implements IPersistenciaCola {
 
 	@Override
 	public EstadoCola cargarCola() {
-		File archivo = new File("cola.txt");
+		File archivo = new File(this.NombreArchivo);
 		EstadoCola aux = new EstadoCola();
         if (!archivo.exists()) {
             return aux;

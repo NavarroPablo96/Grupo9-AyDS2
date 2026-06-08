@@ -14,11 +14,12 @@ import gestorFila.EstadoCola;
 
 public class PersistenciaColaJSON implements IPersistenciaCola {
 
-    private static final String ARCHIVO = "cola.json";
+    private String ARCHIVO = "";
 
     private Gson gson;
 
-    public PersistenciaColaJSON() {
+    public PersistenciaColaJSON(String archivo) {
+    	this.ARCHIVO=archivo;
         this.gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .create();

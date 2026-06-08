@@ -11,11 +11,12 @@ import gestorFila.RegistroRellamar;
 
 public class PersistenciaLlamadoJSON implements IPersistenciaLlamado {
 
-    private static final String ARCHIVO = "llamados.json";
+	private String ARCHIVO = "";
 
     private Gson gson;
 
-    public PersistenciaLlamadoJSON() {
+    public PersistenciaLlamadoJSON(String archivo) {
+    	this.ARCHIVO=archivo;
         this.gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .create();

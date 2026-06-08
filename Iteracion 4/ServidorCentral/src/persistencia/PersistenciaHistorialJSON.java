@@ -11,12 +11,13 @@ import gestorFila.Historial;
 
 public class PersistenciaHistorialJSON implements IPersistenciaHistorial {
 
-    private static final String ARCHIVO = "historial.json";
+	private String ARCHIVO = "";
 
     private Gson gson;
 
-    public PersistenciaHistorialJSON() {
-        this.gson = new GsonBuilder()
+    public PersistenciaHistorialJSON(String archivo) {
+    	this.ARCHIVO=archivo;
+    	this.gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .create();
     }

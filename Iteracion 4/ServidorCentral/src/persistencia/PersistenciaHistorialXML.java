@@ -13,7 +13,12 @@ import java.io.File;
 import java.util.Date;
 
 public class PersistenciaHistorialXML implements IPersistenciaHistorial {
+    private String ARCHIVO = "";
 
+    public PersistenciaHistorialXML(String archivo) {
+    	this.ARCHIVO=archivo;
+    }
+    
     @Override
     public void guardarHistorial(Historial historial) {
 
@@ -50,7 +55,7 @@ public class PersistenciaHistorialXML implements IPersistenciaHistorial {
 
             transformer.transform(
                     new DOMSource(doc),
-                    new StreamResult(new File("historial.xml"))
+                    new StreamResult(new File(this.ARCHIVO))
             );
 
             System.out.println("PersistenciaHistorialXML - guardado OK");
@@ -65,7 +70,7 @@ public class PersistenciaHistorialXML implements IPersistenciaHistorial {
     	Historial historial = new Historial();
 
         try {
-            File file = new File("historial.xml");
+            File file = new File(this.ARCHIVO);
             if (!file.exists()) return historial;
 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
