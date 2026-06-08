@@ -27,6 +27,10 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 
 
 	private ISeguridadStrategy encriptador;
+	public ISeguridadStrategy getEncriptador() {
+		return this.encriptador;
+	}
+	
 	
 	//INTERFAZ CON EL CONTROLADOR
 	private IActualizarServidor ControladorServidor;
@@ -50,7 +54,7 @@ public class GestorFila implements IRegistro,IAtencion,IEstadoFila{
 	private IActualizacion actualizadorServidorSecundario;
 	public void setActualizador(IActualizacion gestorSincronizacion) {
 		this.actualizadorServidorSecundario=gestorSincronizacion;
-	}
+	}	
 	
 	//PATRON SINGLETON
 	private static GestorFila instancia;

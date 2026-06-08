@@ -18,6 +18,7 @@ import gestorFila.GestorFila;
 import gestorFila.Historial;
 import gestorFila.Llamado;
 import gestorFila.RegistroRellamar;
+import seguridad.ISeguridadStrategy;
 
 public class GestorTerminales implements IEnviarEventoClientes,IGestorTerminal{
 	//PATRON SINGLETON
@@ -269,12 +270,17 @@ public class GestorTerminales implements IEnviarEventoClientes,IGestorTerminal{
 
 		    //SE debe enviar el estado del operador, su turno y la cantidad de veces llamado.
 		    RegistroRellamar registro = GestorFila.getInstance().getRegistro();
+		    ISeguridadStrategy Encriptador = GestorFila.getInstance().getEncriptador();
 		    if(registro!=null) {
 		    	Llamado llamado = registro.getLlamado(numero);
 		    	if(llamado!=null) {
-		    		System.out.println("GestorTerminales 274 - Creando EventoRecuperacionRellamado");
 					Turno t = llamado.getTurno();
-		    		EventoRecuperacionRellamado evr = new EventoRecuperacionRellamado(t,llamado.getCantidadVecesLlamado(),llamado.getNumeroTerminal());			
+					Turno dosT = new Turno(t.getNumero(),t.getDocumento(),t.getHoraRegistro(),t.getHoraHoraDeLlamado());
+					
+					dosT.setDocumento(Encriptador.encriptar(dosT.getDocumento()));
+		    		EventoRecuperacionRellamado evr = new EventoRecuperacionRellamado(dosT,llamado.getCantidadVecesLlamado(),llamado.getNumeroTerminal());
+		    		
+		    		
 		    		enviarEvento(evr,tipo,numero);
 		    	}
 		    }
